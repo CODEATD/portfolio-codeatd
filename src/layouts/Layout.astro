@@ -1,7 +1,14 @@
 ---
+import Header from '../components/ui/Header.astro'
+import Footer from '../components/ui/Footer.astro'
 import "../styles/global.css";
+
+const user = 'Adolfo';
 ---
 
+<Header user={user} />
 <p>Elemento visible en todas las páginas</p>
 
 <slot />
+
+<Footer />

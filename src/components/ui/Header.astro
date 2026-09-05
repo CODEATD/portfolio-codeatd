@@ -1,0 +1,12 @@
+---
+interface Props {
+  user: string;
+}
+
+const { user } = Astro.props;
+---
+
+<header>
+  <h1>Header Component</h1>
+  <p class="font-black">Bienvenido, {user.toUpperCase()}</p>
+</header>
