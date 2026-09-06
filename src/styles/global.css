@@ -1,6 +1,49 @@
 @import "tailwindcss";
 
 @theme {
+  /* Tipografías */
   --font-sans: "Open Sans", sans-serif;
   --font-heading: "Space Grotesk", sans-serif;
+
+  /* Brand Primary */
+  --color-primary-50: #fef8e8;
+  --color-primary-100: #fbebb8;
+  --color-primary-200: #f9e195;
+  --color-primary-300: #f6d365;
+  --color-primary-400: #f4ca47;
+  --color-primary-500: #f1bd19;
+  --color-primary-600: #dbac17;
+  --color-primary-700: #ab8612;
+  --color-primary-800: #85680e;
+  --color-primary-900: #654f0b;
+
+  /* Text Colors */
+  --color-text-50: #e7e7e7;
+  --color-text-100: #b5b5b5;
+  --color-text-200: #929292;
+  --color-text-300: #606060;
+  --color-text-400: #414141;
+  --color-text-500: #111111;
+  --color-text-600: #0f0f0f;
+  --color-text-700: #0c0c0c;
+  --color-text-800: #090909;
+  --color-text-900: #070707;
+
+  /* Black Scale (Other Black de Figma) */
+  --color-black-50: #e6e6e6;
+  --color-black-100: #b0b0b0;
+  --color-black-200: #8a8a8a;
+  --color-black-300: #545454;
+  --color-black-400: #333333;
+  --color-black-500: #000000;
+
+  /* Bordes */
+  --color-border-dark: #2c2c2c;
+  --color-border-light: #f9f9f9;
+}
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+  }
 }
