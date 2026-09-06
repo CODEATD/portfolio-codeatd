@@ -1,14 +1,49 @@
 ---
-import Header from '@/components/ui/Header.astro'
-import Footer from '@/components/ui/Footer.astro'
-import "../styles/global.css";
+import { siteConfig } from "@/config/site-config.ts";
+import Header from "@/components/ui/Header.astro";
+import Footer from "@/components/ui/Footer.astro";
+import "@/styles/global.css";
 
-const user = 'Adolfo';
+// Props for the layout component (SEO metadata)
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+}
+
+const {
+  title,
+  description = siteConfig.description,
+  image = siteConfig.ogImage,
+} = Astro.props;
+
+// Construct the full page title for SEO
+const pageTitle = title ? `${title} | ${siteConfig.name}` : siteConfig.title;
 ---
 
-<Header user={user} />
-<p>Elemento visible en todas las páginas</p>
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
-<slot />
+    <!-- SEO basics -->
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={siteConfig.author} />
 
-<Footer />
+    <!-- Open Graph Social Media -->
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={image} />
+    <meta property="og:url" content={siteConfig.url} />
+  </head>
+  <body>
+    <Header />
+    <main class="flex-grow">
+        <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
