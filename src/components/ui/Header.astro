@@ -1,5 +1,6 @@
 ---
-import Logo from '@/assets/logos/logo-circle.svg'
+import MainNav from "@/components/ui/MainNav.astro";
+import Logo from "@/assets/logos/logo-circle.svg";
 interface Props {
   user?: string;
 }
@@ -8,29 +9,38 @@ interface Props {
 <header
   class="w-full sticky top-0 z-40 dark:bg-white/80 backdrop-blur-md transition-colors duration-300"
 >
-  <div class="max-w-7xl mx-auto px-4 py-3 md:px-8 flex items-center justify-between">
+  <div
+    class="max-w-7xl mx-auto px-4 py-3 md:px-8 flex items-center justify-between"
+  >
     <!-- Logo -->
-     <a href="/" class="flex items-center gap-2 group" aria-label="Ir al inicio">
-      <div class="size-12 rounded-full flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform">
+    <a href="/" class="flex items-center gap-2 group" aria-label="Ir al inicio">
+      <div
+        class="size-12 rounded-full flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform"
+      >
         <Logo class="size-12" />
       </div>
     </a>
 
     <!-- Hamburger icon -->
-     <button
+    <button
       id="mobile-menu-btn"
       type="button"
       class="md:hidden size-10 rounded-full bg-primary-500 flex flex-col items-center justify-center gap-1.5 focus:outline-none cursor-pointer hover:brightness-105 transition"
       aria-label="Abrir menú"
-     >
-     <span class="w-5 h-0.5 bg-text-500 rounded-full"></span>
-     <span class="w-5 h-0.5 bg-text-500 rounded-full"></span>
+    >
+      <span class="w-5 h-0.5 bg-neutral-500 rounded-full"></span>
+      <span class="w-5 h-0.5 bg-neutral-500 rounded-full"></span>
     </button>
 
-    <!-- Container Desktop -->
+    <!-- Container Desktop (Menu + Button CTA) -->
 
-    <div class="hidden md:flex items-center gap-8">
+    <div class="hidden md:flex items-center gap-9">
+      <MainNav />
 
+      <a href="#contact" class="btn-primary">
+        <span>Let's Talk</span>
+        <i class="ri-arrow-right-up-line text-base"></i>
+      </a>
     </div>
   </div>
 </header>
