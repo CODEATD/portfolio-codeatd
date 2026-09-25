@@ -41,8 +41,8 @@
   --color-black-500: #000000;
 
   /* Bordes */
-  --color-border-dark: #2c2c2c;
-  --color-border-light: #f9f9f9;
+  --color-bor-dark: #070707;
+  --color-bor-light: #ECECEC;
 }
 
 @layer base {
@@ -58,7 +58,7 @@
 /* Botón principal: Negro en Light, Amarillo en Dark (como en Figma) */
 @utility btn-primary {
   @apply inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-full font-medium text-sm transition-all duration-200 
-         bg-neutral-900 text-white hover:bg-neutral-800 
+         bg-neutral-500 text-white hover:bg-primary-500 hover:text-neutral-500
          dark:bg-primary-500 dark:text-black dark:hover:bg-primary-400 cursor-pointer;
 }
 

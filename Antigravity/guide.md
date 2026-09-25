@@ -1,10 +1,5 @@
-## 📌 ETAPA 3: Componente `ThemeToggle.astro` (Modo Claro / Modo Oscuro)
-
-Ahora agregamos el botón de alternar tema con los iconos de Remix Icon (`ri-sun-line` y `ri-moon-clear-line`), colocado a la derecha del botón *"Let's Talk"*.
-
 ### 1. Crear `src/components/ui/ThemeToggle.astro`:
 
-```astro
 ---
 // src/components/ui/ThemeToggle.astro
 ---
@@ -34,30 +29,62 @@ Ahora agregamos el botón de alternar tema con los iconos de Remix Icon (`ri-sun
 
 ### 2. Integrar `ThemeToggle` en `src/components/header/Header.astro`:
 
-En `src/components/header/Header.astro`, impórtalo en el frontmatter:
-```astro
-import ThemeToggle from '@/components/ui/ThemeToggle.astro';
-```
+En `src/components/header/Header.astro`, importamos `ThemeToggle` y lo colocamos dentro del grupo de acciones para que esté disponible **tanto en móvil (al lado del menú hamburguesa) como en escritorio (al lado del botón CTA)**:
 
-Y agrégalo justo al lado del botón *"Let's Talk"*:
 ```astro
-    <!-- Contenedor Desktop (Menú + Botón CTA + ThemeToggle) -->
-    <div class="hidden md:flex items-center gap-6">
+---
+// src/components/header/Header.astro
+import MainNav from "@/components/header/MainNav.astro";
+import ThemeToggle from "@/components/ui/ThemeToggle.astro";
+import Logo from "@/assets/logos/logo-circle.svg";
+---
+
+<header
+  class="w-full sticky top-0 z-40 bg-white/80 dark:bg-dark-bg/80 backdrop-blur-md transition-colors duration-300"
+>
+  <div class="max-w-7xl mx-auto px-4 py-3 md:px-8 flex items-center justify-between">
+    <!-- 1. Logo -->
+    <a href="/" class="flex items-center gap-2 group" aria-label="Ir al inicio">
+      <div class="size-12 rounded-full flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform">
+        <Logo class="size-12" />
+      </div>
+    </a>
+
+    <!-- 2. Navegación Desktop -->
+    <div class="hidden md:flex items-center">
       <MainNav />
+    </div>
 
-      <a href="#contact" class="btn-primary">
+    <!-- 3. Acciones Derecha (CTA + ThemeToggle + Hamburguesa) -->
+    <div class="flex items-center gap-3 md:gap-6">
+      <!-- Botón Let's Talk (Solo Desktop) -->
+      <a href="#contact" class="hidden md:inline-flex btn-primary">
         <span>Let's Talk</span>
         <i class="ri-arrow-right-up-line text-base"></i>
       </a>
 
+      <!-- ThemeToggle (Visible en Móvil y Escritorio) -->
       <ThemeToggle />
+
+      <!-- Botón Hamburguesa (Solo Móvil) -->
+      <button
+        id="mobile-menu-btn"
+        type="button"
+        class="md:hidden size-10 rounded-full bg-primary-500 flex flex-col items-center justify-center gap-1.5 focus:outline-none cursor-pointer hover:brightness-105 transition"
+        aria-label="Abrir menú"
+      >
+        <span class="w-5 h-0.5 bg-black rounded-full"></span>
+        <span class="w-5 h-0.5 bg-black rounded-full"></span>
+      </button>
     </div>
+  </div>
+</header>
 ```
 
 ### Commit sugerido para la Etapa 3:
 ```bash
-git add src/components/ui/ThemeToggle.astro src/components/header/Header.astro
-git commit -m "feat(header): add theme toggle button with sun and moon icons"
+git add src/components/ui/ThemeToggle.astro src/components/header/Header.astro Antigravity/guide.md
+git commit -m "feat(header): add theme toggle button with mobile and desktop support"
 ```
 
 ---

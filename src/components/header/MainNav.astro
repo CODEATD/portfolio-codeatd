@@ -1,6 +1,4 @@
 ---
-// src/components/ui/MainNav.astro
-
 const navigation = [
   { name: "About", href: "#about" },
   { name: "Experience", href: "#experience" },
@@ -15,14 +13,14 @@ const isActive = (href: string) => {
   return currentPath.startsWith(href);
 };
 
-// Estilos base que comparten todos los enlaces
+// Base styles for all navigation links
 const baseStyles = "text-sm font-semibold transition-colors duration-200";
 
-// Función centralizada para decidir los estilos activo vs inactivo
+// Function to get the appropriate classes for each link based on its active state
 const getLinkClasses = (href: string) => {
   return isActive(href)
     ? "text-primary-500 dark:text-primary-400 font-bold" // Active
-    : "text-neutral-600 hover:text-black dark:text-neutral-300 dark:hover:text-primary-400"; // Inactive
+    : "text-neutral-500 hover:text-black dark:text-white dark:hover:text-primary-500"; // Inactive
 };
 ---
 
