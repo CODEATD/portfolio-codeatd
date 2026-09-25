@@ -1,13 +1,10 @@
 ---
-import MainNav from "@/components/ui/MainNav.astro";
+import MainNav from "@/components/header/MainNav.astro";
 import Logo from "@/assets/logos/logo-circle.svg";
-interface Props {
-  user?: string;
-}
 ---
 
 <header
-  class="w-full sticky top-0 z-40 dark:bg-white/80 backdrop-blur-md transition-colors duration-300"
+  class="w-full sticky top-0 z-40 bg-white/80 dark:bg-dark-bg/80 backdrop-blur-md transition-colors duration-300"
 >
   <div
     class="max-w-7xl mx-auto px-4 py-3 md:px-8 flex items-center justify-between"
