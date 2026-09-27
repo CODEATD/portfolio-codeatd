@@ -32,6 +32,8 @@
   --color-neutral-800: #090909;
   --color-neutral-900: #070707;
 
+  --color-text-muted: rgba(255, 255, 255, 0.8);
+
   /* Black Scale (Other Black de Figma) */
   --color-black-50: #e6e6e6;
   --color-black-100: #b0b0b0;

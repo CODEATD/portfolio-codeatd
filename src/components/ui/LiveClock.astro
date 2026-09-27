@@ -1,0 +1,75 @@
+---
+// src/components/ui/LiveClock.astro
+import { siteConfig } from "@/config/site-config";
+
+interface Props {
+  location?: string;
+  class?: string;
+}
+
+const { location = siteConfig.location, class: className = "" } = Astro.props;
+---
+
+<div
+  class={`items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-neutral-100 dark:bg-neutral-900/80 border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-300 font-mono text-xs shadow-sm ${className}`}
+>
+  <!-- Pulsing dot -->
+  <span class="relative flex h-2 w-2">
+    <span
+      class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
+    ></span>
+    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"
+    ></span>
+  </span>
+
+  <!-- Clock display -->
+  <span
+    id="live-clock-display"
+    class="live-clock-display font-semibold text-neutral-900 dark:text-white tracking-wider"
+  >
+    --:--:-- --
+  </span>
+
+  <!-- Location separator and label -->
+  {
+    location && (
+      <>
+        <span class="text-neutral-400 dark:text-neutral-600">·</span>
+        <span class="text-neutral-600 dark:text-text-muted">{location}</span>
+      </>
+    )
+  }
+</div>
+
+<script>
+  import { siteConfig } from "@/config/site-config";
+
+  function initClock(): void {
+    const clockDisplays = document.querySelectorAll<HTMLElement>(
+      ".live-clock-display, #live-clock-display",
+    );
+    if (clockDisplays.length === 0) return;
+
+    const formatter: Intl.DateTimeFormat = new Intl.DateTimeFormat("en-US", {
+      timeZone: siteConfig.timeZone,
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+    });
+
+    const update = (): void => {
+      const timeStr = formatter.format(new Date());
+      clockDisplays.forEach((display) => {
+        display.textContent = timeStr;
+      });
+    };
+
+    update();
+    setInterval(update, 1000);
+  }
+
+  // Initialization and support for View Transitions
+  initClock();
+  document.addEventListener("astro:page-load", initClock);
+</script>

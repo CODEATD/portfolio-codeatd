@@ -1,7 +1,173 @@
 ---
+// Component imports & configuration
+import {
+  siteConfig,
+  navLinks,
+  socialLinks,
+  footerNavCol1,
+  footerNavCol2,
+} from "@/config/site-config";
+import FooterBox from "@/components/footer/FooterBox.astro";
+import LogoPrimary from "@/assets/logos/logo_text_primary.svg";
+import LiveClock from "@/components/ui/LiveClock.astro";
 
+// Dynamic background image prop support
+interface Props {
+  bgImage?: string;
+}
+
+const { bgImage } = Astro.props;
+const currentYear = new Date().getFullYear();
 ---
 
-<footer>
-    <h2>Footer Component</h2>
+<footer
+  class="relative bg-surface-light dark:bg-surface-dark text-neutral-900 dark:text-white border-t border-bor-light dark:border-neutral-900 overflow-hidden"
+>
+  <!-- Background Image Layer -->
+  {
+    bgImage && (
+      <div
+        class="absolute inset-0 z-0 bg-center bg-cover bg-no-repeat opacity-20 pointer-events-none"
+        style={`background-image: url('${bgImage}')`}
+      />
+    )
+  }
+
+  <!-- Background Overlay Layer -->
+  {
+    bgImage && (
+      <div class="absolute inset-0 z-10 bg-white/40 dark:bg-black/40 pointer-events-none" />
+    )
+  }
+
+  <!-- Main Content Container -->
+  <div class="relative z-20 container pt-16 sm:pt-20">
+    <!-- Main 12-Column Responsive Grid -->
+    <div
+      class="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-16 border-b border-primary-500 w-full pb-10 sm:pb-16"
+    >
+      <!-- Left Column: Brand, Description & Contact -->
+      <div class="md:col-span-6 lg:col-span-7 flex flex-col gap-3 sm:gap-6">
+        <!-- Brand Logo -->
+        <a
+          href="/"
+          class="block w-fit hover:opacity-90 transition-opacity m-0"
+          aria-label="Ir al inicio"
+        >
+          <LogoPrimary class="h-8 w-auto" />
+        </a>
+
+        <!-- Description -->
+        <p
+          class="text-neutral-600 dark:text-text-muted text-sm sm:text-base leading-relaxed max-w-md m-0"
+        >
+          {siteConfig.description}
+        </p>
+
+        <!-- Direct Contact Info -->
+        <div class="flex flex-col gap-3 sm:gap-6 pt-1 text-sm">
+          <div class="flex gap-3 sm:gap-6">
+            <!-- Phone -->
+            <div class="flex flex-col gap-1">
+              <span class="text-neutral-500 dark:text-white font-medium">
+                Call Today:
+              </span>{" "}
+              <a
+                href={`tel:${siteConfig.phone.replace(/[^0-9+]/g, "")}`}
+                class="text-neutral-800 dark:text-neutral-200 hover:text-primary-500 transition-colors font-medium"
+              >
+                {siteConfig.phone}
+              </a>
+            </div>
+
+            <!-- Email -->
+            <div class="flex flex-col gap-1">
+              <span class="text-neutral-500 dark:text-white font-medium">
+                Email:
+              </span>{" "}
+              <a
+                href={`mailto:${siteConfig.email}`}
+                class="text-neutral-800 dark:text-neutral-200 hover:text-primary-500 transition-colors font-medium"
+              >
+                {siteConfig.email}
+              </a>
+            </div>
+          </div>
+
+          <!-- Social Media -->
+          <div class="flex items-center gap-3">
+            {
+              socialLinks.map((social) => (
+                <a
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-primary-500 hover:text-neutral-900 dark:hover:text-white hover:scale-115 transition-all text-xl"
+                  aria-label={social.name}
+                >
+                  <i class={social.icon} />
+                </a>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+      <!-- Right Column: Navigation & Legal -->
+      <div class="md:col-span-6 lg:col-span-5 grid grid-cols-2 gap-8 sm:gap-12">
+        <!-- Menu 1 -->
+        <FooterBox heading="Navigation">
+          <ul class="space-y-4">
+            {
+              footerNavCol1.map((item) => (
+                <li>
+                  <a
+                    href={item.href}
+                    class="hover:text-primary-500 transition-colors inline-block"
+                  >
+                    {item.name}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </FooterBox>
+        <!-- Menu 2 -->
+        <FooterBox heading="Social">
+          <ul class="space-y-4">
+            {
+              footerNavCol2.map((item) => (
+                <li>
+                  <a
+                    href={item.href}
+                    class="hover:text-primary-500 transition-colors inline-block"
+                  >
+                    {item.name}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </FooterBox>
+      </div>
+    </div>
+  </div>
+  <!-- Subfooter -->
+  <div
+    class="flex flex-col md:flex-row items-start md:items-center justify-between gap-2.5 md:gap-6 container text-xs text-neutral-500 dark:text-text-muted pt-6 pb-9 md:py-6"
+  >
+    <p class="order-1 text-left">
+      &copy; {`${currentYear} ${siteConfig.brandName}`}. All rights reserved.
+    </p>
+
+    <!-- Live Clock -->
+    <LiveClock class="hidden md:inline-flex order-2" />
+
+    <!-- Créditos de desarrollo -->
+    <p class="order-2 md:order-3 text-left md:text-right">
+      Developed and designed by <span
+        class="text-neutral-500 dark:text-neutral-200 font-medium"
+        >{siteConfig.brandName}</span
+      >
+    </p>
+  </div>
 </footer>
