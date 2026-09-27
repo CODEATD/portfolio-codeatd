@@ -1,0 +1,169 @@
+---
+import { navLinks } from "@/config/site-config";
+import LogoBlack from "@/assets/logos/logo_text_black.svg";
+import LogoWhite from "@/assets/logos/logo_text_white.svg";
+---
+
+<div
+  id="mobile-drawer"
+  class="fixed inset-0 z-50 bg-surface-light/95 dark:bg-surface-dark/95 backdrop-blur-xl text-neutral-500 dark:text-white flex flex-col justify-between p-6 sm:p-8 md:hidden transition-all duration-300 opacity-0 pointer-events-none translate-y-[-10px] overflow-hidden"
+  aria-hidden="true"
+>
+  <!-- Background Blur and Circle -->
+  <div class="pointer-events-none absolute inset-0 overflow-hidden z-0">
+    <div
+      class="absolute -bottom-24 -left-24 size-80 rounded-full bg-primary-500/20 dark:bg-primary-500/10 blur-3xl"
+    >
+    </div>
+  </div>
+
+  <!-- Menu Handle -->
+  <div
+    class="w-12 h-1.5 bg-neutral-300 dark:bg-neutral-300 rounded-full mx-auto my-1 shrink-0 relative z-10"
+  >
+  </div>
+
+  <div class="flex items-center justify-between w-full relative z-10">
+    <a href="/" class="flex items-center" aria-label="Ir al inicio">
+      <LogoBlack class="h-8 w-auto dark:hidden" />
+      <LogoWhite class="h-8 w-auto hidden dark:block" />
+    </a>
+
+    <button
+      id="close-menu-btn"
+      type="button"
+      class="size-10 flex items-center justify-center text-neutral-900 hover:text-primary-500 dark:text-primary-500 dark:hover:text-primary-400 hover:scale-110 transition cursor-pointer"
+      aria-label="Cerrar menú"
+    >
+      <i class="ri-close-line text-3xl"></i>
+    </button>
+  </div>
+
+  <nav
+    class="flex flex-col items-start justify-center gap-3 sm:gap-4 my-auto w-full relative z-10"
+  >
+    {
+      navLinks.map((item) => (
+        <a href={item.href} class="menu-link-split mobile-nav-link">
+          {item.name}
+        </a>
+      ))
+    }
+  </nav>
+
+  <div class="flex flex-col items-start gap-4 pb-2 w-full relative z-10">
+    <p class="text-xs text-neutral-500 dark:text-white font-medium">
+      Ready to build something?
+    </p>
+    <a
+      href="#contact"
+      class="btn-primary w-full justify-center py-3 text-base mobile-nav-link"
+    >
+      <span>Let's talk</span>
+      <i class="ri-arrow-right-up-line text-lg"></i>
+    </a>
+  </div>
+</div>
+
+<script>
+  const mobileDrawer = document.querySelector(
+    "#mobile-drawer",
+  ) as HTMLElement | null;
+  const openBtn = document.querySelector("#mobile-menu-btn");
+  const closeBtn = document.querySelector("#close-menu-btn");
+  const navLinks = document.querySelectorAll(".mobile-nav-link");
+
+  // Open and close menu functions
+  function openMenu() {
+    if (!mobileDrawer) return;
+    mobileDrawer.style.transform = "";
+    mobileDrawer.style.transition = "";
+    mobileDrawer.classList.remove(
+      "opacity-0",
+      "pointer-events-none",
+      "translate-y-[-10px]",
+    );
+    mobileDrawer.classList.add(
+      "opacity-100",
+      "pointer-events-auto",
+      "translate-y-0",
+    );
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeMenu() {
+    if (!mobileDrawer) return;
+    mobileDrawer.style.transform = "";
+    mobileDrawer.classList.add(
+      "opacity-0",
+      "pointer-events-none",
+      "translate-y-[-10px]",
+    );
+    mobileDrawer.classList.remove(
+      "opacity-100",
+      "pointer-events-auto",
+      "translate-y-0",
+    );
+    document.body.style.overflow = "";
+  }
+
+  openBtn?.addEventListener("click", openMenu);
+  closeBtn?.addEventListener("click", closeMenu);
+  navLinks.forEach((link) => link.addEventListener("click", closeMenu));
+
+  // Close menu on Escape key press
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && mobileDrawer?.classList.contains("opacity-100")) {
+      closeMenu();
+    }
+  });
+
+  // Swipe Down to Dismiss
+  let startY = 0;
+  let currentY = 0;
+  let isDragging = false;
+
+  mobileDrawer?.addEventListener(
+    "touchstart",
+    (e) => {
+      if (mobileDrawer.scrollTop === 0) {
+        startY = e.touches[0].clientY;
+        isDragging = true;
+        mobileDrawer.style.transition = "none";
+      }
+    },
+    { passive: true },
+  );
+
+  mobileDrawer?.addEventListener(
+    "touchmove",
+    (e) => {
+      if (!isDragging || !mobileDrawer) return;
+      currentY = e.touches[0].clientY;
+      const deltaY = currentY - startY;
+
+      // Arrastre hacia abajo
+      if (deltaY > 0) {
+        mobileDrawer.style.transform = `translateY(${deltaY}px)`;
+      }
+    },
+    { passive: true },
+  );
+
+  mobileDrawer?.addEventListener("touchend", () => {
+    if (!isDragging || !mobileDrawer) return;
+    isDragging = false;
+    const deltaY = currentY - startY;
+
+    mobileDrawer.style.transition =
+      "transform 0.3s ease-out, opacity 0.3s ease-out";
+
+    if (deltaY > 120) {
+      closeMenu();
+    } else {
+      mobileDrawer.style.transform = "translateY(0)";
+    }
+    startY = 0;
+    currentY = 0;
+  });
+</script>

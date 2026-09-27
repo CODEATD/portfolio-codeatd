@@ -1,11 +1,5 @@
 ---
-const navigation = [
-  { name: "About", href: "#about" },
-  { name: "Experience", href: "#experience" },
-  { name: "Projects", href: "#projects" },
-  { name: "Blog", href: "#blog" }, // Tenías "Blog" duplicado dos veces, dejamos uno
-  { name: "Contact", href: "#contact" },
-];
+import { navLinks } from "@/config/site-config";
 
 const currentPath = Astro.url.pathname;
 const isActive = (href: string) => {
@@ -20,13 +14,13 @@ const baseStyles = "text-sm font-semibold transition-colors duration-200";
 const getLinkClasses = (href: string) => {
   return isActive(href)
     ? "text-primary-500 dark:text-primary-400 font-bold" // Active
-    : "text-neutral-500 hover:text-black dark:text-white dark:hover:text-primary-500"; // Inactive
+    : "text-neutral-500 hover:text-neutral-400 dark:text-white dark:hover:text-primary-500"; // Inactive
 };
 ---
 
 <nav class="flex flex-col md:flex-row items-center gap-6 lg:gap-8">
   {
-    navigation.map((item) => (
+    navLinks.map((item) => (
       <a href={item.href} class={`${baseStyles} ${getLinkClasses(item.href)}`}>
         {item.name}
       </a>

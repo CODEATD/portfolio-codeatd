@@ -1,12 +1,12 @@
 ---
-// src/components/header/Header.astro
 import MainNav from "@/components/header/MainNav.astro";
 import ThemeToggle from "@/components/ui/ThemeToggle.astro";
 import Logo from "@/assets/logos/logo-circle.svg";
+import MobileMenu from "@/components/header/MobileMenu.astro";
 ---
 
 <header
-  class="w-full sticky top-0 z-40 bg-white dark:bg-neutral-900 border-b border-bor-light dark:border-bor-dark transition-colors duration-300"
+  class="w-full sticky top-0 z-40 bg-surface-light dark:bg-surface-dark border-b border-bor-light dark:border-bor-dark transition-colors duration-300"
 >
   <div
     class="max-w-7xl mx-auto px-4 py-3 md:px-8 flex items-center justify-between"
@@ -49,3 +49,5 @@ import Logo from "@/assets/logos/logo-circle.svg";
     </div>
   </div>
 </header>
+
+<MobileMenu />

@@ -3,8 +3,14 @@ export const siteConfig = {
   title: 'CODE ATD | Desarrollador Full Stack | Portafolio y Blog',
   description: 'Portafolio personal y blog de desarrollo.',
   author: 'CODE ATD',
-  url: 'https://codeatd.dev', // O tu dominio final
+  url: 'https://codeatd.dev',
   ogImage: '/og-image.jpg',
 };
 
-// export type SiteConfig = typeof siteConfig;
+export const navLinks = [
+  { name: "About", href: "#about" },
+  { name: "Experience", href: "#experience" },
+  { name: "Projects", href: "#projects" },
+  { name: "Blog", href: "#blog" },
+  { name: "Contact", href: "#contact" },
+] as const;
