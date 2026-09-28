@@ -66,6 +66,20 @@
   @apply max-w-7xl w-[95%] mx-auto;
 }
 
+@layer base {
+  /* Transitions global for dark mode */
+  body,
+  header,
+  footer,
+  nav,
+  section,
+  aside {
+    transition-property: background-color, border-color, color;
+    transition-duration: 300ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
 /* Primary button */
 @utility btn-primary {
   @apply inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-full font-medium text-sm transition-all duration-200 

@@ -21,13 +21,13 @@ const currentYear = new Date().getFullYear();
 ---
 
 <footer
-  class="relative bg-surface-light dark:bg-surface-dark text-neutral-900 dark:text-white border-t border-bor-light dark:border-neutral-900 overflow-hidden"
+  class="relative bg-surface-dark text-white overflow-hidden"
 >
   <!-- Background Image Layer -->
   {
     bgImage && (
       <div
-        class="absolute inset-0 z-0 bg-center bg-cover bg-no-repeat opacity-20 pointer-events-none"
+        class="absolute inset-0 z-0 bg-center bg-cover bg-no-repeat pointer-events-none"
         style={`background-image: url('${bgImage}')`}
       />
     )
@@ -36,7 +36,7 @@ const currentYear = new Date().getFullYear();
   <!-- Background Overlay Layer -->
   {
     bgImage && (
-      <div class="absolute inset-0 z-10 bg-white/40 dark:bg-black/40 pointer-events-none" />
+      <div class="absolute inset-0 z-10 bg-surface-dark/40 pointer-events-none" />
     )
   }
 
@@ -59,7 +59,7 @@ const currentYear = new Date().getFullYear();
 
         <!-- Description -->
         <p
-          class="text-neutral-600 dark:text-text-muted text-sm sm:text-base leading-relaxed max-w-md m-0"
+          class="text-text-muted text-sm sm:text-base leading-relaxed max-w-md m-0"
         >
           {siteConfig.description}
         </p>
@@ -69,12 +69,12 @@ const currentYear = new Date().getFullYear();
           <div class="flex gap-3 sm:gap-6">
             <!-- Phone -->
             <div class="flex flex-col gap-1">
-              <span class="text-neutral-500 dark:text-white font-medium">
+              <span class="text-white font-medium">
                 Call Today:
               </span>{" "}
               <a
                 href={`tel:${siteConfig.phone.replace(/[^0-9+]/g, "")}`}
-                class="text-neutral-800 dark:text-neutral-200 hover:text-primary-500 transition-colors font-medium"
+                class="text-neutral-200 hover:text-primary-500 transition-colors font-medium"
               >
                 {siteConfig.phone}
               </a>
@@ -82,12 +82,12 @@ const currentYear = new Date().getFullYear();
 
             <!-- Email -->
             <div class="flex flex-col gap-1">
-              <span class="text-neutral-500 dark:text-white font-medium">
+              <span class="text-white font-medium">
                 Email:
               </span>{" "}
               <a
                 href={`mailto:${siteConfig.email}`}
-                class="text-neutral-800 dark:text-neutral-200 hover:text-primary-500 transition-colors font-medium"
+                class="text-neutral-200 hover:text-primary-500 transition-colors font-medium"
               >
                 {siteConfig.email}
               </a>
@@ -102,7 +102,7 @@ const currentYear = new Date().getFullYear();
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-primary-500 hover:text-neutral-900 dark:hover:text-white hover:scale-115 transition-all text-xl"
+                  class="text-primary-500 hover:text-neutral-900 hover:text-white hover:scale-115 transition-all text-xl"
                   aria-label={social.name}
                 >
                   <i class={social.icon} />
@@ -153,7 +153,7 @@ const currentYear = new Date().getFullYear();
   </div>
   <!-- Subfooter -->
   <div
-    class="flex flex-col md:flex-row items-start md:items-center justify-between gap-2.5 md:gap-6 container text-xs text-neutral-500 dark:text-text-muted pt-6 pb-9 md:py-6"
+    class="relative z-20 flex flex-col md:flex-row items-start md:items-center justify-between gap-2.5 md:gap-6 container text-xs text-neutral-500 text-text-muted pt-6 pb-9 md:py-6"
   >
     <p class="order-1 text-left">
       &copy; {`${currentYear} ${siteConfig.brandName}`}. All rights reserved.
@@ -165,7 +165,7 @@ const currentYear = new Date().getFullYear();
     <!-- Créditos de desarrollo -->
     <p class="order-2 md:order-3 text-left md:text-right">
       Developed and designed by <span
-        class="text-neutral-500 dark:text-neutral-200 font-medium"
+        class="text-neutral-500 text-neutral-200 font-medium"
         >{siteConfig.brandName}</span
       >
     </p>
