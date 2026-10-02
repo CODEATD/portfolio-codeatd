@@ -1,0 +1,43 @@
+---
+// src/components/hero/HeroActions.astro
+interface Props {
+  primaryCta?: {
+    text: string;
+    href: string;
+  };
+  secondaryCta?: {
+    text: string;
+    href: string;
+  };
+  class?: string;
+}
+
+const {
+  primaryCta = { text: "View Projects", href: "#projects" },
+  secondaryCta = { text: "Download CV", href: "#cv" },
+  class: className = "",
+} = Astro.props;
+---
+
+<div class={`flex flex-wrap items-center gap-5 sm:gap-7 ${className}`}>
+  <!-- Primary Button -->
+  <a
+    href={primaryCta.href}
+    class="btn-primary bg-primary-500 text-neutral-500 hover:bg-primary-400 dark:text-neutral-500 px-7 py-3.5 text-sm sm:text-base"
+  >
+    <span>{primaryCta.text}</span>
+    <i
+      class="ri-arrow-down-line text-lg inline-block animate-float-arrow"
+      aria-hidden="true"
+    ></i>
+  </a>
+
+  <!-- Secondary Button -->
+  <a href={secondaryCta.href} class="btn-link">
+    <span class="mr-2">{secondaryCta.text}</span>
+    <i
+      class="ri-arrow-right-up-line text-lg"
+      aria-hidden="true"
+    ></i>
+  </a>
+</div>

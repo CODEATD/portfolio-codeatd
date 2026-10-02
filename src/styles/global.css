@@ -129,3 +129,17 @@
     transform: scaleX(1);
   }
 }
+
+/* Floating arrow animation */
+@keyframes float-arrow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(4px);
+  }
+}
+
+@utility animate-float-arrow {
+  animation: float-arrow 1.8s ease-in-out infinite;
+}

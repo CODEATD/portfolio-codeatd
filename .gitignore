@@ -26,3 +26,6 @@ pnpm-debug.log*
 # antigravity folder
 Antigravity/
 
+# Pages
+test.astro
+
