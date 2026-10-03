@@ -11,7 +11,7 @@ const { location = siteConfig.location, class: className = "" } = Astro.props;
 ---
 
 <div
-  class={`items-center gap-2.5 px-3.5 py-1.5 rounded-full text-neutral-300 font-mono text-xs shadow-sm ${className}`}
+  class={`items-center gap-2.5 rounded-full text-neutral-300 font-mono text-xs shadow-sm ${className}`}
 >
   <!-- Pulsing dot -->
   <span class="relative flex h-2 w-2">
@@ -25,7 +25,7 @@ const { location = siteConfig.location, class: className = "" } = Astro.props;
   <!-- Clock display -->
   <span
     id="live-clock-display"
-    class="live-clock-display font-semibold text-neutral-900 text-white tracking-wider"
+    class="live-clock-display font-semibold text-white tracking-wider"
   >
     --:--:-- --
   </span>
@@ -34,8 +34,8 @@ const { location = siteConfig.location, class: className = "" } = Astro.props;
   {
     location && (
       <>
-        <span class="text-neutral-400 text-white">·</span>
-        <span class="text-neutral-600 text-text-muted">{location}</span>
+        <span class="text-text-muted">·</span>
+        <span class="text-text-muted">{location}</span>
       </>
     )
   }
