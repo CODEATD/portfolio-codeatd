@@ -1,0 +1,216 @@
+---
+import HeroActions from "@/components/hero/HeroActions.astro";
+import HeroMedia from "@/components/hero/HeroMedia.astro";
+
+interface Props {
+  tag?: string;
+  greeting?: string;
+  title?: string;
+  highlightText?: string;
+  description?: string;
+  bgLight?: string;
+  bgDark?: string;
+  bgImage?: string;
+  primaryCta?: { text: string; href: string };
+  secondaryCta?: { text: string; href: string };
+}
+
+const {
+  tag = "FULL STACK DEVELOPER",
+  greeting = "Hi, I'm Adolfo. I build",
+  title = "beautiful software that performs as",
+  highlightText = "well as it looks.",
+  description = "I'm a full-stack engineer with eight years building SaaS platforms, startup products, and scalable web applications — from first commit to production at scale.",
+  bgLight,
+  bgDark,
+  bgImage = bgDark, // fallback
+  primaryCta,
+  secondaryCta,
+} = Astro.props;
+---
+
+<section
+  id="hero"
+  class="relative min-h-[calc(100vh-80px)] flex items-center overflow-hidden bg-surface-light dark:bg-surface-dark transition-colors duration-300"
+>
+  <!-- Background image -->
+  {
+    bgImage && (
+      <div
+        class="absolute inset-0 z-0 bg-center bg-repeat pointer-events-none opacity-[0.03] dark:opacity-100 transition-opacity duration-300"
+        style={`background-image: url('${bgImage}')`}
+      />
+    )
+  }
+
+  <!-- Radial Gradient Light -->
+  <div
+    class="absolute inset-0 z-10 bg-radial from-transparent via-surface-light/40 to-surface-light pointer-events-none opacity-100 dark:opacity-0 transition-opacity duration-300"
+  >
+  </div>
+
+  <!-- Radial Gradient Dark -->
+  <div
+    class="absolute inset-0 z-10 bg-radial from-transparent via-surface-dark/40 to-surface-dark pointer-events-none opacity-0 dark:opacity-100 transition-opacity duration-300"
+  >
+  </div>
+
+  <!-- Container and grid columns -->
+  <div class="relative z-20 container py-14 sm:py-20 lg:py-24">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+      <!-- Left column -->
+      <div class="lg:col-span-7 flex flex-col gap-6 sm:gap-8">
+        <slot name="left-content">
+          <div class="hero-anim-item flex items-center gap-2.5">
+            <span class="size-2 rounded-full bg-primary-500 animate-pulse"
+            ></span>
+            <span
+              class="font-heading font-medium text-xs sm:text-sm tracking-widest uppercase text-neutral-500 dark:text-text-muted"
+            >
+              {tag}
+            </span>
+          </div>
+          <!-- Headline -->
+          <h1
+            class="hero-anim-item font-heading font-bold text-4xl sm:text-5xl lg:text-6xl tracking-tight text-neutral-500 dark:text-white leading-[1.12] text-balance"
+          >
+            <span>{greeting}</span>
+            <span class="block">{title}</span>
+            <!-- SplitText + Glitch -->
+            <span
+              class="brand-glitch text-primary-500 inline-block font-black cursor-pointer"
+              data-text={highlightText}
+            >
+              <span class="sr-only">{highlightText}</span>
+              {
+                highlightText.split("").map((char) => (
+                  <span
+                    class="hero-split-char inline-block will-change-[transform,opacity,filter]"
+                    aria-hidden="true"
+                  >
+                    {char === " " ? "\u00A0" : char}
+                  </span>
+                ))
+              }
+            </span>
+          </h1>
+
+          <!-- Description -->
+          <p
+            class="hero-anim-item text-neutral-500 dark:text-text-muted text-base sm:text-lg leading-relaxed max-w-2xl font-sans text-pretty"
+          >
+            {description}
+          </p>
+
+          <!-- CTAs -->
+          <div class="hero-anim-item pt-2">
+            <slot name="actions">
+              <HeroActions
+                primaryCta={primaryCta}
+                secondaryCta={secondaryCta}
+              />
+            </slot>
+          </div>
+        </slot>
+      </div>
+
+      <!-- Right column -->
+      <div
+        class="hero-anim-media lg:col-span-5 flex justify-center lg:justify-end relative"
+      >
+        <slot name="media">
+          <HeroMedia />
+        </slot>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from "gsap";
+
+  let heroTimeline: gsap.core.Timeline | null = null;
+
+  function initHeroTimeline() {
+    const hero = document.querySelector<HTMLElement>("#hero");
+    if (!hero) return;
+    heroTimeline?.kill();
+
+    // Accessibility: No animation if the user has limited mobility
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    heroTimeline = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+    // 1. Staggered entry
+    heroTimeline.from(hero.querySelectorAll(".hero-anim-item"), {
+      y: 35,
+      autoAlpha: 0,
+      duration: 0.85,
+      stagger: 0.12,
+      delay: 0.15,
+    });
+
+    // 2. SplitText con blur + Remate Glitch
+    const splitChars = hero.querySelectorAll(".hero-split-char");
+    const glitchEl = hero.querySelector<HTMLElement>(".brand-glitch");
+
+    if (splitChars.length > 0) {
+      heroTimeline.from(
+        splitChars,
+        {
+          y: 20,
+          autoAlpha: 0,
+          filter: "blur(10px)",
+          duration: 0.65,
+          stagger: 0.035,
+          ease: "power2.out",
+        },
+        "-=0.5",
+      );
+
+      if (glitchEl) {
+        heroTimeline.call(
+          () => {
+            glitchEl.classList.add("is-glitching");
+            gsap.to(glitchEl, {
+              x: -2,
+              duration: 0.0625,
+              yoyo: true,
+              repeat: 15,
+              ease: "none",
+              onComplete: () => {
+                gsap.set(glitchEl, { x: 0 });
+                glitchEl.classList.remove("is-glitching");
+              },
+            });
+          },
+          [],
+          "+=0.15",
+        );
+      }
+    }
+    // 3. Multimedia card: Scale-down
+    heroTimeline.from(
+      hero.querySelector(".hero-anim-media"),
+      {
+        scale: 1.08,
+        autoAlpha: 0,
+        duration: 1.1,
+        ease: "power2.out",
+      },
+      "-=0.7",
+    );
+  }
+  function destroyHeroTimeline() {
+    heroTimeline?.kill();
+    heroTimeline = null;
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initHeroTimeline);
+  } else {
+    initHeroTimeline();
+  }
+
+  document.addEventListener("astro:page-load", initHeroTimeline);
+  document.addEventListener("astro:before-swap", destroyHeroTimeline);
+</script>

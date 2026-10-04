@@ -1,7 +1,9 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import Hero from "@/components/hero/Hero.astro";
+import bg from "@/assets/backgrounds/bg-pattern-dark.avif";
 ---
 
 <Layout title="Inicio">
-  <!-- <h1 class="text-6xl">Inicio</h1> -->
+  <Hero slot="before-main-content" bgImage={bg.src} />
 </Layout>

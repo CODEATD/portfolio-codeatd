@@ -143,3 +143,62 @@
 @utility animate-float-arrow {
   animation: float-arrow 1.8s ease-in-out infinite;
 }
+
+/* HERO · Subtle Brand Glitch */
+.brand-glitch {
+  position: relative;
+  display: inline-block;
+}
+
+.brand-glitch::before,
+.brand-glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.brand-glitch::before {
+  left: 2px;
+  text-shadow: -2px 0 var(--color-primary-500);
+  clip-path: inset(20% 0 30% 0);
+}
+
+.brand-glitch::after {
+  left: -2px;
+  text-shadow: 2px 0 #ffffff;
+  clip-path: inset(50% 0 10% 0);
+}
+
+.brand-glitch.is-glitching::before,
+.brand-glitch:hover::before {
+  opacity: 0.85;
+  animation: glitch-anim-1 0.4s steps(2, end) infinite;
+}
+
+.brand-glitch.is-glitching::after,
+.brand-glitch:hover::after {
+  opacity: 0.75;
+  animation: glitch-anim-2 0.35s steps(2, end) infinite;
+}
+
+@keyframes glitch-anim-1 {
+  0% { clip-path: inset(10% 0 60% 0); transform: translate(-2px, 1px); }
+  50% { clip-path: inset(40% 0 20% 0); transform: translate(2px, -1px); }
+  100% { clip-path: inset(70% 0 10% 0); transform: translate(-1px, 2px); }
+}
+
+@keyframes glitch-anim-2 {
+  0% { clip-path: inset(60% 0 10% 0); transform: translate(2px, -1px); }
+  50% { clip-path: inset(20% 0 50% 0); transform: translate(-2px, 1px); }
+  100% { clip-path: inset(10% 0 70% 0); transform: translate(1px, -2px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-glitch::before,
+  .brand-glitch::after {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+}
