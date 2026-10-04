@@ -1,0 +1,88 @@
+---
+import { Picture } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import HeroBadge from "@/components/hero/HeroBadge.astro";
+import defaultLight from "@/assets/hero/hero-avatar-2.png";
+import defaultDark from "@/assets/hero/hero-avatar-1.png";
+
+interface Media {
+  src: ImageMetadata;
+  alt: string;
+}
+
+interface Props {
+  class?: string;
+  light?: Media;
+  dark?: Media;
+  showBadge?: boolean;
+  badgePosition?: string;
+}
+
+const {
+  class: className = "",
+  light = { src: defaultLight, alt: "Imagen 1" },
+  dark = { src: defaultDark, alt: "Imagen 2" },
+  showBadge = true,
+  badgePosition = "-bottom-5 -left-5 sm:-bottom-7 sm:-left-7",
+} = Astro.props;
+---
+
+<div
+  class={`relative w-full max-w-sm sm:max-w-md lg:max-w-[420px] mx-auto ${className}`}
+>
+  <label
+    class="group relative block w-full aspect-square sm:aspect-[4/5] rounded-[32px] sm:rounded-[40px] overflow-hidden border border-neutral-300 dark:border-bor-dark bg-neutral-200 dark:bg-surface-dark shadow-2xl cursor-pointer select-none has-[input:focus-visible]:ring-2 has-[input:focus-visible]:ring-primary-500 has-[input:focus-visible]:ring-offset-4"
+  >
+    <!-- Hidden Switch for mobile and keyboards  -->
+    <input
+      type="checkbox"
+      class="peer sr-only"
+      aria-label="Revelar la otra versión de la imagen"
+    />
+    <!-- Light image -->
+    <Picture
+      src={light.src}
+      alt={light.alt}
+      formats={["avif", "webp"]}
+      widths={[320, 440, 640]}
+      sizes="(min-width: 1024px) 420px, 90vw"
+      loading="eager"
+      fetchpriority="high"
+      class="absolute inset-0 size-full object-cover object-center transition-[clip-path] duration-700 ease-[cubic-bezier(.22,1,.36,1)] z-0 dark:z-10 dark:[clip-path:circle(0%_at_0%_100%)] dark:group-hover:[clip-path:circle(150%_at_0%_100%)] dark:group-has-[input:checked]:[clip-path:circle(150%_at_0%_100%)]"
+    />
+
+    <!-- Dark image -->
+    <Picture
+      src={dark.src}
+      alt={dark.alt}
+      formats={["avif", "webp"]}
+      widths={[320, 440, 640]}
+      sizes="(min-width: 1024px) 420px, 90vw"
+      loading="eager"
+      class="absolute inset-0 size-full object-cover object-center transition-[clip-path] duration-700 ease-[cubic-bezier(.22,1,.36,1)] z-10 dark:z-0 [clip-path:circle(0%_at_0%_100%)] group-hover:[clip-path:circle(150%_at_0%_100%)] group-has-[input:checked]:[clip-path:circle(150%_at_0%_100%)] dark:[clip-path:none]"
+    />
+
+    <!-- Extra content for the media container -->
+    <slot name="media-extra" />
+
+    <!-- Indicador flotante en hover -->
+    <span
+      class="absolute top-4 right-4 z-20 px-2.5 py-1 rounded-full bg-black/60 dark:bg-white/20 backdrop-blur-md text-white text-[11px] font-mono tracking-wider opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none flex items-center gap-1.5"
+      aria-hidden="true"
+    >
+      <span>HOVER TO REVEAL</span>
+      <i class="ri-shining-2-fill text-primary-500"></i>
+    </span>
+  </label>
+
+  <!-- Floating Badge -->
+  {
+    showBadge && (
+      <div class={`absolute ${badgePosition} z-30`}>
+        <slot name="badge">
+          <HeroBadge />
+        </slot>
+      </div>
+    )
+  }
+</div>

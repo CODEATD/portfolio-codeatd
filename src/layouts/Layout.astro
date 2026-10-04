@@ -3,7 +3,7 @@ import { siteConfig } from "@/config/site-config.ts";
 import Header from "@/components/header/Header.astro";
 import Footer from "@/components/footer/Footer.astro";
 import "@/styles/global.css";
-import bg from '@/assets/backgrounds/bg-footer.png'
+import bg from "@/assets/backgrounds/bg-footer.png";
 
 // Props for the layout component (SEO metadata)
 interface Props {
@@ -51,30 +51,36 @@ const pageTitle = title ? `${title} | ${siteConfig.name}` : siteConfig.title;
     <script is:inline>
       // Function to get the initial theme based on localStorage or system preference
       const getInitialTheme = () => {
-        if( typeof localStorage !== 'undefined' && localStorage.getItem('theme') ) {
-          return localStorage.getItem('theme');
+        if (
+          typeof localStorage !== "undefined" &&
+          localStorage.getItem("theme")
+        ) {
+          return localStorage.getItem("theme");
         }
         // If no theme is set in localStorage, check the user's system preference
-        if(window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          return 'dark';
+        if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+          return "dark";
         }
-        return 'light';
+        return "light";
       };
 
       const theme = getInitialTheme();
-      if(theme === 'dark') {
-        document.documentElement.classList.add('dark');
+      if (theme === "dark") {
+        document.documentElement.classList.add("dark");
       } else {
-      document.documentElement.classList.remove('dark');
+        document.documentElement.classList.remove("dark");
       }
-
     </script>
   </head>
-  <body class="bg-surface-light text-neutral-500 dark:bg-surface-dark dark:text-white min-h-screen flex flex-col">
+  <body
+    class="bg-surface-light text-neutral-500 dark:bg-surface-dark dark:text-white min-h-screen flex flex-col"
+  >
     <Header />
-    <main class="flex-grow">
+    <slot name="before-main-content" />
+    <main class="flex-grow container">
       <slot />
     </main>
-    <Footer bgImage={bg.src}/>
+    <slot name="after-main-content" />
+    <Footer bgImage={bg.src} />
   </body>
 </html>
