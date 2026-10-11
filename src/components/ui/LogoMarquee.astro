@@ -1,0 +1,71 @@
+---
+import { trustedBrands, type Brand } from "@/config/brands";
+
+interface Props {
+  items?: readonly Brand[];
+  label?: string;
+  duration?: number;
+  id?: string;
+  class?: string;
+}
+
+const {
+  items = trustedBrands,
+  label = "Trusted by teams building at",
+  duration = 60,
+  id = "logo-marquee",
+  class: className = "",
+} = Astro.props;
+
+const titleId = `${id}-title`;
+
+const copies = [0, 1];
+---
+
+<section
+  id={id}
+  aria-labelledby={titleId}
+  class:list={[
+    "group/marquee relative pt-10 sm:pt-14 bg-surface-light dark:bg-surface-dark",
+    className,
+  ]}
+>
+  <div class="container">
+    <h2
+      id={titleId}
+      class="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-neutral-300 dark:text-surface-light text-balance text-center"
+    >
+      {label}
+    </h2>
+  </div>
+
+  <div
+    class="group/track overflow-hidden mask-x-from-85% sm:mask-x-from-90%"
+    style={`--marquee-duration: ${duration}s`}
+  >
+    <div
+      class="flex w-max animate-marquee motion-reduce:animate-none"
+    >
+      {
+        copies.map((copy) => (
+          <ul
+            class="flex shrink-0 items-center gap-12 pr-12 py-10 sm:gap-16 sm:pr-16"
+            aria-hidden={copy > 0 ? "true" : undefined}
+          >
+            {items.map(({ name, icon: Icon }) => (
+              <li class="group/logo relative flex items-center justify-center">
+                <Icon
+                  class="h-6 sm:h-6.5 w-auto text-neutral-500/32 dark:text-white/32 transition-colors duration-300 group-hover/logo:text-neutral-500 dark:group-hover/logo:text-primary-500"
+                  aria-hidden="true"
+                />
+                <span class="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 translate-y-1 whitespace-nowrap rounded-md bg-neutral-500 px-2 py-1 text-xs font-medium text-white opacity-0 shadow-lg transition duration-200 group-hover/logo:translate-y-0 group-hover/logo:opacity-100 dark:bg-white dark:text-neutral-500">
+                  {name}
+                </span>
+              </li>
+            ))}
+          </ul>
+        ))
+      }
+    </div>
+  </div>
+</section>

@@ -14,6 +14,7 @@ export const siteConfig = {
 };
 
 // Navigation for Header and Footer
+// Social media links for the website
 export const navLinks = [
   { name: "About", href: "#about" },
   { name: "Experience", href: "#experience" },
