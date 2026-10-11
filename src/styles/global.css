@@ -3,8 +3,9 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ===== THEME ===== */
 @theme {
-  /* Tipografías */
+  /* Fonts */
   --font-sans: "Open Sans", sans-serif;
   --font-heading: "Space Grotesk", sans-serif;
 
@@ -49,8 +50,18 @@
   /* Fondos / Superficies */
   --color-surface-dark: #070707;
   --color-surface-light: #ffffff;
+
+  /* Logo marquee */
+  --animate-marquee: marquee var(--marquee-duration, 60s) linear infinite;
+
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
 }
 
+/* ===== BASE ===== */
 @layer base {
   h1,
   h2,
@@ -60,13 +71,7 @@
   h6 {
     font-family: var(--font-heading);
   }
-}
 
-.container {
-  @apply max-w-7xl w-[95%] mx-auto;
-}
-
-@layer base {
   /* Transitions global for dark mode */
   body,
   header,
@@ -80,16 +85,21 @@
   }
 }
 
+/* ===== UTILITIES ===== */
+.container {
+  @apply max-w-7xl w-[95%] mx-auto;
+}
+
 /* Primary button */
 @utility btn-primary {
-  @apply inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 
+  @apply inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200
          bg-neutral-500 text-white hover:bg-primary-500 hover:text-neutral-500
          dark:bg-primary-500 dark:text-black dark:hover:bg-primary-400 cursor-pointer;
 }
 
 /* Secondary button */
 @utility btn-outline {
-  @apply inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 
+  @apply inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200
          border border-neutral-300 text-neutral-800 hover:border-black
          dark:border-neutral-700 dark:text-white dark:hover:border-white cursor-pointer;
 }
@@ -132,7 +142,8 @@
 
 /* Floating arrow animation */
 @keyframes float-arrow {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -144,7 +155,8 @@
   animation: float-arrow 1.8s ease-in-out infinite;
 }
 
-/* HERO · Subtle Brand Glitch */
+/* ===== SECTIONS: HERO ===== */
+/* Subtle Brand Glitch */
 .brand-glitch {
   position: relative;
   display: inline-block;
@@ -184,15 +196,33 @@
 }
 
 @keyframes glitch-anim-1 {
-  0% { clip-path: inset(10% 0 60% 0); transform: translate(-2px, 1px); }
-  50% { clip-path: inset(40% 0 20% 0); transform: translate(2px, -1px); }
-  100% { clip-path: inset(70% 0 10% 0); transform: translate(-1px, 2px); }
+  0% {
+    clip-path: inset(10% 0 60% 0);
+    transform: translate(-2px, 1px);
+  }
+  50% {
+    clip-path: inset(40% 0 20% 0);
+    transform: translate(2px, -1px);
+  }
+  100% {
+    clip-path: inset(70% 0 10% 0);
+    transform: translate(-1px, 2px);
+  }
 }
 
 @keyframes glitch-anim-2 {
-  0% { clip-path: inset(60% 0 10% 0); transform: translate(2px, -1px); }
-  50% { clip-path: inset(20% 0 50% 0); transform: translate(-2px, 1px); }
-  100% { clip-path: inset(10% 0 70% 0); transform: translate(1px, -2px); }
+  0% {
+    clip-path: inset(60% 0 10% 0);
+    transform: translate(2px, -1px);
+  }
+  50% {
+    clip-path: inset(20% 0 50% 0);
+    transform: translate(-2px, 1px);
+  }
+  100% {
+    clip-path: inset(10% 0 70% 0);
+    transform: translate(1px, -2px);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -203,7 +233,8 @@
   }
 }
 
-/* Disable View Transitions fade */
+/* ===== GLOBAL: VIEW TRANSITIONS ===== */
+/* Disable View Transitions fade (Theme Reveal) */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
