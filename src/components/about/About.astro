@@ -1,0 +1,139 @@
+---
+import type { Stat } from "@/types";
+
+interface Props {
+  index?: string;
+  label?: string;
+  heading?: string;
+  content?: string; // HTML from WordPress (content.rendered)
+  stats?: Stat[];
+  class?: string;
+}
+
+const {
+  index = "01",
+  label = "About",
+  heading = "A design-minded developer obsessed with performance, clean architecture and user experience.",
+  content = "<p>For the past eight years I've helped startups and product teams turn ambitious ideas into software people genuinely like to use. I care about the whole stack — the database query, the API contract, the animation curve.</p><p>My work sits at the intersection of engineering and design: fast, accessible, and quietly considered. No fireworks, just products that feel right.</p>",
+  stats = [
+    { value: "8+", label: "Years experience" },
+    { value: "40+", label: "Projects delivered" },
+    { value: "12", label: "Countries worked with" },
+    { value: "∞", label: "Cups of coffee" },
+  ],
+  class: className = "",
+} = Astro.props;
+---
+
+<section
+  id="about"
+  aria-labelledby="about-title"
+  class:list={["scroll-mt-20 py-20 sm:py-28", className]}
+>
+  <div class="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-8">
+    <!-- Label + Heading -->
+    <div class="about-anim-item lg:col-span-7">
+      <p
+        class="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500 dark:text-primary-500"
+      >
+        ({index}) {label}
+      </p>
+      <h2
+        id="about-title"
+        class="mt-5 text-3xl font-medium leading-tight tracking-tight text-balance text-neutral-500 sm:text-4xl lg:text-5xl dark:text-white"
+      >
+        {heading}
+      </h2>
+    </div>
+
+    <!-- WordPress content (paragraphs) -->
+    <div
+      class="about-anim-item text-sm leading-relaxed text-neutral-400 sm:text-base lg:col-span-4 lg:col-start-9 dark:text-neutral-50 [&_p]:text-pretty [&_p+p]:mt-4"
+      set:html={content}
+    />
+  </div>
+
+  <!-- Stats -->
+  {
+    stats.length > 0 && (
+      <dl class="about-anim-stats mt-16 grid grid-cols-2 gap-px border-y border-bor-light bg-bor-light md:grid-cols-4 dark:border-neutral-400 dark:bg-neutral-400">
+        {stats.map(({ value, label }) => (
+          <div class="flex flex-col gap-3 bg-surface-light px-4 py-8 sm:px-6 dark:bg-surface-dark">
+            <dt class="order-last text-[0.7rem] font-medium uppercase tracking-wider text-neutral-300 dark:text-neutral-200">
+              {label}
+            </dt>
+            <dd class="font-heading text-4xl font-medium text-primary-500 sm:text-5xl">
+              {value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    )
+  }
+</section>
+
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  let aboutTimeline: gsap.core.Timeline | null = null;
+
+  function initAboutReveal() {
+    const about = document.querySelector<HTMLElement>("#about");
+    if (!about) return;
+    destroyAboutReveal();
+
+    // Accessibility: no animation if the user prefers reduced motion
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    aboutTimeline = gsap.timeline({
+      defaults: { ease: "power3.out" },
+      scrollTrigger: {
+        trigger: about,
+        start: "top 75%", // when the top of the section reaches 75% of the viewport
+        once: true, // play once, like the Hero
+      },
+    });
+
+    // 1. Label + heading, then WordPress text (fade-up, staggered)
+    aboutTimeline.from(about.querySelectorAll(".about-anim-item"), {
+      y: 35,
+      autoAlpha: 0,
+      duration: 0.85,
+      stagger: 0.15,
+    });
+
+    // 2. Stats block
+    const stats = about.querySelector<HTMLElement>(".about-anim-stats");
+    if (stats) {
+      aboutTimeline.from(
+        stats,
+        { y: 25, autoAlpha: 0, duration: 0.7 },
+        "-=0.45",
+      );
+
+      // 3. Numbers one by one, inside the visible block
+      aboutTimeline.from(
+        stats.querySelectorAll("dd"),
+        { y: 15, autoAlpha: 0, duration: 0.5, stagger: 0.1 },
+        "-=0.4",
+      );
+    }
+  }
+
+  function destroyAboutReveal() {
+    aboutTimeline?.scrollTrigger?.kill();
+    aboutTimeline?.kill();
+    aboutTimeline = null;
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initAboutReveal);
+  } else {
+    initAboutReveal();
+  }
+  document.addEventListener("astro:page-load", initAboutReveal);
+  document.addEventListener("astro:before-swap", destroyAboutReveal);
+</script>

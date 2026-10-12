@@ -2,10 +2,22 @@
 import Layout from "@/layouts/Layout.astro";
 import Hero from "@/components/hero/Hero.astro";
 import LogoMarquee from "@/components/ui/LogoMarquee.astro";
+import About from "@/components/about/About.astro";
+import { getPageBySlug } from "@/helpers";
+import { AboutPageSchema } from "@/types";
 import bg from "@/assets/backgrounds/bg-pattern-dark.avif";
+
+const about = AboutPageSchema.parse(await getPageBySlug("about"));
 ---
 
 <Layout title="Inicio">
   <Hero slot="before-main-content" bgImage={bg.src} />
   <LogoMarquee slot="before-main-content" />
+
+  <About
+    label={about.title.rendered}
+    heading={about.acf.heading}
+    content={about.content.rendered}
+    stats={about.acf.stats}
+  />
 </Layout>
