@@ -104,11 +104,10 @@
          dark:border-neutral-700 dark:text-white dark:hover:border-white cursor-pointer;
 }
 
-/* Animation split */
-@utility menu-link-split {
-  @apply relative inline-block text-3xl sm:text-5xl font-heading font-bold py-1 px-3 sm:px-4 transition-colors duration-300 z-10 overflow-hidden text-left;
-
-  @apply text-neutral-600 dark:text-white hover:text-black dark:hover:text-black;
+/* Split hover effect: two yellow bars sweep in from opposite sides.
+   Reusable on any link (desktop nav, mobile menu…). */
+@utility link-split {
+  @apply relative inline-block overflow-hidden z-10;
 
   &::before,
   &::after {
@@ -135,20 +134,25 @@
   }
 
   &:hover::before,
-  &:hover::after {
+  &:hover::after,
+  &:focus-visible::before,
+  &:focus-visible::after {
     transform: scaleX(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::before,
+    &::after {
+      transition: none;
+    }
   }
 }
 
-/* Floating arrow animation */
-@keyframes float-arrow {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(4px);
-  }
+/* Mobile menu link: split effect + large typography */
+@utility menu-link-split {
+  @apply link-split text-3xl sm:text-5xl font-heading font-bold py-1 px-3 sm:px-4 transition-colors duration-300 text-left;
+
+  @apply text-neutral-600 dark:text-white hover:text-black dark:hover:text-black;
 }
 
 @utility animate-float-arrow {
