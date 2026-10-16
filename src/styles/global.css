@@ -94,14 +94,23 @@
 @utility btn-primary {
   @apply inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200
          bg-neutral-500 text-white hover:bg-primary-500 hover:text-neutral-500
-         dark:bg-primary-500 dark:text-black dark:hover:bg-primary-400 cursor-pointer;
+         dark:bg-primary-500 dark:text-black dark:hover:bg-primary-400 cursor-pointer
+         hover:-translate-y-0.5 active:translate-y-0 motion-reduce:hover:translate-y-0;
 }
 
 /* Secondary button */
 @utility btn-outline {
   @apply inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200
          border border-neutral-300 text-neutral-800 hover:border-black
-         dark:border-neutral-700 dark:text-white dark:hover:border-white cursor-pointer;
+         dark:border-neutral-700 dark:text-white dark:hover:border-white cursor-pointer
+         hover:-translate-y-0.5 active:translate-y-0 motion-reduce:hover:translate-y-0;
+}
+
+/* Link button (inline text CTA like "Download CV") */
+@utility btn-link {
+  @apply inline-flex items-center font-semibold text-sm sm:text-base transition-colors duration-200
+         text-neutral-500 hover:text-primary-500
+         dark:text-white dark:hover:text-primary-400 cursor-pointer;
 }
 
 /* Split hover effect: two yellow bars sweep in from opposite sides.
