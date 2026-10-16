@@ -1,0 +1,129 @@
+---
+import type { Skill } from "@/types";
+
+interface Props {
+  index?: string;
+  label?: string;
+  heading?: string;
+  skills?: Skill[];
+  class?: string;
+}
+
+const {
+  index = "02",
+  label = "Stack",
+  heading = "What I can do for you.",
+  skills = [
+    { name: "UI/UX", featured: true },
+    { name: "Web Apps", featured: true },
+    { name: "Mobile Apps", featured: true },
+    { name: "Automations", featured: true },
+    { name: "Frontend", featured: false },
+    { name: "Backend", featured: false },
+    { name: "Design Systems", featured: false },
+    { name: "Workflows", featured: false },
+  ],
+  class: className = "",
+} = Astro.props;
+
+// Full class
+const chipStyles = {
+  base: "stack-chip rounded-full border px-5 py-2 text-sm font-medium transition-[translate] duration-300 hover:-translate-y-0.5 dark:border-primary-500 dark:bg-transparent dark:text-primary-500",
+  normal: "border-bor-light bg-neutral-50/40 text-neutral-500",
+  featured: "border-primary-500 bg-primary-500 text-neutral-500",
+};
+---
+
+<section
+  id="stack"
+  aria-labelledby="stack-title"
+  class:list={["scroll-mt-20 py-16 sm:py-24", className]}
+>
+  <div class="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-8">
+    <!-- Label + heading -->
+    <div class="stack-anim-item lg:col-span-4">
+      <p
+        class="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500 dark:text-primary-500"
+      >
+        ({index}) {label}
+      </p>
+      <h2
+        id="stack-title"
+        class="mt-5 text-3xl font-medium leading-tight tracking-tight text-balance text-neutral-500 sm:text-4xl dark:text-white"
+      >
+        {heading}
+      </h2>
+    </div>
+
+    <!-- Skills -->
+    <ul class="flex flex-wrap content-start gap-3 lg:col-span-8">
+      {
+        skills.map(({ name, featured }) => (
+          <li
+            class:list={[
+              chipStyles.base,
+              featured ? chipStyles.featured : chipStyles.normal,
+            ]}
+          >
+            {name}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  let stackTimeline: gsap.core.Timeline | null = null;
+
+  function initStackReveal() {
+    const stack = document.querySelector<HTMLElement>("#stack");
+    if (!stack) return;
+    destroyStackReveal();
+
+    // Accessibility: no animation if the user prefers reduced motion
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    stackTimeline = gsap.timeline({
+      defaults: { ease: "power3.out" },
+      scrollTrigger: {
+        trigger: stack,
+        start: "top 75%",
+        once: true,
+      },
+    });
+
+    // 1. Label + heading
+    stackTimeline.from(stack.querySelectorAll(".stack-anim-item"), {
+      y: 35,
+      autoAlpha: 0,
+      duration: 0.85,
+    });
+
+    // 2. Chips one by one (stagger = time between each start)
+    stackTimeline.from(
+      stack.querySelectorAll(".stack-chip"),
+      { y: 20, autoAlpha: 0, duration: 0.5, stagger: 0.06 },
+      "-=0.5",
+    );
+  }
+
+  function destroyStackReveal() {
+    stackTimeline?.scrollTrigger?.kill();
+    stackTimeline?.kill();
+    stackTimeline = null;
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initStackReveal);
+  } else {
+    initStackReveal();
+  }
+  document.addEventListener("astro:page-load", initStackReveal);
+  document.addEventListener("astro:before-swap", destroyStackReveal);
+</script>
