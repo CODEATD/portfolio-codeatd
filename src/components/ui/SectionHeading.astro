@@ -1,0 +1,36 @@
+---
+interface Props {
+  index: string; // "01"
+  label: string; // "About"
+  heading: string;
+  id: string; // for aria-labelledby on the <section>
+  class?: string; // wrapper: layout + animation class
+  headingClass?: string; // extra heading sizes
+}
+
+const {
+  index,
+  label,
+  heading,
+  id,
+  class: className = "",
+  headingClass = "",
+} = Astro.props;
+---
+
+<div class={className}>
+  <p
+    class="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500 dark:text-primary-500"
+  >
+    ({index}) {label}
+  </p>
+  <h2
+    {id}
+    class:list={[
+      "mt-5 text-3xl font-medium leading-tight tracking-tight text-balance text-neutral-500 sm:text-4xl dark:text-white",
+      headingClass,
+    ]}
+  >
+    {heading}
+  </h2>
+</div>
