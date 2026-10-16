@@ -1,13 +1,22 @@
 ---
+// Layout
 import Layout from "@/layouts/Layout.astro";
+
+// Components
 import Hero from "@/components/hero/Hero.astro";
 import LogoMarquee from "@/components/ui/LogoMarquee.astro";
 import About from "@/components/about/About.astro";
+import Stack from "@/components/stack/Stack.astro";
+
+// Helpers
 import { getPageBySlug } from "@/helpers";
-import { AboutPageSchema } from "@/types";
+
+// Types
+import { AboutPageSchema, StackPageSchema } from "@/types";
 import bg from "@/assets/backgrounds/bg-pattern-dark.avif";
 
 const about = AboutPageSchema.parse(await getPageBySlug("about"));
+const stack = StackPageSchema.parse(await getPageBySlug("stack"));
 ---
 
 <Layout title="Inicio">
@@ -19,5 +28,11 @@ const about = AboutPageSchema.parse(await getPageBySlug("about"));
     heading={about.acf.heading}
     content={about.content.rendered}
     stats={about.acf.stats}
+  />
+
+  <Stack
+    label={stack.title.rendered}
+    heading={stack.acf.heading}
+    skills={stack.acf.skills}
   />
 </Layout>
