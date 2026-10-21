@@ -85,3 +85,20 @@ const ExperienceSchema = BaseWPSchema.pick({
 export const ExperiencesSchema = z.array(ExperienceSchema);
 
 export type Experience = z.infer<typeof ExperienceSchema>;
+
+//* Site Settings (ACF Options Page via /codeatd/v1/options)
+const SocialLinkSchema = z.object({
+    name: z.string(),
+    url: z.string(),
+    icon: z.string(), // RemixIcon class, e.g. "ri-instagram-line"
+});
+
+export const OptionsSchema = z.object({
+    contact_email: z.string(),
+    contact_phone: z.string(),
+    contact_location: z.string(),
+    social_links: z.array(SocialLinkSchema).catch([]), // empty repeater → false
+    cv_file: z.string().catch(""), // no CV → false → ""
+});
+
+export type SocialLink = z.infer<typeof SocialLinkSchema>;
