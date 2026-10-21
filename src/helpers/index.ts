@@ -8,3 +8,10 @@ export async function getPageBySlug(slug: string) {
     // Return first match from the array
     return json[0];
 }
+
+//* WordPress: GET /{type} returns all entries of a post type (CPT)
+export async function getPostType(type: string) {
+    // per_page=100 → not only the first 10
+    const res = await fetch(`${import.meta.env.API_URL}/${type}?per_page=100`);
+    return res.json(); // an array (no json[0])
+}

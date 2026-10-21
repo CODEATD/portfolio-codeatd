@@ -41,3 +41,47 @@ export const StackPageSchema = BaseWPSchema.extend({
 });
 
 export type Skill = z.infer<typeof SkillSchema>;
+
+//* Section page (ACF: heading) → Experience, later Projects/Blog
+export const SectionPageSchema = BaseWPSchema.extend({
+    acf: z.object({
+        heading: z.string(),
+    }),
+});
+
+//* Taxonomy term (custom REST field, e.g. technology_details)
+const TermSchema = z.object({
+    id: z.number(),
+    name: z.string(),
+    slug: z.string(),
+});
+
+//* Experience CPT (ACF + technology_details)
+
+const ExperienceSchema = BaseWPSchema.pick({
+    id: true,
+    title: true,
+})
+    .extend({
+        acf: z.object({
+            company: z.string(),
+            start_year: z.coerce.number(),
+            end_year: z.coerce.number().catch(0), // empty → 0
+            description: z.string(),
+        }),
+        technology_details: z.array(TermSchema),
+    })
+    // Flat shape for the component
+    .transform(({ id, title, acf, technology_details }) => ({
+        id,
+        role: title.rendered,
+        company: acf.company,
+        start: acf.start_year,
+        end: acf.end_year || null, // 0 → null → "Present"
+        description: acf.description,
+        technologies: technology_details.map((term) => term.name),
+    }));
+
+export const ExperiencesSchema = z.array(ExperienceSchema);
+
+export type Experience = z.infer<typeof ExperienceSchema>;
