@@ -3,13 +3,14 @@
 import {
   siteConfig,
   navLinks,
-  socialLinks,
   footerNavCol1,
   footerNavCol2,
 } from "@/config/site-config";
 import FooterBox from "@/components/footer/FooterBox.astro";
 import LogoPrimary from "@/assets/logos/logo_text_primary.svg";
 import LiveClock from "@/components/ui/LiveClock.astro";
+import { getOptions } from "@/helpers";
+import { OptionsSchema } from "@/types";
 
 // Dynamic background image prop support
 interface Props {
@@ -18,6 +19,7 @@ interface Props {
 
 const { bgImage } = Astro.props;
 const currentYear = new Date().getFullYear();
+const options = OptionsSchema.parse(await getOptions());
 ---
 
 <footer class="relative bg-surface-dark text-white overflow-hidden">
@@ -69,10 +71,10 @@ const currentYear = new Date().getFullYear();
             <div class="flex flex-col gap-1">
               <span class="text-white font-medium"> Call Today: </span>{" "}
               <a
-                href={`tel:${siteConfig.phone.replace(/[^0-9+]/g, "")}`}
+                href={`tel:${options.contact_phone.replace(/[^0-9+]/g, "")}`}
                 class="text-neutral-200 hover:text-primary-500 transition-colors font-medium"
               >
-                {siteConfig.phone}
+                {options.contact_phone}
               </a>
             </div>
 
@@ -80,10 +82,10 @@ const currentYear = new Date().getFullYear();
             <div class="flex flex-col gap-1">
               <span class="text-white font-medium"> Email: </span>{" "}
               <a
-                href={`mailto:${siteConfig.email}`}
+                href={`mailto:${options.contact_email}`}
                 class="text-neutral-200 hover:text-primary-500 transition-colors font-medium"
               >
-                {siteConfig.email}
+                {options.contact_email}
               </a>
             </div>
           </div>
@@ -91,9 +93,9 @@ const currentYear = new Date().getFullYear();
           <!-- Social Media -->
           <div class="flex items-center gap-3">
             {
-              socialLinks.map((social) => (
+              options.social_links.map((social) => (
                 <a
-                  href={social.href}
+                  href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   class="text-primary-500 hover:text-neutral-900 hover:text-white hover:scale-115 transition-all text-xl"
@@ -154,7 +156,10 @@ const currentYear = new Date().getFullYear();
     </p>
 
     <!-- Live Clock -->
-    <LiveClock class="hidden md:inline-flex order-2" />
+    <LiveClock
+      location={options.contact_location}
+      class="hidden md:inline-flex order-2"
+    />
 
     <!-- Créditos de desarrollo -->
     <p class="order-2 md:order-3 text-left md:text-right">

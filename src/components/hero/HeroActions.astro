@@ -14,7 +14,7 @@ interface Props {
 
 const {
   primaryCta = { text: "View Projects", href: "#projects" },
-  secondaryCta = { text: "Download CV", href: "#cv" },
+  secondaryCta,
   class: className = "",
 } = Astro.props;
 ---
@@ -32,12 +32,18 @@ const {
     ></i>
   </a>
 
-  <!-- Secondary Button -->
-  <a href={secondaryCta.href} class="btn-link">
-    <span class="mr-2">{secondaryCta.text}</span>
-    <i
-      class="ri-arrow-right-up-line text-lg"
-      aria-hidden="true"
-    ></i>
-  </a>
+  <!-- Secondary Button (only when there is a CV) -->
+  {
+    secondaryCta && (
+      <a
+        href={secondaryCta.href}
+        class="btn-link"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span class="mr-2">{secondaryCta.text}</span>
+        <i class="ri-arrow-right-up-line text-lg" aria-hidden="true" />
+      </a>
+    )
+  }
 </div>

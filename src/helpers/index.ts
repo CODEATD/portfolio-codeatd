@@ -15,3 +15,8 @@ export async function getPostType(type: string) {
     const res = await fetch(`${import.meta.env.API_URL}/${type}?per_page=100`);
     return res.json(); // an array (no json[0])
 }
+//* WordPress: GET /codeatd/v1/options returns all ACF Site Settings fields
+export async function getOptions() {
+    const res = await fetch(`${import.meta.env.API_CUSTOM_URL}/options`);
+    return res.json(); // an object, not an array (no json[0])
+}
