@@ -1,13 +1,11 @@
 ---
 // src/components/ui/LiveClock.astro
-import { siteConfig } from "@/config/site-config";
-
 interface Props {
-  location?: string;
+  location: string; // from Site Settings (contact_location)
   class?: string;
 }
 
-const { location = siteConfig.location, class: className = "" } = Astro.props;
+const { location, class: className = "" } = Astro.props;
 ---
 
 <div

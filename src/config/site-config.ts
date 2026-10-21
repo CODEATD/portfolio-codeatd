@@ -7,14 +7,11 @@ export const siteConfig = {
   author: 'CODE ATD',
   url: 'https://codeatd.dev',
   ogImage: '/og-image.jpg',
-  phone: '+58 412-1464014',
-  email: 'email@example.com',
-  location: 'Valencia, VE',
   timeZone: 'America/Caracas', // IANA TimeZone para Intl.DateTimeFormat
 };
 
 // Navigation for Header and Footer
-// Social media links for the website
+// (contact details and social links come from WordPress: Site Settings)
 export const navLinks = [
   { name: "About", href: "#about" },
   { name: "Experience", href: "#experience" },
@@ -34,9 +31,3 @@ export const footerNavCol2 = [
   { name: "Contact", href: "#contact" },
 ] as const;
 
-export const socialLinks = [
-  { name: 'Instagram', href: 'https://www.instagram.com/codeatd/', icon: 'ri-instagram-line' },
-  { name: 'LinkedIn', href: 'https://www.linkedin.com/in/codeatd', icon: 'ri-linkedin-fill' },
-  { name: 'Website', href: 'https://codeatd.dev', icon: 'ri-global-line' },
-  { name: 'WhatsApp', href: 'https://wa.me/584121464014', icon: 'ri-whatsapp-line' },
-] as const
