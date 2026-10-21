@@ -10,17 +10,19 @@ import Stack from "@/components/stack/Stack.astro";
 import Experience from "@/components/experience/Experience.astro";
 
 // Helpers
-import { getPageBySlug, getPostType } from "@/helpers";
+import { getOptions, getPageBySlug, getPostType } from "@/helpers";
 
 // Types
 import {
   AboutPageSchema,
   ExperiencesSchema,
+  OptionsSchema,
   SectionPageSchema,
   StackPageSchema,
 } from "@/types";
 import bg from "@/assets/backgrounds/bg-pattern-dark.avif";
 
+const options = OptionsSchema.parse(await getOptions());
 const about = AboutPageSchema.parse(await getPageBySlug("about"));
 const stack = StackPageSchema.parse(await getPageBySlug("stack"));
 const experiencePage = SectionPageSchema.parse(
@@ -30,7 +32,15 @@ const experiences = ExperiencesSchema.parse(await getPostType("experience"));
 ---
 
 <Layout title="Inicio">
-  <Hero slot="before-main-content" bgImage={bg.src} />
+  <Hero
+    slot="before-main-content"
+    bgImage={bg.src}
+    secondaryCta={
+      options.cv_file
+        ? { text: "Download CV", href: options.cv_file }
+        : undefined
+    }
+  />
   <LogoMarquee slot="before-main-content" />
 
   <About
