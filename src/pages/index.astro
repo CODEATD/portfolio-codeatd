@@ -7,16 +7,26 @@ import Hero from "@/components/hero/Hero.astro";
 import LogoMarquee from "@/components/ui/LogoMarquee.astro";
 import About from "@/components/about/About.astro";
 import Stack from "@/components/stack/Stack.astro";
+import Experience from "@/components/experience/Experience.astro";
 
 // Helpers
-import { getPageBySlug } from "@/helpers";
+import { getPageBySlug, getPostType } from "@/helpers";
 
 // Types
-import { AboutPageSchema, StackPageSchema } from "@/types";
+import {
+  AboutPageSchema,
+  ExperiencesSchema,
+  SectionPageSchema,
+  StackPageSchema,
+} from "@/types";
 import bg from "@/assets/backgrounds/bg-pattern-dark.avif";
 
 const about = AboutPageSchema.parse(await getPageBySlug("about"));
 const stack = StackPageSchema.parse(await getPageBySlug("stack"));
+const experiencePage = SectionPageSchema.parse(
+  await getPageBySlug("experience"),
+);
+const experiences = ExperiencesSchema.parse(await getPostType("experience"));
 ---
 
 <Layout title="Inicio">
@@ -34,5 +44,11 @@ const stack = StackPageSchema.parse(await getPageBySlug("stack"));
     label={stack.title.rendered}
     heading={stack.acf.heading}
     skills={stack.acf.skills}
+  />
+
+  <Experience
+    label={experiencePage.title.rendered}
+    heading={experiencePage.acf.heading}
+    experiences={experiences}
   />
 </Layout>
