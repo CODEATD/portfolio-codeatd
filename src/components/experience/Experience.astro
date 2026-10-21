@@ -1,0 +1,149 @@
+---
+import SectionHeading from "@/components/ui/SectionHeading.astro";
+import type { Experience } from "@/types";
+
+interface Props {
+  index?: string;
+  label?: string;
+  heading?: string;
+  experiences?: Experience[];
+  class?: string;
+}
+
+const {
+  index = "03",
+  label = "Experience",
+heading = "Where I've been building.",
+  experiences = [
+    {
+      id: 1,
+      role: "Senior Software Engineer",
+      company: "Helio",
+      start: 2023,
+      end: null,
+      description:
+        "Lead front-end for a real-time analytics platform — owning the design system, performance budget, and the team's engineering standards.",
+      technologies: ["React", "Next.js", "TypeScript"],
+    },
+    {
+      id: 2,
+      role: "Software Engineer",
+      company: "Northwind",
+      start: 2020,
+      end: 2023,
+      description:
+        "Built and maintained customer-facing dashboards and the component library used across three product teams.",
+      technologies: ["React", "Node.js", "Tailwind CSS"],
+    },
+  ],
+  class: className = "",
+} = Astro.props;
+
+// Current roles first (no end year), then the most recent start
+const sorted = experiences.toSorted(
+  (a, b) => (b.end ?? Infinity) - (a.end ?? Infinity) || b.start - a.start,
+);
+---
+
+<section
+  id="experience"
+  aria-labelledby="experience-title"
+  class:list={["scroll-mt-20 pb-20 sm:pb-28 lg:pb-30", className]}
+>
+  <SectionHeading
+    class="experience-anim-item"
+    id="experience-title"
+    index={index}
+    label={label}
+    heading={heading}
+    headingClass="lg:text-5xl"
+  />
+
+  <ol
+    class="mt-12 sm:mt-16"
+  >
+    {
+      sorted.map(({ role, company, start, end, description, technologies }) => (
+        <li class="experience-anim-row grid grid-cols-1 gap-3 border-b border-bor-light px-4 py-8 lg:grid-cols-12 lg:gap-8 dark:border-neutral-400">
+          <!-- Dates -->
+          <p class="text-xs font-medium text-primary-500 lg:col-span-3 lg:pt-1.5 lg:text-neutral-400 lg:dark:text-white">
+            <time datetime={String(start)}>{start}</time> —{" "}
+            {end ? <time datetime={String(end)}>{end}</time> : "Present"}
+          </p>
+
+          <!-- Role, description, technologies -->
+          <div class="lg:col-span-6 lg:col-start-7 lg:ml-auto lg:max-w-sm lg:text-right">
+            <h3 class="font-heading text-lg font-medium text-neutral-500 sm:text-xl dark:text-white">
+              <Fragment set:html={role} />{" "}
+              <span class="font-normal text-neutral-300 dark:text-neutral-200">
+                — {company}
+              </span>
+            </h3>
+            <p class="mt-3 text-sm leading-relaxed text-pretty text-neutral-300 dark:text-neutral-200">
+              {description}
+            </p>
+            {technologies.length > 0 && (
+              <p class="mt-3 text-right text-xs font-medium text-neutral-500 dark:text-primary-500">
+                {technologies.join(" · ")}
+              </p>
+            )}
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  let experienceTimeline: gsap.core.Timeline | null = null;
+
+  function initExperienceReveal() {
+    const experience = document.querySelector<HTMLElement>("#experience");
+    if (!experience) return;
+    destroyExperienceReveal();
+
+    // Accessibility: no animation if the user prefers reduced motion
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    experienceTimeline = gsap.timeline({
+      defaults: { ease: "power3.out" },
+      scrollTrigger: {
+        trigger: experience,
+        start: "top 75%",
+        once: true,
+      },
+    });
+
+    // 1. Label + heading
+    experienceTimeline.from(
+      experience.querySelectorAll(".experience-anim-item"),
+      { y: 35, autoAlpha: 0, duration: 0.85 },
+    );
+
+    // 2. Rows one by one
+    experienceTimeline.from(
+      experience.querySelectorAll(".experience-anim-row"),
+      { y: 30, autoAlpha: 0, duration: 0.7, stagger: 0.12 },
+      "-=0.45",
+    );
+  }
+
+  function destroyExperienceReveal() {
+    experienceTimeline?.scrollTrigger?.kill();
+    experienceTimeline?.kill();
+    experienceTimeline = null;
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initExperienceReveal);
+  } else {
+    initExperienceReveal();
+  }
+  document.addEventListener("astro:page-load", initExperienceReveal);
+  document.addEventListener("astro:before-swap", destroyExperienceReveal);
+</script>
