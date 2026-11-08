@@ -102,3 +102,53 @@ export const OptionsSchema = z.object({
 });
 
 export type SocialLink = z.infer<typeof SocialLinkSchema>;
+
+//* WordPress image sizes (custom REST field featured_images)
+const ImageSchema = z.object({
+    url: z.string(),
+    width: z.number(),
+    height: z.number(),
+});
+
+const FeaturedImagesSchema = z.object({
+    thumbnail: ImageSchema,
+    medium: ImageSchema,
+    medium_large: ImageSchema,
+    large: ImageSchema,
+    full: ImageSchema,
+});
+
+export type FeaturedImages = z.infer<typeof FeaturedImagesSchema>;
+
+//* Project CPT (ACF + featured_images + technology_details + project_category_details)
+const ProjectSchema = BaseWPSchema.pick({
+    id: true,
+    slug: true,
+    title: true,
+})
+    .extend({
+        featured_images: FeaturedImagesSchema,
+        acf: z.object({
+            description: z.string(),
+            live_url: z.string().catch(""), // empty → no "Visit Live"
+        }),
+        technology_details: z.array(TermSchema),
+        project_category_details: z.array(TermSchema),
+    })
+    // Flat shape for the components
+    .transform(
+        ({ id, slug, title, featured_images, acf, technology_details, project_category_details }) => ({
+            id,
+            slug, // → /projects/[slug] (single-project, later)
+            title: title.rendered,
+            category: project_category_details[0]?.name ?? "", // card label: first category
+            description: acf.description,
+            liveUrl: acf.live_url,
+            image: featured_images,
+            technologies: technology_details.map((term) => term.name),
+        }),
+    );
+
+export const ProjectsSchema = z.array(ProjectSchema);
+
+export type Project = z.infer<typeof ProjectSchema>;

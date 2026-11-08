@@ -7,4 +7,8 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
+  // Remote images Astro may optimize (WordPress local + production)
+  image: {
+    domains: ["codeatd.local", "cms.codeatd.dev"],
+  },
 });
