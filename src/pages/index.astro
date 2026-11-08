@@ -9,6 +9,7 @@ import About from "@/components/about/About.astro";
 import Stack from "@/components/stack/Stack.astro";
 import Experience from "@/components/experience/Experience.astro";
 import Projects from "@/components/projects/Projects.astro";
+import Showreel from "@/components/showreel/Showreel.astro";
 
 // Helpers
 import { getOptions, getPageBySlug, getPostType } from "@/helpers";
@@ -21,6 +22,7 @@ import {
   ProjectsSchema,
   SectionPageSchema,
   StackPageSchema,
+  ShowreelPageSchema,
 } from "@/types";
 import bg from "@/assets/backgrounds/bg-pattern-dark.avif";
 
@@ -34,6 +36,7 @@ const experiences = ExperiencesSchema.parse(await getPostType("experience"));
 const projectsPage = SectionPageSchema.parse(await getPageBySlug("projects"));
 const projects = ProjectsSchema.parse(await getPostType("project"));
 const homeProjects = projects.slice(0, 4); // home: the 4 most recent
+const showreel = ShowreelPageSchema.parse(await getPageBySlug("showreel"));
 ---
 
 <Layout title="Inicio">
@@ -74,4 +77,10 @@ const homeProjects = projects.slice(0, 4); // home: the 4 most recent
       />
     )
   }
+
+  <Showreel
+    label={showreel.title.rendered}
+    video={showreel.acf.video}
+    poster={showreel.acf.poster}
+  />
 </Layout>

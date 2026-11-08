@@ -1,0 +1,153 @@
+---
+import { Picture } from "astro:assets";
+
+interface Props {
+  label?: string; // accessible name (WordPress page title)
+  video: string; // MP4 url
+  poster?: string; // image url ("" = none)
+  class?: string;
+}
+
+const {
+  label = "Showreel",
+  video,
+  poster,
+  class: className = "",
+} = Astro.props;
+---
+
+<section
+  id="showreel"
+  aria-label={label}
+  class:list={["pb-20 sm:pb-28 lg:pb-30", className]}
+>
+  <div
+    class="showreel-media relative overflow-hidden rounded-3xl bg-neutral-900"
+  >
+    <!-- Poster: optimized by Astro, sits behind the video -->
+    {
+      poster && (
+        <Picture
+          src={poster}
+          alt=""
+          width={1280}
+          height={720}
+          formats={["avif", "webp"]}
+          fallbackFormat="jpg"
+          class="absolute inset-0 size-full object-cover"
+        />
+      )
+    }
+
+    <video
+      class:list={[
+        "showreel-video relative aspect-video w-full object-cover transition-opacity duration-500",
+        poster && "opacity-0", // hidden until it really plays (the poster shows meanwhile)
+      ]}
+      src={video}
+      muted
+      loop
+      playsinline
+      preload="none"
+      aria-hidden="true"></video>
+
+    <!-- Pause / play (WCAG 2.2.2) -->
+    <button
+      type="button"
+      class="showreel-toggle absolute right-4 bottom-4 grid size-11 place-items-center rounded-full bg-neutral-500/70 text-white backdrop-blur-sm transition-colors duration-200 hover:bg-primary-500 hover:text-neutral-500 sm:right-6 sm:bottom-6"
+      aria-label="Play video"
+    >
+      <i class="ri-play-fill text-xl" aria-hidden="true"></i>
+    </button>
+  </div>
+</section>
+
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  let showreelTween: gsap.core.Tween | null = null;
+  let showreelVisibility: ScrollTrigger | null = null;
+
+  function initShowreel() {
+    const showreel = document.querySelector<HTMLElement>("#showreel");
+    if (!showreel) return;
+    destroyShowreel();
+
+    const media = showreel.querySelector<HTMLElement>(".showreel-media")!;
+    const video = showreel.querySelector<HTMLVideoElement>(".showreel-video")!;
+    const toggle =
+      showreel.querySelector<HTMLButtonElement>(".showreel-toggle")!;
+    const icon = toggle.querySelector("i")!;
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    // Reduced motion: never autoplay (the user starts it with the button)
+    let pausedByUser = prefersReducedMotion;
+
+    // Button label + icon follow the real state of the video
+    const showState = (playing: boolean) => {
+      toggle.setAttribute("aria-label", playing ? "Pause video" : "Play video");
+      icon.className = `${playing ? "ri-pause-fill" : "ri-play-fill"} text-xl`;
+    };
+    video.onplay = () => showState(true);
+    video.onpause = () => showState(false);
+    // First real frame: fade the video in over the poster
+    video.onplaying = () => video.classList.remove("opacity-0");
+
+    toggle.onclick = () => {
+      pausedByUser = !video.paused;
+      if (video.paused) video.play();
+      else video.pause();
+    };
+
+    // 1. Play only while the section is on screen (saves data and battery)
+    showreelVisibility = ScrollTrigger.create({
+      trigger: showreel,
+      start: "top bottom",
+      end: "bottom top",
+      onToggle: (self) => {
+        if (self.isActive && !pausedByUser) video.play().catch(() => {});
+        else video.pause();
+      },
+    });
+
+    if (prefersReducedMotion) return;
+
+    // 2. Grows with the scroll: scrub ties it to the scrollbar (reverses going up)
+    showreelTween = gsap.fromTo(
+      media,
+      { scale: 0.8 },
+      {
+        scale: 1,
+        ease: "none",
+        scrollTrigger: {
+          trigger: showreel,
+          start: "top bottom",
+          end: "center center",
+          scrub: 0.5,
+        },
+      },
+    );
+  }
+
+  function destroyShowreel() {
+    showreelVisibility?.kill();
+    showreelVisibility = null;
+    showreelTween?.scrollTrigger?.kill();
+    showreelTween?.kill();
+    showreelTween = null;
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initShowreel);
+  } else {
+    initShowreel();
+  }
+  document.addEventListener("astro:page-load", initShowreel);
+  document.addEventListener("astro:before-swap", destroyShowreel);
+</script>

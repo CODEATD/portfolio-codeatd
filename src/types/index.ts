@@ -49,6 +49,14 @@ export const SectionPageSchema = BaseWPSchema.extend({
     }),
 });
 
+//* Showreel page (ACF: video file + poster)
+export const ShowreelPageSchema = BaseWPSchema.extend({
+    acf: z.object({
+        video: z.string(), // MP4 url (ACF File → URL)
+        poster: z.string().catch(""), // no poster → false → ""
+    }),
+});
+
 //* Taxonomy term (custom REST field, e.g. technology_details)
 const TermSchema = z.object({
     id: z.number(),
