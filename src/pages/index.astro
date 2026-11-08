@@ -8,6 +8,7 @@ import LogoMarquee from "@/components/ui/LogoMarquee.astro";
 import About from "@/components/about/About.astro";
 import Stack from "@/components/stack/Stack.astro";
 import Experience from "@/components/experience/Experience.astro";
+import Projects from "@/components/projects/Projects.astro";
 
 // Helpers
 import { getOptions, getPageBySlug, getPostType } from "@/helpers";
@@ -17,6 +18,7 @@ import {
   AboutPageSchema,
   ExperiencesSchema,
   OptionsSchema,
+  ProjectsSchema,
   SectionPageSchema,
   StackPageSchema,
 } from "@/types";
@@ -29,17 +31,18 @@ const experiencePage = SectionPageSchema.parse(
   await getPageBySlug("experience"),
 );
 const experiences = ExperiencesSchema.parse(await getPostType("experience"));
+const projectsPage = SectionPageSchema.parse(await getPageBySlug("projects"));
+const projects = ProjectsSchema.parse(await getPostType("project"));
+const homeProjects = projects.slice(0, 4); // home: the 4 most recent
 ---
 
 <Layout title="Inicio">
   <Hero
     slot="before-main-content"
     bgImage={bg.src}
-    secondaryCta={
-      options.cv_file
-        ? { text: "Download CV", href: options.cv_file }
-        : undefined
-    }
+    secondaryCta={options.cv_file
+      ? { text: "Download CV", href: options.cv_file }
+      : undefined}
   />
   <LogoMarquee slot="before-main-content" />
 
@@ -61,4 +64,14 @@ const experiences = ExperiencesSchema.parse(await getPostType("experience"));
     heading={experiencePage.acf.heading}
     experiences={experiences}
   />
+
+  {
+    homeProjects.length > 0 && (
+      <Projects
+        label={projectsPage.title.rendered}
+        heading={projectsPage.acf.heading}
+        projects={homeProjects}
+      />
+    )
+  }
 </Layout>
