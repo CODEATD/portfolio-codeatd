@@ -1,0 +1,73 @@
+---
+import { Picture } from "astro:assets";
+import type { Project } from "@/types";
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const { title, category, description, liveUrl, image, technologies } = project;
+---
+
+<article
+  class="project-anim-card group/card grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-center lg:gap-8"
+>
+  <!-- Image -->
+  <div class="overflow-hidden rounded-2xl lg:col-span-5">
+    <Picture
+      src={image.large.url}
+      alt={`Preview of ${title}`}
+      width={image.large.width}
+      height={image.large.height}
+      formats={["avif", "webp"]}
+      class="aspect-4/3 w-full object-cover transition-transform duration-500 group-hover/card:scale-[1.03] motion-reduce:transition-none"
+    />
+  </div>
+
+  <!-- Category, title, description, technologies, actions -->
+  <div class="lg:col-span-6 lg:col-start-7">
+    {
+      category && (
+        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-300 dark:text-primary-500">
+          {category}
+        </p>
+      )
+    }
+    <h3
+      class="mt-3 font-heading text-2xl font-medium text-neutral-500 sm:text-3xl dark:text-white"
+    >
+      <Fragment set:html={title} />
+    </h3>
+    <p
+      class="mt-3 max-w-md text-sm leading-relaxed text-pretty text-neutral-300 dark:text-neutral-200"
+    >
+      {description}
+    </p>
+    {
+      technologies.length > 0 && (
+        <p class="mt-3 text-xs font-medium text-neutral-500 dark:text-white">
+          {technologies.join(" · ")}
+        </p>
+      )
+    }
+
+    <!-- Actions ("Read The Story" → single-project branch) -->
+    {
+      liveUrl && (
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a
+            href={liveUrl}
+            class="btn-primary"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Visit Live
+            <span class="sr-only">: {title} (opens in a new tab)</span>
+            <i class="ri-arrow-right-up-line" aria-hidden="true" />
+          </a>
+        </div>
+      )
+    }
+  </div>
+</article>
