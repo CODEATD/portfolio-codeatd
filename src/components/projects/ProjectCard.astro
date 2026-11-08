@@ -21,6 +21,7 @@ const { title, category, description, liveUrl, image, technologies } = project;
       width={image.large.width}
       height={image.large.height}
       formats={["avif", "webp"]}
+      fallbackFormat="jpg"
       class="aspect-4/3 w-full object-cover transition-transform duration-500 group-hover/card:scale-[1.03] motion-reduce:transition-none"
     />
   </div>
