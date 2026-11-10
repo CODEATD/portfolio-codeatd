@@ -10,6 +10,7 @@ import Stack from "@/components/stack/Stack.astro";
 import Experience from "@/components/experience/Experience.astro";
 import Projects from "@/components/projects/Projects.astro";
 import Showreel from "@/components/showreel/Showreel.astro";
+import Testimonials from "@/components/testimonials/Testimonials.astro";
 
 // Helpers
 import { getOptions, getPageBySlug, getPostType } from "@/helpers";
@@ -17,12 +18,14 @@ import { getOptions, getPageBySlug, getPostType } from "@/helpers";
 // Types
 import {
   AboutPageSchema,
+  BaseWPSchema,
   ExperiencesSchema,
   OptionsSchema,
   ProjectsSchema,
   SectionPageSchema,
   StackPageSchema,
   ShowreelPageSchema,
+  TestimonialsSchema,
 } from "@/types";
 import bg from "@/assets/backgrounds/bg-pattern-dark.avif";
 
@@ -37,6 +40,10 @@ const projectsPage = SectionPageSchema.parse(await getPageBySlug("projects"));
 const projects = ProjectsSchema.parse(await getPostType("project"));
 const homeProjects = projects.slice(0, 4); // home: the 4 most recent
 const showreel = ShowreelPageSchema.parse(await getPageBySlug("showreel"));
+const testimonialsPage = BaseWPSchema.parse(
+  await getPageBySlug("testimonials"),
+);
+const testimonials = TestimonialsSchema.parse(await getPostType("testimonial"));
 ---
 
 <Layout title="Inicio">
@@ -83,4 +90,13 @@ const showreel = ShowreelPageSchema.parse(await getPageBySlug("showreel"));
     video={showreel.acf.video}
     poster={showreel.acf.poster}
   />
+
+  {
+    testimonials.length > 0 && (
+      <Testimonials
+        label={testimonialsPage.title.rendered}
+        testimonials={testimonials}
+      />
+    )
+  }
 </Layout>

@@ -1,0 +1,164 @@
+---
+import { Picture } from "astro:assets";
+import type { Testimonial } from "@/types";
+
+interface Props {
+  index?: string;
+  label?: string;
+  testimonials: Testimonial[];
+  class?: string;
+}
+
+const {
+  index = "06",
+  label = "Testimonials",
+  testimonials,
+  class: className = "",
+} = Astro.props;
+
+// Swiper's loop needs more slides than the screen shows → repeat the list up to 8
+const repeat = Math.ceil(8 / testimonials.length);
+const items = Array.from({ length: repeat }, () => testimonials).flat();
+---
+
+<section
+  id="testimonials"
+  aria-labelledby="testimonials-title"
+  class:list={["scroll-mt-20 pb-20 sm:pb-28 lg:pb-30", className]}
+>
+  <h2
+    id="testimonials-title"
+    class="testimonials-anim-item text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500 dark:text-primary-500"
+  >
+    ({index}) {label}
+  </h2>
+
+  <!-- Swiper -->
+  <div
+    class="testimonials-anim-item testimonials-swiper swiper mt-10 ml-[calc(50%-50vw)]! w-screen sm:mt-12"
+  >
+    <ul
+      class="swiper-wrapper [--swiper-wrapper-transition-timing-function:linear]"
+    >
+      {
+        items.map(({ name, quote, role, company, avatar }, i) => (
+          <li
+            class="swiper-slide w-[85vw]! sm:w-108! h-auto!"
+            aria-hidden={i >= testimonials.length ? "true" : undefined}
+          >
+            <figure class="flex h-full flex-col justify-between gap-8 rounded-3xl bg-neutral-50/30 p-8 sm:p-10 dark:bg-black-400">
+              <blockquote class="text-lg leading-relaxed text-pretty text-neutral-300 sm:text-xl dark:text-neutral-50">
+                <p>{quote}</p>
+              </blockquote>
+
+              <figcaption class="flex items-center gap-4">
+                {avatar ? (
+                  <Picture
+                    src={avatar.url}
+                    alt=""
+                    width={96}
+                    height={96}
+                    formats={["avif", "webp"]}
+                    fallbackFormat="jpg"
+                    class="size-12 shrink-0 rounded-full object-cover dark:ring-2 dark:ring-white"
+                  />
+                ) : (
+                  <span
+                    class="grid size-12 shrink-0 place-items-center rounded-full bg-primary-500 font-heading text-lg font-semibold text-neutral-500"
+                    aria-hidden="true"
+                  >
+                    {name.charAt(0)}
+                  </span>
+                )}
+                <div>
+                  <p class="font-medium text-neutral-500 dark:text-white" set:html={name} />
+                  <p class="text-sm text-neutral-300 dark:text-primary-500">
+                    {[role, company].filter(Boolean).join(" · ")}
+                  </p>
+                </div>
+              </figcaption>
+            </figure>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<script>
+  import Swiper from "swiper";
+  import { Autoplay, FreeMode, Keyboard, A11y } from "swiper/modules";
+  import "swiper/css";
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  let swiper: Swiper | null = null;
+  let testimonialsTween: gsap.core.Tween | null = null;
+
+  function initTestimonials() {
+    const section = document.querySelector<HTMLElement>("#testimonials");
+    const container = section?.querySelector<HTMLElement>(".testimonials-swiper");
+    if (!section || !container) return;
+    destroyTestimonials();
+
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    // 1. Swiper: a continuous, draggable row
+    swiper = new Swiper(container, {
+      modules: [Autoplay, FreeMode, Keyboard, A11y],
+      slidesPerView: "auto",
+      spaceBetween: 24,
+      grabCursor: true,
+      keyboard: { enabled: true },
+      freeMode: true, // drag with inertia, no snapping to a slide
+      // Reduced motion → no auto-scroll and no loop: the user drags or uses the keyboard
+      loop: !reduceMotion,
+      speed: 7000, // ms per slide: higher = slower
+      autoplay: reduceMotion
+        ? false
+        : {
+            delay: 0, // no wait between moves → continuous
+            disableOnInteraction: false, // keep going after dragging
+            pauseOnMouseEnter: true, // stop to read
+          },
+    });
+
+    // Pause when a card receives keyboard focus (pauseOnMouseEnter only covers the mouse)
+    container.addEventListener("focusin", () => swiper?.autoplay?.stop());
+    container.addEventListener("focusout", () => swiper?.autoplay?.start());
+
+    // 2. Entrance animation (label + row)
+    if (reduceMotion) return;
+    testimonialsTween = gsap.from(
+      section.querySelectorAll(".testimonials-anim-item"),
+      {
+        y: 35,
+        autoAlpha: 0,
+        duration: 0.85,
+        ease: "power3.out",
+        stagger: 0.12,
+        scrollTrigger: { trigger: section, start: "top 75%", once: true },
+      },
+    );
+  }
+
+  function destroyTestimonials() {
+    swiper?.destroy(true, true); // remove listeners and styles Swiper added
+    swiper = null;
+    testimonialsTween?.scrollTrigger?.kill();
+    testimonialsTween?.kill();
+    testimonialsTween = null;
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initTestimonials);
+  } else {
+    initTestimonials();
+  }
+  document.addEventListener("astro:page-load", initTestimonials);
+  document.addEventListener("astro:before-swap", destroyTestimonials);
+</script>
