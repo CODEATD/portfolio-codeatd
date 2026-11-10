@@ -160,3 +160,33 @@ const ProjectSchema = BaseWPSchema.pick({
 export const ProjectsSchema = z.array(ProjectSchema);
 
 export type Project = z.infer<typeof ProjectSchema>;
+
+//* Testimonial CPT (ACF + featured_images → avatar)
+const TestimonialSchema = BaseWPSchema.pick({
+    id: true,
+    title: true,
+})
+    .extend({
+        featured_images: z
+            .object({ thumbnail: ImageSchema }) // 150 × 150 crop → avatar
+            .nullable()
+            .catch(null), // no featured image → false → null
+        acf: z.object({
+            quote: z.string(),
+            role: z.string(),
+            company: z.string().catch(""), // empty → only the role
+        }),
+    })
+    // Flat shape for the component
+    .transform(({ id, title, featured_images, acf }) => ({
+        id,
+        name: title.rendered,
+        quote: acf.quote,
+        role: acf.role,
+        company: acf.company,
+        avatar: featured_images?.thumbnail ?? null,
+    }));
+
+export const TestimonialsSchema = z.array(TestimonialSchema);
+
+export type Testimonial = z.infer<typeof TestimonialSchema>;
