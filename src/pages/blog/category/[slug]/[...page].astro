@@ -6,10 +6,10 @@ import SectionHeading from "@/components/ui/SectionHeading.astro";
 import CategoryChips from "@/components/blog/CategoryChips.astro";
 import PostCard from "@/components/blog/PostCard.astro";
 import Pagination from "@/components/blog/Pagination.astro";
-import { getPostType, toPlainText } from "@/helpers";
+import { getPostType, toPlainText, withPagePrefix } from "@/helpers";
 import { CategoriesSchema, PostsSchema, type Category, type Post } from "@/types";
 
-//* SSG: /blog/category/astro, /blog/category/astro/2… — Juan 16 + Fernando 3.13
+//* SSG: /blog/category/astro, /blog/category/astro/page/2… — Juan 16 + Fernando 3.13
 export const getStaticPaths = (async ({ paginate }) => {
   const posts = PostsSchema.parse(await getPostType("posts"));
   const categories = CategoriesSchema.parse(
@@ -22,11 +22,13 @@ export const getStaticPaths = (async ({ paginate }) => {
       post.categories.some(({ slug }) => slug === category.slug),
     );
 
-    return paginate(categoryPosts, {
-      pageSize: 6,
-      params: { slug: category.slug },
-      props: { category, categories },
-    });
+    return withPagePrefix(
+      paginate(categoryPosts, {
+        pageSize: 6,
+        params: { slug: category.slug },
+        props: { category, categories },
+      }),
+    );
   });
 }) satisfies GetStaticPaths;
 

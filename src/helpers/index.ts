@@ -24,6 +24,15 @@ export async function getOptions() {
     return res.json(); // an object, not an array (no json[0])
 }
 
+//* paginate() makes "/blog/2", but /blog/[slug] (SSR) would catch that URL first.
+//* WordPress-style "/blog/page/2" has one more segment, so it never clashes
+export function withPagePrefix<T extends { params: { page?: string | number } }>(paths: T[]) {
+    return paths.map((path) => ({
+        ...path,
+        params: { ...path.params, page: path.params.page ? `page/${path.params.page}` : undefined },
+    }));
+}
+
 //* Format an ISO date in English, e.g. "2025-03-15T10:00:00" → "Mar 15, 2025"
 export function formatDate(date: string) {
     return new Intl.DateTimeFormat("en-US", {

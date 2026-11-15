@@ -6,7 +6,7 @@ import SectionHeading from "@/components/ui/SectionHeading.astro";
 import CategoryChips from "@/components/blog/CategoryChips.astro";
 import PostCard from "@/components/blog/PostCard.astro";
 import Pagination from "@/components/blog/Pagination.astro";
-import { getPageBySlug, getPostType, toPlainText } from "@/helpers";
+import { getPageBySlug, getPostType, toPlainText, withPagePrefix } from "@/helpers";
 import {
   CategoriesSchema,
   PostsSchema,
@@ -16,7 +16,7 @@ import {
   type SectionPage,
 } from "@/types";
 
-//* SSG: /blog, /blog/2, /blog/3… (6 posts per page)
+//* SSG: /blog, /blog/page/2, /blog/page/3… (6 posts per page)
 export const getStaticPaths = (async ({ paginate }) => {
   const posts = PostsSchema.parse(await getPostType("posts"));
   const categories = CategoriesSchema.parse(
@@ -24,8 +24,8 @@ export const getStaticPaths = (async ({ paginate }) => {
   );
   const blogPage = SectionPageSchema.parse(await getPageBySlug("blog"));
 
-  // props → the same data on every page, fetched once
-  return paginate(posts, { pageSize: 6, props: { categories, blogPage } });
+  // props → the same data on every page, fetched once · /blog, /blog/page/2…
+  return withPagePrefix(paginate(posts, { pageSize: 6, props: { categories, blogPage } }));
 }) satisfies GetStaticPaths;
 
 interface Props {
