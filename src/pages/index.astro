@@ -12,6 +12,7 @@ import Projects from "@/components/projects/Projects.astro";
 import Showreel from "@/components/showreel/Showreel.astro";
 import Testimonials from "@/components/testimonials/Testimonials.astro";
 import Faq from "@/components/faq/Faq.astro";
+import Blog from "@/components/blog/Blog.astro";
 
 // Helpers
 import { getOptions, getPageBySlug, getPostType } from "@/helpers";
@@ -23,6 +24,7 @@ import {
   ExperiencesSchema,
   FaqsSchema,
   OptionsSchema,
+  PostsSchema,
   ProjectsSchema,
   SectionPageSchema,
   StackPageSchema,
@@ -51,6 +53,10 @@ const faqs = FaqsSchema.parse(
   await getPostType("faq", "&orderby=menu_order&order=asc"),
 );
 const homeFaqs = faqs.slice(0, 5); // home: the first 5 by "Order"
+
+const blogPage = SectionPageSchema.parse(await getPageBySlug("blog"));
+const posts = PostsSchema.parse(await getPostType("posts"));
+const homePosts = posts.slice(0, 3); // home: the 3 most recent
 
 ---
 
@@ -124,6 +130,16 @@ const homeFaqs = faqs.slice(0, 5); // home: the first 5 by "Order"
         heading={faqPage.acf.heading}
         intro={faqPage.content.rendered}
         faqs={homeFaqs}
+      />
+    )
+  }
+
+    {
+    homePosts.length > 0 && (
+      <Blog
+        label={blogPage.title.rendered}
+        heading={blogPage.acf.heading}
+        posts={homePosts}
       />
     )
   }
