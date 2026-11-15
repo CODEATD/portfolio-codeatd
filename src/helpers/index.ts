@@ -10,11 +10,12 @@ export async function getPageBySlug(slug: string) {
 }
 
 //* WordPress: GET /{type} returns all entries of a post type (CPT)
-export async function getPostType(type: string) {
-    // per_page=100 → not only the first 10
-    const res = await fetch(`${import.meta.env.API_URL}/${type}?per_page=100`);
+export async function getPostType(type: string, query = "") {
+    // per_page=100 → not only the first 10; query → extra params, e.g. "&orderby=menu_order&order=asc"
+    const res = await fetch(`${import.meta.env.API_URL}/${type}?per_page=100${query}`);
     return res.json(); // an array (no json[0])
 }
+
 //* WordPress: GET /codeatd/v1/options returns all ACF Site Settings fields
 export async function getOptions() {
     const res = await fetch(`${import.meta.env.API_CUSTOM_URL}/options`);
