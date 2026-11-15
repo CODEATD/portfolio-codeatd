@@ -1,0 +1,49 @@
+---
+import type { Category } from "@/types";
+
+interface Props {
+  categories: Category[];
+  current?: string; // active category slug ("" = All)
+  class?: string;
+}
+
+const { categories, current = "", class: className = "" } = Astro.props;
+
+// "All" + one chip per category (only categories with posts: hide_empty=true)
+const chips = [
+  { name: "All", slug: "", href: "/blog", count: null },
+  ...categories.map(({ name, slug, count }) => ({
+    name,
+    slug,
+    href: `/blog/category/${slug}`,
+    count,
+  })),
+];
+---
+
+<nav aria-label="Blog categories" class={className}>
+  <ul class="flex flex-wrap gap-2">
+    {
+      chips.map(({ name, slug, href, count }) => {
+        const active = slug === current;
+        return (
+          <li>
+            <a
+              href={href}
+              aria-current={active ? "page" : undefined}
+              class:list={[
+                "inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium transition-colors",
+                active
+                  ? "border-primary-500 bg-primary-500 text-neutral-500"
+                  : "border-bor-light text-neutral-400 hover:border-neutral-500 hover:text-neutral-500 dark:border-neutral-400 dark:text-neutral-50 dark:hover:border-white dark:hover:text-white",
+              ]}
+            >
+              <Fragment set:html={name} />
+              {count !== null && <span class="text-xs opacity-60">{count}</span>}
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</nav>
