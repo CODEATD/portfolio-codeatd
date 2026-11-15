@@ -1,4 +1,5 @@
 import { z } from "astro/zod";
+import { contentToHtml, getReadingTime, toPlainText } from "@/helpers";
 
 //* Fields shared by every WordPress page
 export const BaseWPSchema = z.object({
@@ -48,6 +49,8 @@ export const SectionPageSchema = BaseWPSchema.extend({
         heading: z.string(),
     }),
 });
+
+export type SectionPage = z.infer<typeof SectionPageSchema>;
 
 //* Showreel page (ACF: video file + poster)
 export const ShowreelPageSchema = BaseWPSchema.extend({
@@ -211,3 +214,50 @@ const FaqSchema = BaseWPSchema.pick({
 export const FaqsSchema = z.array(FaqSchema);
 
 export type Faq = z.infer<typeof FaqSchema>;
+
+//* Blog post (WP posts + content_raw + featured_images + category_details)
+const PostSchema = BaseWPSchema.pick({
+    id: true,
+    slug: true,
+    title: true,
+    content: true,
+})
+    .extend({
+        date: z.string(),
+        excerpt: z.object({ rendered: z.string() }),
+        content_raw: z.string().catch(""), // as written (Markdown or HTML), W2b
+        featured_images: FeaturedImagesSchema.nullable().catch(null), // no image → false → null
+        category_details: z.array(TermSchema).catch([]),
+    })
+    // Flat shape for the components
+    .transform(
+        ({ id, slug, title, content, content_raw, date, excerpt, featured_images, category_details }) => {
+            // Markdown or HTML → HTML. Without content_raw (W2b missing) → WordPress's own HTML
+            const html = content_raw ? contentToHtml(content_raw) : content.rendered;
+
+            return {
+                id,
+                slug, // → /blog/[slug]
+                title: title.rendered, // HTML entities → set:html
+                date,
+                excerpt: toPlainText(excerpt.rendered).replace(/\s*\[…\]$/, "…"), // "text […]" → "text…"
+                content: html,
+                image: featured_images,
+                categories: category_details, // [{ id, name, slug }]
+                readingTime: getReadingTime(html),
+            };
+        },
+    );
+
+export const PostsSchema = z.array(PostSchema);
+
+export type Post = z.infer<typeof PostSchema>;
+
+//* Blog category (WP /categories) + number of posts
+const CategorySchema = TermSchema.extend({
+    count: z.number(),
+});
+
+export const CategoriesSchema = z.array(CategorySchema);
+
+export type Category = z.infer<typeof CategorySchema>;
