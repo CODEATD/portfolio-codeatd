@@ -84,6 +84,25 @@
   & .wp-caption {
     max-width: 100%;
   }
+
+  & h2 {
+    @apply mt-12 font-heading text-2xl font-semibold text-neutral-500 sm:text-3xl dark:text-white;
+  }
+  & h3 {
+    @apply mt-8 font-heading text-xl font-semibold text-neutral-500 dark:text-white;
+  }
+  & blockquote {
+    @apply border-l-2 border-primary-500 pl-5 italic text-neutral-500 dark:text-white;
+  }
+  & :not(pre) > code {
+    @apply rounded-md border border-bor-light bg-neutral-50/40 px-1.5 py-0.5 font-mono text-[0.85em] font-medium text-neutral-500 dark:border-neutral-400 dark:bg-black-400 dark:text-primary-500;
+  }
+  & pre {
+    @apply overflow-x-auto rounded-2xl bg-neutral-500 p-5 text-sm leading-relaxed text-neutral-50;
+  }
+  & hr {
+    @apply my-12 border-bor-light dark:border-neutral-400;
+  }
 }
 
 /* ===== BASE ===== */
