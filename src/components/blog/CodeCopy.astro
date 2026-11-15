@@ -1,0 +1,27 @@
+<!-- Copy buttons of the code blocks (markup comes from highlightCode) -->
+<script>
+  function initCodeCopy() {
+    document.querySelectorAll<HTMLButtonElement>("[data-copy-code]").forEach((button) => {
+      button.onclick = async () => {
+        const code = button.closest(".code-block")?.querySelector("code")?.innerText ?? "";
+        await navigator.clipboard.writeText(code);
+
+        // Feedback: check icon for 2 s
+        const icon = button.querySelector("i");
+        icon?.classList.replace("ri-file-copy-line", "ri-check-line");
+        button.setAttribute("aria-label", "Copied");
+        setTimeout(() => {
+          icon?.classList.replace("ri-check-line", "ri-file-copy-line");
+          button.setAttribute("aria-label", "Copy code");
+        }, 2000);
+      };
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initCodeCopy);
+  } else {
+    initCodeCopy();
+  }
+  document.addEventListener("astro:page-load", initCodeCopy);
+</script>
