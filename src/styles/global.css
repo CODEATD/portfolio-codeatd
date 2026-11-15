@@ -103,6 +103,32 @@
   & hr {
     @apply my-12 border-bor-light dark:border-neutral-400;
   }
+
+  /* Code blocks (highlightCode): dark in both themes, like midu.dev */
+  & .code-block {
+    @apply overflow-hidden rounded-2xl bg-neutral-500 text-sm ring-1 ring-white/10;
+  }
+  & .code-block__header {
+    @apply flex items-center gap-3 border-b border-white/10 px-4 py-3 font-sans text-sm font-medium text-white;
+  }
+  & .code-block__badge {
+    @apply grid h-6 min-w-6 place-items-center rounded-md bg-primary-500 px-1 font-mono text-[0.65rem] font-bold text-neutral-500;
+  }
+  & .code-block__copy {
+    @apply ml-auto grid size-8 place-items-center rounded-lg border border-white/10 text-neutral-100 transition-colors hover:border-white/30 hover:text-white;
+  }
+  & .code-block pre {
+    @apply m-0 overflow-x-auto rounded-none p-5 leading-relaxed;
+    background-color: transparent !important; /* Shiki sets an inline background */
+  }
+  & .code-block code {
+    counter-reset: line;
+  }
+  & .code-block .line::before {
+    counter-increment: line;
+    content: counter(line);
+    @apply mr-5 inline-block w-4 text-right text-neutral-300 select-none;
+  }
 }
 
 /* ===== BASE ===== */
