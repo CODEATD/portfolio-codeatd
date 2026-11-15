@@ -1,0 +1,151 @@
+---
+import SectionHeading from "@/components/ui/SectionHeading.astro";
+import PostCard from "@/components/blog/PostCard.astro";
+import type { Post } from "@/types";
+
+interface Props {
+  index?: string;
+  label?: string;
+  heading?: string;
+  posts: Post[];
+  moreLink?: { text: string; href: string };
+  class?: string;
+}
+
+const {
+  index = "08",
+  label = "Blog",
+  heading = "Dev Insights & Ideas",
+  posts,
+  moreLink = { text: "Browse All Insights", href: "/blog" },
+  class: className = "",
+} = Astro.props;
+---
+
+<section
+  id="blog"
+  aria-labelledby="blog-title"
+  class:list={["scroll-mt-20 pb-20 sm:pb-28 lg:pb-30", className]}
+>
+  <SectionHeading
+    class="blog-anim-item"
+    id="blog-title"
+    index={index}
+    label={label}
+    heading={heading}
+    headingClass="lg:text-5xl"
+  />
+
+  <!-- Mobile: Swiper (one card + dots) · Desktop (lg): plain 3-column grid -->
+  <div class="blog-anim-item blog-swiper swiper mt-12 sm:mt-16">
+    <ul class="swiper-wrapper lg:grid! lg:grid-cols-3 lg:gap-8">
+      {
+        posts.map((post) => (
+          <li class="swiper-slide h-auto!">
+            <PostCard post={post} />
+          </li>
+        ))
+      }
+    </ul>
+    <div class="blog-pagination mt-8 flex justify-center gap-2 lg:hidden"></div>
+  </div>
+
+  <div class="blog-anim-item mt-12 flex justify-center sm:mt-16">
+    <a href={moreLink.href} class="btn-primary">{moreLink.text}</a>
+  </div>
+</section>
+
+<style>
+  /* Swiper creates the dots in JS → :global() to reach them from scoped CSS */
+  .blog-pagination :global(.swiper-pagination-bullet) {
+    width: 0.5rem;
+    height: 0.5rem;
+    border: 1px solid currentColor;
+    border-radius: 9999px;
+    opacity: 0.6;
+    cursor: pointer;
+    transition:
+      width 0.3s ease,
+      background-color 0.3s ease;
+  }
+  .blog-pagination :global(.swiper-pagination-bullet-active) {
+    width: 2rem;
+    border-color: var(--color-primary-500);
+    background-color: var(--color-primary-500);
+    opacity: 1;
+  }
+</style>
+
+<script>
+  import Swiper from "swiper";
+  import { Pagination, A11y } from "swiper/modules";
+  import "swiper/css";
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const desktop = window.matchMedia("(min-width: 1024px)"); // Tailwind lg
+  let swiper: Swiper | null = null;
+  let blogTween: gsap.core.Tween | null = null;
+
+  // Swiper only below lg; on desktop the cards are a CSS grid
+  function toggleBlogSwiper() {
+    const container = document.querySelector<HTMLElement>("#blog .blog-swiper");
+    if (!container) return;
+
+    if (desktop.matches) {
+      swiper?.destroy(true, true); // remove Swiper's inline styles → grid takes over
+      swiper = null;
+      return;
+    }
+    if (swiper) return; // already running
+
+    swiper = new Swiper(container, {
+      modules: [Pagination, A11y],
+      slidesPerView: 1,
+      spaceBetween: 16,
+      pagination: {
+        el: container.querySelector<HTMLElement>(".blog-pagination"),
+        clickable: true,
+      },
+    });
+  }
+
+  function initBlog() {
+    const section = document.querySelector<HTMLElement>("#blog");
+    if (!section) return;
+    destroyBlog();
+
+    toggleBlogSwiper();
+    desktop.addEventListener("change", toggleBlogSwiper); // resize across lg
+
+    // Entrance animation (heading + cards + button)
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    blogTween = gsap.from(section.querySelectorAll(".blog-anim-item"), {
+      y: 35,
+      autoAlpha: 0,
+      duration: 0.85,
+      ease: "power3.out",
+      stagger: 0.12,
+      scrollTrigger: { trigger: section, start: "top 75%", once: true },
+    });
+  }
+
+  function destroyBlog() {
+    desktop.removeEventListener("change", toggleBlogSwiper);
+    swiper?.destroy(true, true);
+    swiper = null;
+    blogTween?.scrollTrigger?.kill();
+    blogTween?.kill();
+    blogTween = null;
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initBlog);
+  } else {
+    initBlog();
+  }
+  document.addEventListener("astro:page-load", initBlog);
+  document.addEventListener("astro:before-swap", destroyBlog);
+</script>
