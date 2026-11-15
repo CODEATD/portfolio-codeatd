@@ -71,17 +71,26 @@ const homeFaqs = faqs.slice(0, 5); // home: the first 5 by "Order"
     stats={about.acf.stats}
   />
 
-  <Stack
-    label={stack.title.rendered}
-    heading={stack.acf.heading}
-    skills={stack.acf.skills}
-  />
+    {
+    stack.acf.skills.length > 0 && (
+      <Stack
+        label={stack.title.rendered}
+        heading={stack.acf.heading}
+        skills={stack.acf.skills}
+      />
+    )
+  }
 
-  <Experience
-    label={experiencePage.title.rendered}
-    heading={experiencePage.acf.heading}
-    experiences={experiences}
-  />
+  {
+    experiences.length > 0 && (
+      <Experience
+        label={experiencePage.title.rendered}
+        heading={experiencePage.acf.heading}
+        experiences={experiences}
+      />
+    )
+  }
+
 
   {
     homeProjects.length > 0 && (
