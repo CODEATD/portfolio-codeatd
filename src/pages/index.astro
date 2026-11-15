@@ -11,6 +11,7 @@ import Experience from "@/components/experience/Experience.astro";
 import Projects from "@/components/projects/Projects.astro";
 import Showreel from "@/components/showreel/Showreel.astro";
 import Testimonials from "@/components/testimonials/Testimonials.astro";
+import Faq from "@/components/faq/Faq.astro";
 
 // Helpers
 import { getOptions, getPageBySlug, getPostType } from "@/helpers";
@@ -20,6 +21,7 @@ import {
   AboutPageSchema,
   BaseWPSchema,
   ExperiencesSchema,
+  FaqsSchema,
   OptionsSchema,
   ProjectsSchema,
   SectionPageSchema,
@@ -44,6 +46,12 @@ const testimonialsPage = BaseWPSchema.parse(
   await getPageBySlug("testimonials"),
 );
 const testimonials = TestimonialsSchema.parse(await getPostType("testimonial"));
+const faqPage = SectionPageSchema.parse(await getPageBySlug("faq"));
+const faqs = FaqsSchema.parse(
+  await getPostType("faq", "&orderby=menu_order&order=asc"),
+);
+const homeFaqs = faqs.slice(0, 5); // home: the first 5 by "Order"
+
 ---
 
 <Layout title="Inicio">
@@ -99,4 +107,16 @@ const testimonials = TestimonialsSchema.parse(await getPostType("testimonial"));
       />
     )
   }
+
+    {
+    homeFaqs.length > 0 && (
+      <Faq
+        label={faqPage.title.rendered}
+        heading={faqPage.acf.heading}
+        intro={faqPage.content.rendered}
+        faqs={homeFaqs}
+      />
+    )
+  }
+
 </Layout>

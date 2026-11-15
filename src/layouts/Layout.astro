@@ -73,7 +73,7 @@ const pageTitle = title ? `${title} | ${siteConfig.name}` : siteConfig.title;
     </script>
   </head>
   <body
-    class="bg-surface-light text-neutral-500 dark:bg-surface-dark dark:text-white min-h-screen flex flex-col"
+    class="bg-surface-light text-neutral-500 dark:bg-surface-dark dark:text-white min-h-screen flex flex-col overflow-x-clip"
   >
     <Header />
     <slot name="before-main-content" />

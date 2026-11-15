@@ -61,6 +61,31 @@
   }
 }
 
+/* WordPress editor HTML (FAQ answers; later blog posts and single-project) */
+@utility rich-text {
+  & > * + * {
+    margin-top: 1em;
+  }
+  & a {
+    @apply font-medium underline decoration-primary-500 underline-offset-4 transition-colors hover:text-primary-600 dark:text-white dark:hover:text-primary-500;
+  }
+  & strong {
+    @apply font-semibold text-neutral-500 dark:text-white;
+  }
+  & ul {
+    @apply list-disc space-y-1 pl-5;
+  }
+  & ol {
+    @apply list-decimal space-y-1 pl-5;
+  }
+  & img {
+    @apply h-auto max-w-full rounded-2xl;
+  }
+  & .wp-caption {
+    max-width: 100%;
+  }
+}
+
 /* ===== BASE ===== */
 @layer base {
   h1,

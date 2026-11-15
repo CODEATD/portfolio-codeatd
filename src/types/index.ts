@@ -190,3 +190,24 @@ const TestimonialSchema = BaseWPSchema.pick({
 export const TestimonialsSchema = z.array(TestimonialSchema);
 
 export type Testimonial = z.infer<typeof TestimonialSchema>;
+
+//* FAQ CPT (title = question, editor = answer HTML, faq_topic_details = topic)
+const FaqSchema = BaseWPSchema.pick({
+    id: true,
+    title: true,
+    content: true,
+})
+    .extend({
+        faq_topic_details: z.array(TermSchema).catch([]), // no topic → []
+    })
+    // Flat shape for the component
+    .transform(({ id, title, content, faq_topic_details }) => ({
+        id,
+        question: title.rendered,
+        answer: content.rendered, // HTML: paragraphs, links, lists, images
+        topic: faq_topic_details[0]?.name ?? "", // label: first topic
+    }));
+
+export const FaqsSchema = z.array(FaqSchema);
+
+export type Faq = z.infer<typeof FaqSchema>;

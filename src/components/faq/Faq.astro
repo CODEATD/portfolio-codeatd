@@ -1,0 +1,154 @@
+---
+import SectionHeading from "@/components/ui/SectionHeading.astro";
+import type { Faq } from "@/types";
+
+interface Props {
+  index?: string;
+  label?: string;
+  heading?: string;
+  intro?: string; // HTML from WordPress (page content)
+  faqs: Faq[];
+  class?: string;
+}
+
+const {
+  index = "07",
+  label = "FAQ",
+  heading = "Frequently asked.",
+  intro = "",
+  faqs,
+  class: className = "",
+} = Astro.props;
+---
+
+<section
+  id="faq"
+  aria-labelledby="faq-title"
+  class:list={["scroll-mt-20 pb-20 sm:pb-28 lg:pb-30", className]}
+>
+  <div class="grid gap-10 lg:grid-cols-12 lg:gap-8">
+    <!-- Left: label + heading + intro -->
+    <div class="lg:col-span-5">
+      <SectionHeading
+        class="faq-anim-item"
+        id="faq-title"
+        index={index}
+        label={label}
+        heading={heading}
+        headingClass="lg:text-5xl"
+      />
+      {
+        intro && (
+          <div
+            class="faq-anim-item rich-text mt-6 text-sm leading-relaxed text-pretty text-neutral-400 sm:text-base dark:text-neutral-50"
+            set:html={intro}
+          />
+        )
+      }
+    </div>
+
+    <!-- Right: accordion (native <details>: one open at a time via name="faq") -->
+    <div
+      class="faq-anim-item border-t border-bor-light lg:col-span-6 lg:col-start-7 dark:border-neutral-400"
+    >
+      {
+        faqs.map(({ question, answer, topic }, i) => (
+          <details
+            name="faq"
+            open={i === 0}
+            class="faq-item group border-b border-bor-light dark:border-neutral-400"
+          >
+            <summary class="grid cursor-pointer list-none grid-cols-[1fr_auto] items-center gap-x-6 rounded-sm py-6 text-neutral-500 transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-500 dark:text-white dark:group-open:text-primary-500 [&::-webkit-details-marker]:hidden">
+              {topic && (
+                <span class="col-start-1 mb-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-300 dark:text-neutral-100">
+                  {topic}
+                </span>
+              )}
+              <h3
+                class="col-start-1 font-heading text-lg font-medium sm:text-xl"
+                set:html={question}
+              />
+              <!-- ri-add-line fades out, ri-subtract-line fades in when open -->
+              <span
+                class="relative col-start-2 row-span-2 row-start-1 grid size-5 shrink-0 place-items-center text-lg"
+                aria-hidden="true"
+              >
+                <i class="ri-add-line absolute transition-opacity duration-200 group-open:opacity-0 motion-reduce:transition-none" />
+                <i class="ri-subtract-line absolute opacity-0 transition-opacity duration-200 group-open:opacity-100 motion-reduce:transition-none" />
+              </span>
+            </summary>
+
+            <div
+              class="rich-text pb-6 text-sm leading-relaxed text-pretty text-neutral-300 sm:text-base dark:text-neutral-50"
+              set:html={answer}
+            />
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Smooth open/close where supported; elsewhere it simply opens instantly */
+  .faq-item {
+    interpolate-size: allow-keywords; /* lets "auto" be animated */
+  }
+  .faq-item::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition:
+      block-size 0.35s ease,
+      content-visibility 0.35s allow-discrete;
+  }
+  .faq-item[open]::details-content {
+    block-size: auto;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .faq-item::details-content {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  let faqTween: gsap.core.Tween | null = null;
+
+  function initFaqReveal() {
+    const faq = document.querySelector<HTMLElement>("#faq");
+    if (!faq) return;
+    destroyFaqReveal();
+
+    // Accessibility: no animation if the user prefers reduced motion
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    // Label + heading + intro + accordion
+    faqTween = gsap.from(faq.querySelectorAll(".faq-anim-item"), {
+      y: 35,
+      autoAlpha: 0,
+      duration: 0.85,
+      ease: "power3.out",
+      stagger: 0.12,
+      scrollTrigger: { trigger: faq, start: "top 75%", once: true },
+    });
+  }
+
+  function destroyFaqReveal() {
+    faqTween?.scrollTrigger?.kill();
+    faqTween?.kill();
+    faqTween = null;
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initFaqReveal);
+  } else {
+    initFaqReveal();
+  }
+  document.addEventListener("astro:page-load", initFaqReveal);
+  document.addEventListener("astro:before-swap", destroyFaqReveal);
+</script>
