@@ -15,6 +15,7 @@
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.1",
     "gsap": "^3.15.0",
+    "marked": "^18.2.0",
     "remixicon": "^4.9.1",
     "swiper": "^14.4.0",
     "tailwindcss": "^4.3.3"
