@@ -1,3 +1,5 @@
+import { marked } from "marked";
+
 // Helpers (server-side)
 
 //* WordPress: GET /pages?slug  returns an array with one page
@@ -20,4 +22,57 @@ export async function getPostType(type: string, query = "") {
 export async function getOptions() {
     const res = await fetch(`${import.meta.env.API_CUSTOM_URL}/options`);
     return res.json(); // an object, not an array (no json[0])
+}
+
+//* Format an ISO date in English, e.g. "2025-03-15T10:00:00" → "Mar 15, 2025"
+export function formatDate(date: string) {
+    return new Intl.DateTimeFormat("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+    }).format(new Date(date));
+}
+
+//* Decode WordPress HTML entities: "&#8217;" → "’", "&lt;" → "<"
+const ENTITIES: Record<string, string> = {
+    "&amp;": "&",
+    "&hellip;": "…",
+    "&nbsp;": " ",
+    "&quot;": '"',
+    "&lt;": "<",
+    "&gt;": ">",
+};
+
+export function decodeEntities(text: string) {
+    return text
+        .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code))) // &#8217;
+        .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCharCode(parseInt(hex, 16))) // &#x27;
+        .replace(/&[a-z]+;/g, (entity) => ENTITIES[entity] ?? entity); // &amp;
+}
+
+//* Plain text from WordPress HTML: no tags, entities decoded, single spaces
+export function toPlainText(html: string) {
+    return decodeEntities(html.replace(/<[^>]*>/g, " ")) // tags → spaces
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+//* Post content (Markdown or HTML, both valid) → HTML
+export function contentToHtml(content: string) {
+    // <pre> written in HTML may contain blank lines, and Markdown would split it there → keep it aside
+    const blocks: string[] = [];
+    const safe = content.replace(/<pre[\s\S]*?<\/pre>/g, (pre) => {
+        blocks.push(pre);
+        return `<!--pre:${blocks.length - 1}-->`;
+    });
+
+    const html = marked.parse(safe, { async: false, breaks: true });
+
+    return html.replace(/<!--pre:(\d+)-->/g, (_, i) => blocks[Number(i)]);
+}
+
+//* Reading time in minutes (≈200 words per minute), at least 1
+export function getReadingTime(html: string) {
+    const words = toPlainText(html).split(" ").filter(Boolean).length;
+    return Math.max(1, Math.round(words / 200));
 }
