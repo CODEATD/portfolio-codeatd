@@ -216,7 +216,7 @@ export const FaqsSchema = z.array(FaqSchema);
 export type Faq = z.infer<typeof FaqSchema>;
 
 //* Blog post (WP posts + content_raw + featured_images + category_details)
-const PostSchema = BaseWPSchema.pick({
+export const PostSchema = BaseWPSchema.pick({
     id: true,
     slug: true,
     title: true,
