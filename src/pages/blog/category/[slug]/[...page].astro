@@ -5,6 +5,7 @@ import Breadcrumb from "@/components/ui/Breadcrumb.astro";
 import SectionHeading from "@/components/ui/SectionHeading.astro";
 import CategoryChips from "@/components/blog/CategoryChips.astro";
 import PostCard from "@/components/blog/PostCard.astro";
+import BlogGridReveal from "@/components/blog/BlogGridReveal.astro";
 import Pagination from "@/components/blog/Pagination.astro";
 import { getPostType, toPlainText, withPagePrefix } from "@/helpers";
 import { CategoriesSchema, PostsSchema, type Category, type Post } from "@/types";
@@ -47,7 +48,11 @@ const postsLabel = `${category.count} ${category.count === 1 ? "post" : "posts"}
   title={`${name} · Blog`}
   description={`${postsLabel} about ${name} on the CODE ATD blog.`}
 >
-  <section aria-labelledby="blog-title" class="pt-12 pb-20 sm:pt-16 sm:pb-28 lg:pb-30">
+  <section
+    aria-labelledby="blog-title"
+    class="pt-12 pb-20 sm:pt-16 sm:pb-28 lg:pb-30"
+    data-blog-reveal
+  >
     <Breadcrumb
       items={[
         { name: "Home", href: "/" },
@@ -58,14 +63,14 @@ const postsLabel = `${category.count} ${category.count === 1 ? "post" : "posts"}
 
     <SectionHeading
       as="h1"
-      class="mt-10"
+      class="blog-reveal-item mt-10"
       id="blog-title"
       label={`Category · ${postsLabel}`}
       heading={name}
       headingClass="sm:text-5xl lg:text-6xl"
     />
 
-    <CategoryChips class="mt-12" categories={categories} current={category.slug} />
+    <CategoryChips class="blog-reveal-item mt-12" categories={categories} current={category.slug} />
 
     <ul class="mt-12 grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
       {
@@ -79,4 +84,5 @@ const postsLabel = `${category.count} ${category.count === 1 ? "post" : "posts"}
 
     <Pagination page={page} />
   </section>
+  <BlogGridReveal />
 </Layout>

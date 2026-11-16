@@ -1,0 +1,60 @@
+<!-- Entrance animation for /blog and category pages (markup: data-blog-reveal, .blog-reveal-item, .post-card) -->
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  let revealTweens: gsap.core.Tween[] = [];
+
+  function initBlogReveal() {
+    const section = document.querySelector<HTMLElement>("[data-blog-reveal]");
+    if (!section) return; // other pages: this listener stays after visiting /blog
+    destroyBlogReveal();
+
+    // Accessibility: no animation if the user prefers reduced motion
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    // 1. Heading + intro + category chips
+    revealTweens.push(
+      gsap.from(section.querySelectorAll(".blog-reveal-item"), {
+        y: 35,
+        autoAlpha: 0,
+        duration: 0.85,
+        ease: "power3.out",
+        stagger: 0.1,
+      }),
+    );
+
+    // 2. Each card when it reaches the screen: its text in cascade.
+    //    Arriving with ClientRouter, <html> has data-astro-transition and the
+    //    View Transition already moves the images → only animate them on the first load
+    const isNavigating = document.documentElement.hasAttribute("data-astro-transition");
+    const parts = isNavigating ? ".post-card-text" : ".post-card-media, .post-card-text";
+
+    section.querySelectorAll<HTMLElement>(".post-card").forEach((card) => {
+      revealTweens.push(
+        gsap.from(card.querySelectorAll(parts), {
+          y: 24,
+          autoAlpha: 0,
+          duration: 0.7,
+          ease: "power3.out",
+          stagger: 0.08,
+          scrollTrigger: { trigger: card, start: "top 85%", once: true },
+        }),
+      );
+    });
+  }
+
+  function destroyBlogReveal() {
+    revealTweens.forEach((tween) => {
+      tween.scrollTrigger?.kill();
+      tween.kill();
+    });
+    revealTweens = [];
+  }
+
+  // ClientRouter: page-load also runs on the first load
+  document.addEventListener("astro:page-load", initBlogReveal);
+  document.addEventListener("astro:before-swap", destroyBlogReveal);
+</script>

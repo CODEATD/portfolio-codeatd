@@ -14,10 +14,10 @@ const { slug, title, date, excerpt, image, categories, readingTime } = post;
 const category = categories[0]; // card label: first category
 ---
 
-<article class:list={["group/post relative flex h-full flex-col", className]}>
+<article class:list={["post-card group/post relative flex h-full flex-col", className]}>
   <!-- Image + category (transition:name → it grows into the post's image, Fernando 3.12) -->
   <div
-    class="relative overflow-hidden rounded-3xl bg-neutral-50/40 dark:bg-black-400"
+    class="post-card-media relative overflow-hidden rounded-3xl bg-neutral-50/40 dark:bg-black-400"
     transition:name={`post-image-${slug}`}
   >
     {
@@ -44,10 +44,10 @@ const category = categories[0]; // card label: first category
     }
   </div>
 
-  <PostMeta class="mt-5" date={date} readingTime={readingTime} />
+  <PostMeta class="post-card-text mt-5" date={date} readingTime={readingTime} />
 
   <Heading
-    class="mt-3 font-heading text-2xl font-semibold uppercase leading-tight text-neutral-500 dark:text-white"
+    class="post-card-text mt-3 font-heading text-2xl font-semibold uppercase leading-tight text-neutral-500 dark:text-white"
   >
     <a
       href={`/blog/${slug}`}
@@ -57,12 +57,12 @@ const category = categories[0]; // card label: first category
     </a>
   </Heading>
 
-  <p class="mt-3 line-clamp-2 text-sm leading-relaxed text-neutral-300 dark:text-neutral-100">
+  <p class="post-card-text mt-3 line-clamp-2 text-sm leading-relaxed text-neutral-300 dark:text-neutral-100">
     {excerpt}
   </p>
 
   <span
-    class="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-medium text-neutral-500 dark:text-white"
+    class="post-card-text mt-auto inline-flex items-center gap-2 pt-5 text-sm font-medium text-neutral-500 dark:text-white"
     aria-hidden="true"
   >
     Read post
