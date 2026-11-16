@@ -2,6 +2,9 @@
 import SectionHeading from "@/components/ui/SectionHeading.astro";
 import PostCard from "@/components/blog/PostCard.astro";
 import type { Post } from "@/types";
+// Swiper styles in the frontmatter (not in <script>): they go in every page's <head>,
+// so ClientRouter keeps them when you navigate away and back
+import "swiper/css";
 
 interface Props {
   index?: string;
@@ -79,7 +82,6 @@ const {
 <script>
   import Swiper from "swiper";
   import { Pagination, A11y } from "swiper/modules";
-  import "swiper/css";
   import { gsap } from "gsap";
   import { ScrollTrigger } from "gsap/ScrollTrigger";
 
