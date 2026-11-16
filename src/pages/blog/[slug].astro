@@ -5,6 +5,7 @@ import Breadcrumb from "@/components/ui/Breadcrumb.astro";
 import PostMeta from "@/components/blog/PostMeta.astro";
 import CodeCopy from "@/components/blog/CodeCopy.astro";
 import ShareLinks from "@/components/blog/ShareLinks.astro";
+import PostReveal from "@/components/blog/PostReveal.astro";
 import { siteConfig } from "@/config/site-config";
 import { getPostType, toPlainText } from "@/helpers";
 import { highlightCode } from "@/helpers/code";
@@ -31,7 +32,7 @@ const url = `${siteConfig.url}/blog/${slug}`;
 ---
 
 <Layout title={plainTitle} description={excerpt} image={image?.large.url}>
-  <article class="mx-auto max-w-3xl pt-12 pb-20 sm:pt-16 sm:pb-28 lg:pb-30">
+  <article class="mx-auto max-w-3xl pt-12 pb-20 sm:pt-16 sm:pb-28 lg:pb-30" data-post-reveal>
     <Breadcrumb
       items={[{ name: "Home", href: "/" }, { name: "Blog", href: "/blog" }, { name: title }]}
     />
@@ -40,7 +41,7 @@ const url = `${siteConfig.url}/blog/${slug}`;
     <header class="mt-10">
       {
         categories.length > 0 && (
-          <ul class="flex flex-wrap gap-2">
+          <ul class="post-anim-item flex flex-wrap gap-2">
             {categories.map(({ name, slug: categorySlug }) => (
               <li>
                 <a
@@ -55,10 +56,10 @@ const url = `${siteConfig.url}/blog/${slug}`;
         )
       }
       <h1
-        class="mt-6 font-heading text-4xl font-semibold uppercase leading-tight tracking-tight text-balance text-neutral-500 sm:text-5xl dark:text-white"
+        class="post-title mt-6 font-heading text-4xl font-semibold uppercase leading-tight tracking-tight text-balance text-neutral-500 sm:text-5xl dark:text-white"
         set:html={title}
       />
-      <PostMeta class="mt-6 text-sm" date={date} readingTime={readingTime} />
+      <PostMeta class="post-anim-item mt-6 text-sm" date={date} readingTime={readingTime} />
     </header>
 
     {
@@ -80,10 +81,11 @@ const url = `${siteConfig.url}/blog/${slug}`;
 
     <!-- WordPress content -->
     <div
-      class="rich-text mt-12 text-base leading-relaxed text-pretty text-neutral-400 sm:text-lg dark:text-neutral-50"
+      class="post-anim-item rich-text mt-12 text-base leading-relaxed text-pretty text-neutral-400 sm:text-lg dark:text-neutral-50"
       set:html={html}
     />
     <CodeCopy />
+    <PostReveal />
 
     <!-- Share + back -->
     <footer class="mt-16 border-t border-bor-light pt-10 dark:border-neutral-400">
