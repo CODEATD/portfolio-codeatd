@@ -205,12 +205,7 @@ const {
     heroTimeline = null;
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initHeroTimeline);
-  } else {
-    initHeroTimeline();
-  }
-
+  // ClientRouter: page-load also runs on the first load
   document.addEventListener("astro:page-load", initHeroTimeline);
   document.addEventListener("astro:before-swap", destroyHeroTimeline);
 </script>

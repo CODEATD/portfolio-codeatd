@@ -143,11 +143,7 @@ const {
     showreelTween = null;
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initShowreel);
-  } else {
-    initShowreel();
-  }
+  // ClientRouter: page-load also runs on the first load
   document.addEventListener("astro:page-load", initShowreel);
   document.addEventListener("astro:before-swap", destroyShowreel);
 </script>

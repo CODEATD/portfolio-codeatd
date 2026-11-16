@@ -18,10 +18,6 @@
     });
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initCodeCopy);
-  } else {
-    initCodeCopy();
-  }
+  // ClientRouter: page-load also runs on the first load
   document.addEventListener("astro:page-load", initCodeCopy);
 </script>

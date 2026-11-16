@@ -141,11 +141,7 @@ const {
     blogTween = null;
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initBlog);
-  } else {
-    initBlog();
-  }
+  // ClientRouter: page-load also runs on the first load
   document.addEventListener("astro:page-load", initBlog);
   document.addEventListener("astro:before-swap", destroyBlog);
 </script>

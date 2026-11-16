@@ -114,11 +114,7 @@ const chipStyles = {
     stackTimeline = null;
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initStackReveal);
-  } else {
-    initStackReveal();
-  }
+  // ClientRouter: page-load also runs on the first load
   document.addEventListener("astro:page-load", initStackReveal);
   document.addEventListener("astro:before-swap", destroyStackReveal);
 </script>

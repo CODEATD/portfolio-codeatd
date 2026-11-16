@@ -154,11 +154,7 @@ const items = Array.from({ length: repeat }, () => testimonials).flat();
     testimonialsTween = null;
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initTestimonials);
-  } else {
-    initTestimonials();
-  }
+  // ClientRouter: page-load also runs on the first load
   document.addEventListener("astro:page-load", initTestimonials);
   document.addEventListener("astro:before-swap", destroyTestimonials);
 </script>

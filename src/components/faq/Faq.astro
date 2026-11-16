@@ -144,11 +144,7 @@ const {
     faqTween = null;
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initFaqReveal);
-  } else {
-    initFaqReveal();
-  }
+  // ClientRouter: page-load also runs on the first load
   document.addEventListener("astro:page-load", initFaqReveal);
   document.addEventListener("astro:before-swap", destroyFaqReveal);
 </script>

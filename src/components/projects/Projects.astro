@@ -113,11 +113,7 @@ const {
     projectsTweens = [];
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initProjectsReveal);
-  } else {
-    initProjectsReveal();
-  }
+  // ClientRouter: page-load also runs on the first load
   document.addEventListener("astro:page-load", initProjectsReveal);
   document.addEventListener("astro:before-swap", destroyProjectsReveal);
 </script>

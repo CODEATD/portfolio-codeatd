@@ -125,11 +125,7 @@ const {
     aboutTimeline = null;
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initAboutReveal);
-  } else {
-    initAboutReveal();
-  }
+  // ClientRouter: page-load also runs on the first load
   document.addEventListener("astro:page-load", initAboutReveal);
   document.addEventListener("astro:before-swap", destroyAboutReveal);
 </script>
