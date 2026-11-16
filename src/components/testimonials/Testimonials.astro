@@ -1,6 +1,9 @@
 ---
 import { Picture } from "astro:assets";
 import type { Testimonial } from "@/types";
+// Swiper styles in the frontmatter (not in <script>): they go in every page's <head>,
+// so ClientRouter keeps them when you navigate away and back
+import "swiper/css";
 
 interface Props {
   index?: string;
@@ -88,7 +91,6 @@ const items = Array.from({ length: repeat }, () => testimonials).flat();
 <script>
   import Swiper from "swiper";
   import { Autoplay, FreeMode, Keyboard, A11y } from "swiper/modules";
-  import "swiper/css";
   import { gsap } from "gsap";
   import { ScrollTrigger } from "gsap/ScrollTrigger";
 
