@@ -1,0 +1,51 @@
+<!-- Entrance animation for the post: title word by word (Midu · GSAP 4.3, "Web Linear") + the rest -->
+<script>
+  import { gsap } from "gsap";
+  import { SplitText } from "gsap/SplitText";
+
+  gsap.registerPlugin(SplitText);
+
+  let postTimeline: gsap.core.Timeline | null = null;
+  let titleSplit: SplitText | null = null;
+
+  function initPostReveal() {
+    const post = document.querySelector<HTMLElement>("[data-post-reveal]");
+    const title = post?.querySelector<HTMLElement>(".post-title");
+    if (!post || !title) return; // other pages: this listener stays after visiting a post
+    destroyPostReveal();
+
+    // Accessibility: no animation if the user prefers reduced motion
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    // One <span> per word (<div> isn't valid inside <h1>). SplitText adds aria-label with the full title
+    titleSplit = new SplitText(title, { type: "words", tag: "span" });
+
+    postTimeline = gsap
+      .timeline({ defaults: { ease: "power3.out" } })
+      // 1. Title: blurred and 10px lower → sharp, word by word (Midu's values)
+      .from(titleSplit.words, {
+        y: 10,
+        autoAlpha: 0,
+        filter: "blur(10px)",
+        duration: 1,
+        stagger: 0.1,
+      })
+      // 2. Categories, meta and content: fade up while the title finishes
+      .from(
+        post.querySelectorAll(".post-anim-item"),
+        { y: 20, autoAlpha: 0, duration: 0.8, stagger: 0.12 },
+        0.3,
+      );
+  }
+
+  function destroyPostReveal() {
+    postTimeline?.kill();
+    postTimeline = null;
+    titleSplit?.revert(); // back to the original <h1> text
+    titleSplit = null;
+  }
+
+  // ClientRouter: page-load also runs on the first load
+  document.addEventListener("astro:page-load", initPostReveal);
+  document.addEventListener("astro:before-swap", destroyPostReveal);
+</script>
