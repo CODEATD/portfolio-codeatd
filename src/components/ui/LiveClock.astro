@@ -42,6 +42,8 @@ const { location, class: className = "" } = Astro.props;
 <script>
   import { siteConfig } from "@/config/site-config";
 
+  let clockId: number | undefined;
+
   function initClock(): void {
     const clockDisplays = document.querySelectorAll<HTMLElement>(
       ".live-clock-display, #live-clock-display",
@@ -64,10 +66,16 @@ const { location, class: className = "" } = Astro.props;
     };
 
     update();
-    setInterval(update, 1000);
+    window.clearInterval(clockId); // never two clocks at once
+    clockId = window.setInterval(update, 1000);
   }
 
-  // Initialization and support for View Transitions
-  initClock();
+  function destroyClock(): void {
+    window.clearInterval(clockId);
+    clockId = undefined;
+  }
+
+  // View Transitions: page-load also runs on the first load
   document.addEventListener("astro:page-load", initClock);
+  document.addEventListener("astro:before-swap", destroyClock);
 </script>
