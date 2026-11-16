@@ -1,0 +1,27 @@
+<!-- Thin bar at the top while ClientRouter loads the next page (it shows no browser spinner) -->
+<div
+  id="nav-progress"
+  class="pointer-events-none fixed inset-x-0 top-0 z-100 h-0.5 origin-left scale-x-0 bg-primary-500 opacity-0 transition-transform duration-[8s] ease-[cubic-bezier(0.1,0.6,0.2,1)] data-loading:scale-x-90 data-loading:opacity-100"
+  aria-hidden="true"
+>
+</div>
+
+<script>
+  let showTimer: number | undefined;
+
+  // Navigation starts: show the bar only if it takes more than 150 ms (no flash on fast pages)
+  function startProgress() {
+    window.clearTimeout(showTimer);
+    showTimer = window.setTimeout(() => {
+      document.getElementById("nav-progress")?.setAttribute("data-loading", "");
+    }, 150);
+  }
+
+  // New page in place: its bar starts hidden again, so only the timer is left to cancel
+  function stopProgress() {
+    window.clearTimeout(showTimer);
+  }
+
+  document.addEventListener("astro:before-preparation", startProgress);
+  document.addEventListener("astro:after-swap", stopProgress);
+</script>

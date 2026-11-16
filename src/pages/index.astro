@@ -33,29 +33,56 @@ import {
 } from "@/types";
 import bg from "@/assets/backgrounds/bg-pattern-dark.avif";
 
-const options = OptionsSchema.parse(await getOptions());
-const about = AboutPageSchema.parse(await getPageBySlug("about"));
-const stack = StackPageSchema.parse(await getPageBySlug("stack"));
-const experiencePage = SectionPageSchema.parse(
-  await getPageBySlug("experience"),
-);
-const experiences = ExperiencesSchema.parse(await getPostType("experience"));
-const projectsPage = SectionPageSchema.parse(await getPageBySlug("projects"));
-const projects = ProjectsSchema.parse(await getPostType("project"));
+// All WordPress requests at once (one after another they took ~2.8 s per visit in dev)
+const [
+  optionsJson,
+  aboutJson,
+  stackJson,
+  experiencePageJson,
+  experiencesJson,
+  projectsPageJson,
+  projectsJson,
+  showreelJson,
+  testimonialsPageJson,
+  testimonialsJson,
+  faqPageJson,
+  faqsJson,
+  blogPageJson,
+  postsJson,
+] = await Promise.all([
+  getOptions(),
+  getPageBySlug("about"),
+  getPageBySlug("stack"),
+  getPageBySlug("experience"),
+  getPostType("experience"),
+  getPageBySlug("projects"),
+  getPostType("project"),
+  getPageBySlug("showreel"),
+  getPageBySlug("testimonials"),
+  getPostType("testimonial"),
+  getPageBySlug("faq"),
+  getPostType("faq", "&orderby=menu_order&order=asc"),
+  getPageBySlug("blog"),
+  getPostType("posts"),
+]);
+
+const options = OptionsSchema.parse(optionsJson);
+const about = AboutPageSchema.parse(aboutJson);
+const stack = StackPageSchema.parse(stackJson);
+const experiencePage = SectionPageSchema.parse(experiencePageJson);
+const experiences = ExperiencesSchema.parse(experiencesJson);
+const projectsPage = SectionPageSchema.parse(projectsPageJson);
+const projects = ProjectsSchema.parse(projectsJson);
 const homeProjects = projects.slice(0, 4); // home: the 4 most recent
-const showreel = ShowreelPageSchema.parse(await getPageBySlug("showreel"));
-const testimonialsPage = BaseWPSchema.parse(
-  await getPageBySlug("testimonials"),
-);
-const testimonials = TestimonialsSchema.parse(await getPostType("testimonial"));
-const faqPage = SectionPageSchema.parse(await getPageBySlug("faq"));
-const faqs = FaqsSchema.parse(
-  await getPostType("faq", "&orderby=menu_order&order=asc"),
-);
+const showreel = ShowreelPageSchema.parse(showreelJson);
+const testimonialsPage = BaseWPSchema.parse(testimonialsPageJson);
+const testimonials = TestimonialsSchema.parse(testimonialsJson);
+const faqPage = SectionPageSchema.parse(faqPageJson);
+const faqs = FaqsSchema.parse(faqsJson);
 const homeFaqs = faqs.slice(0, 5); // home: the first 5 by "Order"
 
-const blogPage = SectionPageSchema.parse(await getPageBySlug("blog"));
-const posts = PostsSchema.parse(await getPostType("posts"));
+const blogPage = SectionPageSchema.parse(blogPageJson);
+const posts = PostsSchema.parse(postsJson);
 const homePosts = posts.slice(0, 3); // home: the 3 most recent
 
 ---

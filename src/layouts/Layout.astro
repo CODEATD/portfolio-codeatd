@@ -3,6 +3,7 @@ import { ClientRouter } from "astro:transitions";
 import { siteConfig } from "@/config/site-config.ts";
 import Header from "@/components/header/Header.astro";
 import Footer from "@/components/footer/Footer.astro";
+import NavigationProgress from "@/components/ui/NavigationProgress.astro";
 import "@/styles/global.css";
 import bg from "@/assets/backgrounds/bg-pattern-dark.png";
 
@@ -80,6 +81,7 @@ const pageTitle = title ? `${title} | ${siteConfig.name}` : siteConfig.title;
   <body
     class="bg-surface-light text-neutral-500 dark:bg-surface-dark dark:text-white min-h-screen flex flex-col overflow-x-clip"
   >
+    <NavigationProgress />
     <Header />
     <slot name="before-main-content" />
     <main class="flex-grow container">
