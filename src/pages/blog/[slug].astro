@@ -74,16 +74,18 @@ const share = [
 
     {
       image && (
-        <Picture
-          src={image.full.url}
-          alt=""
-          width={image.full.width}
-          height={image.full.height}
-          formats={["avif", "webp"]}
-          fallbackFormat="jpg"
-          loading="eager"
-          class="mt-10 aspect-video w-full rounded-3xl object-cover"
-        />
+        <div class="mt-10 overflow-hidden rounded-3xl" transition:name={`post-image-${slug}`}>
+          <Picture
+            src={image.full.url}
+            alt=""
+            width={image.full.width}
+            height={image.full.height}
+            formats={["avif", "webp"]}
+            fallbackFormat="jpg"
+            loading="eager"
+            class="aspect-video w-full object-cover"
+          />
+        </div>
       )
     }
 
