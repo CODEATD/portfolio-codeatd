@@ -12,10 +12,14 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/netlify": "^8.2.14",
+    "@netlify/blobs": "^11.1.9",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.1",
     "gsap": "^3.15.0",
+    "marked": "^18.2.0",
     "remixicon": "^4.9.1",
+    "shiki": "^4.6.0",
     "swiper": "^14.4.0",
     "tailwindcss": "^4.3.3"
   },

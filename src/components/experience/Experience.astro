@@ -139,11 +139,7 @@ const sorted = experiences.toSorted(
     experienceTimeline = null;
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initExperienceReveal);
-  } else {
-    initExperienceReveal();
-  }
+  // ClientRouter: page-load also runs on the first load
   document.addEventListener("astro:page-load", initExperienceReveal);
   document.addEventListener("astro:before-swap", destroyExperienceReveal);
 </script>

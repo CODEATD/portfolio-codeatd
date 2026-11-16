@@ -1,0 +1,98 @@
+---
+import { Picture } from "astro:assets";
+import Layout from "@/layouts/Layout.astro";
+import Breadcrumb from "@/components/ui/Breadcrumb.astro";
+import PostMeta from "@/components/blog/PostMeta.astro";
+import CodeCopy from "@/components/blog/CodeCopy.astro";
+import ShareLinks from "@/components/blog/ShareLinks.astro";
+import { siteConfig } from "@/config/site-config";
+import { getPostType, toPlainText } from "@/helpers";
+import { highlightCode } from "@/helpers/code";
+import { PostSchema } from "@/types";
+
+//* SSR: rendered on each visit, not in the build (Juan 15.3)
+export const prerender = false;
+
+// Slug from the URL: /blog/[slug] → { slug } (Juan 15.4)
+const { slug } = Astro.params;
+
+// WordPress returns an array, even for one post: /posts?slug=… (Juan 15.5)
+const json = await getPostType("posts", `&slug=${slug}`);
+
+// No post with that slug → [] → json[0] is undefined → 404 (Juan 15.7)
+const post = PostSchema.safeParse(json[0]);
+if (!post.success) return Astro.redirect("/404");
+
+const { title, date, excerpt, content, image, categories, readingTime } = post.data;
+
+const html = await highlightCode(content); // code blocks → colors + header + copy (B11)
+const plainTitle = toPlainText(title);
+const url = `${siteConfig.url}/blog/${slug}`;
+---
+
+<Layout title={plainTitle} description={excerpt} image={image?.large.url}>
+  <article class="mx-auto max-w-3xl pt-12 pb-20 sm:pt-16 sm:pb-28 lg:pb-30">
+    <Breadcrumb
+      items={[{ name: "Home", href: "/" }, { name: "Blog", href: "/blog" }, { name: title }]}
+    />
+
+    <!-- Header -->
+    <header class="mt-10">
+      {
+        categories.length > 0 && (
+          <ul class="flex flex-wrap gap-2">
+            {categories.map(({ name, slug: categorySlug }) => (
+              <li>
+                <a
+                  href={`/blog/category/${categorySlug}`}
+                  class="inline-flex rounded-full bg-primary-500 px-3 py-1 text-xs font-semibold text-neutral-500 transition-colors hover:bg-primary-400"
+                >
+                  <Fragment set:html={name} />
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+      <h1
+        class="mt-6 font-heading text-4xl font-semibold uppercase leading-tight tracking-tight text-balance text-neutral-500 sm:text-5xl dark:text-white"
+        set:html={title}
+      />
+      <PostMeta class="mt-6 text-sm" date={date} readingTime={readingTime} />
+    </header>
+
+    {
+      image && (
+        <div class="mt-10 overflow-hidden rounded-3xl" transition:name={`post-image-${slug}`}>
+          <Picture
+            src={image.full.url}
+            alt=""
+            width={image.full.width}
+            height={image.full.height}
+            formats={["avif", "webp"]}
+            fallbackFormat="jpg"
+            loading="eager"
+            class="aspect-video w-full object-cover"
+          />
+        </div>
+      )
+    }
+
+    <!-- WordPress content -->
+    <div
+      class="rich-text mt-12 text-base leading-relaxed text-pretty text-neutral-400 sm:text-lg dark:text-neutral-50"
+      set:html={html}
+    />
+    <CodeCopy />
+
+    <!-- Share + back -->
+    <footer class="mt-16 border-t border-bor-light pt-10 dark:border-neutral-400">
+      <ShareLinks url={url} title={plainTitle} />
+
+      <a href="/blog" class="btn-link mt-10">
+        <i class="ri-arrow-left-line mr-2" aria-hidden="true" />
+        Back to blog
+      </a>
+    </footer>
+  </article>
+</Layout>

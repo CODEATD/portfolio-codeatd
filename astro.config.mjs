@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
+import netlify from "@astrojs/netlify";
 
 // https://astro.build/config
 export default defineConfig({
@@ -11,4 +12,6 @@ export default defineConfig({
   image: {
     domains: ["codeatd.local", "cms.codeatd.dev"],
   },
+  // Netlify: the site stays static; only pages with prerender = false (/blog/[slug]) run on the server
+  adapter: netlify(),
 });

@@ -1,0 +1,82 @@
+---
+import type { GetStaticPaths, Page } from "astro";
+import Layout from "@/layouts/Layout.astro";
+import Breadcrumb from "@/components/ui/Breadcrumb.astro";
+import SectionHeading from "@/components/ui/SectionHeading.astro";
+import CategoryChips from "@/components/blog/CategoryChips.astro";
+import PostCard from "@/components/blog/PostCard.astro";
+import Pagination from "@/components/blog/Pagination.astro";
+import { getPostType, toPlainText, withPagePrefix } from "@/helpers";
+import { CategoriesSchema, PostsSchema, type Category, type Post } from "@/types";
+
+//* SSG: /blog/category/astro, /blog/category/astro/page/2… — Juan 16 + Fernando 3.13
+export const getStaticPaths = (async ({ paginate }) => {
+  const posts = PostsSchema.parse(await getPostType("posts"));
+  const categories = CategoriesSchema.parse(
+    await getPostType("categories", "&hide_empty=true"),
+  );
+
+  // One paginated group per category (filtered here: no extra fetch per category)
+  return categories.flatMap((category) => {
+    const categoryPosts = posts.filter((post) =>
+      post.categories.some(({ slug }) => slug === category.slug),
+    );
+
+    return withPagePrefix(
+      paginate(categoryPosts, {
+        pageSize: 6,
+        params: { slug: category.slug },
+        props: { category, categories },
+      }),
+    );
+  });
+}) satisfies GetStaticPaths;
+
+interface Props {
+  page: Page<Post>;
+  category: Category;
+  categories: Category[];
+}
+
+const { page, category, categories } = Astro.props;
+const name = toPlainText(category.name); // "CSS &amp; Design" → "CSS & Design"
+const postsLabel = `${category.count} ${category.count === 1 ? "post" : "posts"}`;
+---
+
+<Layout
+  title={`${name} · Blog`}
+  description={`${postsLabel} about ${name} on the CODE ATD blog.`}
+>
+  <section aria-labelledby="blog-title" class="pt-12 pb-20 sm:pt-16 sm:pb-28 lg:pb-30">
+    <Breadcrumb
+      items={[
+        { name: "Home", href: "/" },
+        { name: "Blog", href: "/blog" },
+        { name: category.name },
+      ]}
+    />
+
+    <SectionHeading
+      as="h1"
+      class="mt-10"
+      id="blog-title"
+      label={`Category · ${postsLabel}`}
+      heading={name}
+      headingClass="sm:text-5xl lg:text-6xl"
+    />
+
+    <CategoryChips class="mt-12" categories={categories} current={category.slug} />
+
+    <ul class="mt-12 grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        page.data.map((post) => (
+          <li>
+            <PostCard post={post} headingLevel="h2" />
+          </li>
+        ))
+      }
+    </ul>
+
+    <Pagination page={page} />
+  </section>
+</Layout>

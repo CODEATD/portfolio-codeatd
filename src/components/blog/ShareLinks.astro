@@ -1,0 +1,61 @@
+---
+interface Props {
+  url: string; // full post URL
+  title: string; // plain text (no HTML entities)
+  class?: string;
+}
+
+const { url, title, class: className = "" } = Astro.props;
+
+const u = encodeURIComponent(url);
+const t = encodeURIComponent(title);
+const tu = encodeURIComponent(`${title} ${url}`); // apps that only take one text field
+
+// Plain share links: no third-party scripts
+const links = [
+  { name: "X", icon: "ri-twitter-x-line", href: `https://x.com/intent/post?url=${u}&text=${t}` },
+  { name: "LinkedIn", icon: "ri-linkedin-line", href: `https://www.linkedin.com/sharing/share-offsite/?url=${u}` },
+  { name: "Bluesky", icon: "ri-bluesky-line", href: `https://bsky.app/intent/compose?text=${tu}` },
+  { name: "WhatsApp", icon: "ri-whatsapp-line", href: `https://wa.me/?text=${tu}` },
+  { name: "Telegram", icon: "ri-telegram-line", href: `https://t.me/share/url?url=${u}&text=${t}` },
+];
+
+const button =
+  "grid size-10 place-items-center rounded-full border border-bor-light text-lg transition-colors hover:border-neutral-500 dark:border-neutral-400 dark:hover:border-primary-500 dark:hover:text-primary-500";
+---
+
+<div class:list={["flex flex-wrap items-center gap-3", className]}>
+  <span class="text-sm font-medium text-neutral-500 dark:text-white">Share:</span>
+  {
+    links.map(({ name, icon, href }) => (
+      <a href={href} target="_blank" rel="noopener noreferrer" class={button}>
+        <i class={icon} aria-hidden="true" />
+        <span class="sr-only">Share on {name} (opens in a new tab)</span>
+      </a>
+    ))
+  }
+  <button type="button" class={button} data-copy-link={url} aria-label="Copy link">
+    <i class="ri-links-line" aria-hidden="true" />
+  </button>
+</div>
+
+<script>
+  function initCopyLink() {
+    document.querySelectorAll<HTMLButtonElement>("[data-copy-link]").forEach((button) => {
+      button.onclick = async () => {
+        await navigator.clipboard.writeText(button.dataset.copyLink ?? location.href);
+
+        // Feedback: check icon for 2 s
+        const icon = button.querySelector("i");
+        icon?.classList.replace("ri-links-line", "ri-check-line");
+        button.setAttribute("aria-label", "Link copied");
+        setTimeout(() => {
+          icon?.classList.replace("ri-check-line", "ri-links-line");
+          button.setAttribute("aria-label", "Copy link");
+        }, 2000);
+      };
+    });
+  }
+
+  document.addEventListener("astro:page-load", initCopyLink);
+</script>

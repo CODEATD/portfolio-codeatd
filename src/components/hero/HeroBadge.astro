@@ -181,9 +181,7 @@ const {
     activeBadge = null;
   }
 
-  document.addEventListener("DOMContentLoaded", initBadgeAnimation, {
-    once: true,
-  });
+  // ClientRouter: page-load also runs on the first load
   document.addEventListener("astro:page-load", initBadgeAnimation);
   document.addEventListener("astro:before-swap", destroyBadgeAnimation);
 </script>

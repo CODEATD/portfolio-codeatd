@@ -66,15 +66,14 @@ import LogoWhite from "@/assets/logos/logo_text_white.svg";
 </div>
 
 <script>
-  const mobileDrawer = document.querySelector(
-    "#mobile-drawer",
-  ) as HTMLElement | null;
-  const openBtn = document.querySelector("#mobile-menu-btn");
-  const closeBtn = document.querySelector("#close-menu-btn");
-  const navLinks = document.querySelectorAll(".mobile-nav-link");
+  // The drawer is a new element after each navigation → look it up every time
+  function getDrawer() {
+    return document.querySelector<HTMLElement>("#mobile-drawer");
+  }
 
   // Open and close menu functions
   function openMenu() {
+    const mobileDrawer = getDrawer();
     if (!mobileDrawer) return;
     mobileDrawer.style.transform = "";
     mobileDrawer.style.transition = "";
@@ -92,6 +91,7 @@ import LogoWhite from "@/assets/logos/logo_text_white.svg";
   }
 
   function closeMenu() {
+    const mobileDrawer = getDrawer();
     if (!mobileDrawer) return;
     mobileDrawer.style.transform = "";
     mobileDrawer.classList.add(
@@ -107,63 +107,73 @@ import LogoWhite from "@/assets/logos/logo_text_white.svg";
     document.body.style.overflow = "";
   }
 
-  openBtn?.addEventListener("click", openMenu);
-  closeBtn?.addEventListener("click", closeMenu);
-  navLinks.forEach((link) => link.addEventListener("click", closeMenu));
+  function initMobileMenu() {
+    const mobileDrawer = getDrawer();
+    if (!mobileDrawer || mobileDrawer.dataset.ready) return;
+    mobileDrawer.dataset.ready = "true";
 
-  // Close menu on Escape key press
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && mobileDrawer?.classList.contains("opacity-100")) {
-      closeMenu();
-    }
-  });
+    document.querySelector("#mobile-menu-btn")?.addEventListener("click", openMenu);
+    document.querySelector("#close-menu-btn")?.addEventListener("click", closeMenu);
+    document
+      .querySelectorAll(".mobile-nav-link")
+      .forEach((link) => link.addEventListener("click", closeMenu));
 
-  // Swipe Down to Dismiss
-  let startY = 0;
-  let currentY = 0;
-  let isDragging = false;
+    // Swipe Down to Dismiss
+    let startY = 0;
+    let currentY = 0;
+    let isDragging = false;
 
-  mobileDrawer?.addEventListener(
-    "touchstart",
-    (e) => {
-      if (mobileDrawer.scrollTop === 0) {
-        startY = e.touches[0].clientY;
-        isDragging = true;
-        mobileDrawer.style.transition = "none";
-      }
-    },
-    { passive: true },
-  );
+    mobileDrawer.addEventListener(
+      "touchstart",
+      (e) => {
+        if (mobileDrawer.scrollTop === 0) {
+          startY = e.touches[0].clientY;
+          isDragging = true;
+          mobileDrawer.style.transition = "none";
+        }
+      },
+      { passive: true },
+    );
 
-  mobileDrawer?.addEventListener(
-    "touchmove",
-    (e) => {
-      if (!isDragging || !mobileDrawer) return;
-      currentY = e.touches[0].clientY;
+    mobileDrawer.addEventListener(
+      "touchmove",
+      (e) => {
+        if (!isDragging) return;
+        currentY = e.touches[0].clientY;
+        const deltaY = currentY - startY;
+
+        // Arrastre hacia abajo
+        if (deltaY > 0) {
+          mobileDrawer.style.transform = `translateY(${deltaY}px)`;
+        }
+      },
+      { passive: true },
+    );
+
+    mobileDrawer.addEventListener("touchend", () => {
+      if (!isDragging) return;
+      isDragging = false;
       const deltaY = currentY - startY;
 
-      // Arrastre hacia abajo
-      if (deltaY > 0) {
-        mobileDrawer.style.transform = `translateY(${deltaY}px)`;
+      mobileDrawer.style.transition =
+        "transform 0.3s ease-out, opacity 0.3s ease-out";
+
+      if (deltaY > 120) {
+        closeMenu();
+      } else {
+        mobileDrawer.style.transform = "translateY(0)";
       }
-    },
-    { passive: true },
-  );
+      startY = 0;
+      currentY = 0;
+    });
+  }
 
-  mobileDrawer?.addEventListener("touchend", () => {
-    if (!isDragging || !mobileDrawer) return;
-    isDragging = false;
-    const deltaY = currentY - startY;
-
-    mobileDrawer.style.transition =
-      "transform 0.3s ease-out, opacity 0.3s ease-out";
-
-    if (deltaY > 120) {
+  // Close menu on Escape key press (document survives navigation → registered once)
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && getDrawer()?.classList.contains("opacity-100")) {
       closeMenu();
-    } else {
-      mobileDrawer.style.transform = "translateY(0)";
     }
-    startY = 0;
-    currentY = 0;
   });
+
+  document.addEventListener("astro:page-load", initMobileMenu);
 </script>

@@ -84,6 +84,51 @@
   & .wp-caption {
     max-width: 100%;
   }
+
+  & h2 {
+    @apply mt-12 font-heading text-2xl font-semibold text-neutral-500 sm:text-3xl dark:text-white;
+  }
+  & h3 {
+    @apply mt-8 font-heading text-xl font-semibold text-neutral-500 dark:text-white;
+  }
+  & blockquote {
+    @apply border-l-2 border-primary-500 pl-5 italic text-neutral-500 dark:text-white;
+  }
+  & :not(pre) > code {
+    @apply rounded-md border border-bor-light bg-neutral-50/40 px-1.5 py-0.5 font-mono text-[0.85em] font-medium text-neutral-500 dark:border-neutral-400 dark:bg-black-400 dark:text-primary-500;
+  }
+  & pre {
+    @apply overflow-x-auto rounded-2xl bg-neutral-500 p-5 text-sm leading-relaxed text-neutral-50;
+  }
+  & hr {
+    @apply my-12 border-bor-light dark:border-neutral-400;
+  }
+
+  /* Code blocks (highlightCode): dark in both themes, like midu.dev */
+  & .code-block {
+    @apply overflow-hidden rounded-2xl bg-neutral-500 text-sm ring-1 ring-white/10;
+  }
+  & .code-block__header {
+    @apply flex items-center gap-3 border-b border-white/10 px-4 py-3 font-sans text-sm font-medium text-white;
+  }
+  & .code-block__badge {
+    @apply grid h-6 min-w-6 place-items-center rounded-md bg-primary-500 px-1 font-mono text-[0.65rem] font-bold text-neutral-500;
+  }
+  & .code-block__copy {
+    @apply ml-auto grid size-8 place-items-center rounded-lg border border-white/10 text-neutral-100 transition-colors hover:border-white/30 hover:text-white;
+  }
+  & .code-block pre {
+    @apply m-0 overflow-x-auto rounded-none p-5 leading-relaxed;
+    background-color: transparent !important; /* Shiki sets an inline background */
+  }
+  & .code-block code {
+    counter-reset: line;
+  }
+  & .code-block .line::before {
+    counter-increment: line;
+    content: counter(line);
+    @apply mr-5 inline-block w-4 text-right text-neutral-300 select-none;
+  }
 }
 
 /* ===== BASE ===== */

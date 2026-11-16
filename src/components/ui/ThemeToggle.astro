@@ -168,10 +168,6 @@
     btn.addEventListener("click", () => toggleTheme(btn));
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initThemeToggle);
-  } else {
-    initThemeToggle();
-  }
+  // ClientRouter: page-load also runs on the first load
   document.addEventListener("astro:page-load", initThemeToggle);
 </script>

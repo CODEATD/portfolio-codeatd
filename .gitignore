@@ -1,6 +1,9 @@
 # build output
 dist/
 
+# netlify adapter (generated on build)
+.netlify/
+
 # generated types
 .astro/
 
