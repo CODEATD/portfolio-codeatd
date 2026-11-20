@@ -1,0 +1,27 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+// Coming soon: the full gallery (filters + pagination, like the blog) replaces this page later
+const t = useTranslations(getLangFromUrl(Astro.url));
+---
+
+<Layout title={t("projectsPage.title")} description={t("projectsPage.text")}>
+  <section class="grid min-h-[60vh] place-items-center py-20 text-center">
+    <div>
+      <p class="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500 dark:text-primary-500">
+        {t("projectsPage.label")}
+      </p>
+      <h1 class="mt-5 font-heading text-4xl font-medium tracking-tight text-balance text-neutral-500 sm:text-6xl dark:text-white">
+        {t("projectsPage.heading")}
+      </h1>
+      <p class="mx-auto mt-5 max-w-xl text-neutral-300 dark:text-neutral-100">
+        {t("projectsPage.text")}
+      </p>
+      <div class="mt-10 flex flex-wrap justify-center gap-3">
+        <a href="/#projects" class="btn-primary">{t("projectsPage.featured")}</a>
+        <a href="/contact" class="btn-outline">{t("nav.cta")}</a>
+      </div>
+    </div>
+  </section>
+</Layout>

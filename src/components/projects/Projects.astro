@@ -8,7 +8,7 @@ interface Props {
   label?: string;
   heading?: string;
   projects: Project[];
-  moreLink?: { text: string; href: string }; // "View More Projects" → when /projects exists
+  moreLink?: { text: string; href: string }; // "Ver más proyectos" → /projects
   class?: string;
 }
 
@@ -27,7 +27,7 @@ const {
   aria-labelledby="projects-title"
   class:list={["scroll-mt-20 pb-20 sm:pb-28 lg:pb-30", className]}
 >
-  <!-- Heading + optional "View More Projects" -->
+  <!-- Heading + optional "Ver más proyectos" -->
   <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
     <SectionHeading
       class="projects-anim-item lg:max-w-2xl"

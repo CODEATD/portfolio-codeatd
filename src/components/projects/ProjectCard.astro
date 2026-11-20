@@ -1,13 +1,15 @@
 ---
 import { Picture } from "astro:assets";
 import type { Project } from "@/types";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
 
 interface Props {
   project: Project;
 }
 
 const { project } = Astro.props;
-const { title, category, description, liveUrl, image, technologies } = project;
+const { title, category, description, liveUrl, repoUrl, image, technologies } = project;
+const t = useTranslations(getLangFromUrl(Astro.url));
 ---
 
 <article
@@ -17,7 +19,7 @@ const { title, category, description, liveUrl, image, technologies } = project;
   <div class="overflow-hidden rounded-2xl lg:col-span-5">
     <Picture
       src={image.large.url}
-      alt={`Preview of ${title}`}
+      alt={`${t("projects.preview")} ${title}`}
       width={image.large.width}
       height={image.large.height}
       formats={["avif", "webp"]}
@@ -53,20 +55,24 @@ const { title, category, description, liveUrl, image, technologies } = project;
       )
     }
 
-    <!-- Actions ("Read The Story" → single-project branch) -->
+    <!-- Actions ("Leer la historia" → single-project branch) -->
     {
-      liveUrl && (
+      (liveUrl || repoUrl) && (
         <div class="mt-6 flex flex-wrap gap-3">
-          <a
-            href={liveUrl}
-            class="btn-primary"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Visit Live
-            <span class="sr-only">: {title} (opens in a new tab)</span>
-            <i class="ri-arrow-right-up-line" aria-hidden="true" />
-          </a>
+          {liveUrl && (
+            <a href={liveUrl} class="btn-primary" target="_blank" rel="noopener noreferrer">
+              {t("projects.live")}
+              <span class="sr-only">: {title} {t("a11y.newTab")}</span>
+              <i class="ri-arrow-right-up-line" aria-hidden="true" />
+            </a>
+          )}
+          {repoUrl && (
+            <a href={repoUrl} class="btn-outline" target="_blank" rel="noopener noreferrer">
+              <i class="ri-github-line" aria-hidden="true" />
+              {t("projects.code")}
+              <span class="sr-only">: {title} {t("a11y.newTab")}</span>
+            </a>
+          )}
         </div>
       )
     }

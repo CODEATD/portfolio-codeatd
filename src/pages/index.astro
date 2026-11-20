@@ -142,6 +142,7 @@ const homePosts = posts.slice(0, 3); // home: the 3 most recent
         label={projectsPage.title.rendered}
         heading={projectsPage.acf.heading}
         projects={homeProjects}
+        moreLink={{ text: projectsPage.acf.cta_text || t("projects.more"), href: "/projects" }}
       />
     )
   }
@@ -178,6 +179,7 @@ const homePosts = posts.slice(0, 3); // home: the 3 most recent
         label={blogPage.title.rendered}
         heading={blogPage.acf.heading}
         posts={homePosts}
+        moreLink={{ text: blogPage.acf.cta_text || t("blog.more"), href: "/blog" }}
       />
     )
   }
