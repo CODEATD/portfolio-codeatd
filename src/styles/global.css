@@ -51,6 +51,10 @@
   --color-surface-dark: #070707;
   --color-surface-light: #ffffff;
 
+  /* Errors (forms) */
+  --color-danger-400: #ff6369;
+  --color-danger-500: #e5484d;
+
   /* Logo marquee */
   --animate-marquee: marquee var(--marquee-duration, 80s) linear infinite;
 
@@ -181,6 +185,31 @@
   @apply inline-flex items-center font-semibold text-sm sm:text-base transition-colors duration-200
          text-neutral-500 hover:text-primary-500
          dark:text-white dark:hover:text-primary-400 cursor-pointer;
+}
+
+/* Form label */
+@utility input-label {
+  @apply mb-2 block text-sm font-medium text-neutral-500 dark:text-white;
+}
+
+/* Form input / textarea: 16px text on mobile (no iOS zoom), visible focus ring, red when invalid */
+@utility input-field {
+  @apply w-full rounded-2xl border border-bor-light bg-surface-light px-4 py-3 text-base text-neutral-500
+         placeholder:text-neutral-200 transition-[border-color,box-shadow] duration-150 ease-out
+         focus:border-neutral-500 focus:outline-none focus:ring-4 focus:ring-primary-500/30
+         aria-invalid:border-danger-500 aria-invalid:focus:ring-danger-500/25
+         dark:border-neutral-400 dark:bg-black-400/40 dark:text-white dark:placeholder:text-neutral-300
+         dark:focus:border-primary-500 dark:aria-invalid:border-danger-400;
+}
+
+/* Choice chip: a radio button styled as a pill (works with the keyboard and without JS) */
+@utility chip {
+  @apply inline-flex min-h-11 cursor-pointer items-center rounded-full border border-bor-light px-4 text-sm
+         transition-colors duration-150 hover:border-neutral-500
+         has-checked:border-neutral-500 has-checked:bg-neutral-500 has-checked:text-white
+         has-focus-visible:ring-4 has-focus-visible:ring-primary-500/30
+         dark:border-neutral-400 dark:hover:border-primary-500
+         dark:has-checked:border-primary-500 dark:has-checked:bg-primary-500 dark:has-checked:text-black;
 }
 
 /* Split hover effect: two yellow bars sweep in from opposite sides.
