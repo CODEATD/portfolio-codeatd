@@ -108,7 +108,7 @@
     @apply my-12 border-bor-light dark:border-neutral-400;
   }
 
-  /* Code blocks (highlightCode): dark in both themes, like midu.dev */
+  /* Code blocks (highlightCode): dark in both themes */
   & .code-block {
     @apply overflow-hidden rounded-2xl bg-neutral-500 text-sm ring-1 ring-white/10;
   }

@@ -51,7 +51,7 @@ const pageTitle = title ? `${title} | ${siteConfig.name}` : siteConfig.title;
     <meta property="og:image" content={image} />
     <meta property="og:url" content={siteConfig.url} />
 
-    <!-- View Transitions: navigate without full reloads (Juan 21.4) -->
+    <!-- View Transitions: navigate without full reloads -->
     <ClientRouter />
 
     <script is:inline>
@@ -78,7 +78,7 @@ const pageTitle = title ? `${title} | ${siteConfig.name}` : siteConfig.title;
       };
 
       applyTheme();
-      // ClientRouter copies the new page's <html> attributes (no "dark") → apply it again (Juan 21.4)
+      // ClientRouter copies the new page's <html> attributes (no "dark") → apply it again
       document.addEventListener("astro:after-swap", applyTheme);
     </script>
   </head>

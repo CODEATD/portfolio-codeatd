@@ -11,16 +11,16 @@ import { getPostType, toPlainText } from "@/helpers";
 import { highlightCode } from "@/helpers/code";
 import { PostSchema } from "@/types";
 
-//* SSR: rendered on each visit, not in the build (Juan 15.3)
+//* SSR: rendered on each visit, not in the build
 export const prerender = false;
 
-// Slug from the URL: /blog/[slug] → { slug } (Juan 15.4)
+// Slug from the URL: /blog/[slug] → { slug }
 const { slug } = Astro.params;
 
-// WordPress returns an array, even for one post: /posts?slug=… (Juan 15.5)
+// WordPress returns an array, even for one post: /posts?slug=…
 const json = await getPostType("posts", `&slug=${slug}`);
 
-// No post with that slug → [] → json[0] is undefined → 404 (Juan 15.7)
+// No post with that slug → [] → json[0] is undefined → 404
 const post = PostSchema.safeParse(json[0]);
 if (!post.success) return Astro.redirect("/404");
 

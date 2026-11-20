@@ -10,7 +10,7 @@ import Pagination from "@/components/blog/Pagination.astro";
 import { getPostType, toPlainText, withPagePrefix } from "@/helpers";
 import { CategoriesSchema, PostsSchema, type Category, type Post } from "@/types";
 
-//* SSG: /blog/category/astro, /blog/category/astro/page/2… — Juan 16 + Fernando 3.13
+//* SSG: /blog/category/astro, /blog/category/astro/page/2…
 export const getStaticPaths = (async ({ paginate }) => {
   const posts = PostsSchema.parse(await getPostType("posts"));
   const categories = CategoriesSchema.parse(

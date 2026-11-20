@@ -10,7 +10,7 @@ interface Props {
 const { markers } = Astro.props;
 ---
 
-<!-- The data travels in data-* and the element builds the map (Juan 19.6, <location-data>) -->
+<!-- The data travels in data-* and the element builds the map -->
 <clients-map data-markers={JSON.stringify(markers)} class="block">
   <div
     class="clients-map h-90 overflow-hidden rounded-3xl border border-bor-light sm:h-115 dark:border-neutral-400"
@@ -21,7 +21,7 @@ const { markers } = Astro.props;
 <style is:global>
   /* Leaflet builds its HTML in JS → global styles */
 
-  /* OpenStreetMap tiles (Juan 19.7) in the site's colors: grey in light, dark in dark */
+  /* OpenStreetMap tiles in the site's colors: grey in light, dark in dark */
   .clients-map {
     background: var(--color-neutral-50);
   }

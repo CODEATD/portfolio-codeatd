@@ -15,7 +15,7 @@ const category = categories[0]; // card label: first category
 ---
 
 <article class:list={["post-card group/post relative flex h-full flex-col", className]}>
-  <!-- Image + category (transition:name → it grows into the post's image, Fernando 3.12) -->
+  <!-- Image + category (transition:name → it grows into the post's image) -->
   <div
     class="post-card-media relative overflow-hidden rounded-3xl bg-neutral-50/40 dark:bg-black-400"
     transition:name={`post-image-${slug}`}

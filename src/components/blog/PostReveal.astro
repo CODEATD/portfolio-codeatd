@@ -1,4 +1,4 @@
-<!-- Entrance animation for the post: title word by word (Midu · GSAP 4.3, "Web Linear") + the rest -->
+<!-- Entrance animation for the post: title word by word + the rest -->
 <script>
   import { gsap } from "gsap";
   import { SplitText } from "gsap/SplitText";
@@ -22,7 +22,7 @@
 
     postTimeline = gsap
       .timeline({ defaults: { ease: "power3.out" } })
-      // 1. Title: blurred and 10px lower → sharp, word by word (Midu's values)
+      // 1. Title: blurred and 10px lower → sharp, word by word
       .from(titleSplit.words, {
         y: 10,
         autoAlpha: 0,
