@@ -1,0 +1,205 @@
+---
+// Leaflet styles in the frontmatter, not in <script> (lesson from Swiper)
+import "leaflet/dist/leaflet.css";
+import type { Marker } from "@/types";
+
+interface Props {
+  markers: Marker[];
+}
+
+const { markers } = Astro.props;
+---
+
+<!-- The data travels in data-* and the element builds the map -->
+<clients-map data-markers={JSON.stringify(markers)} class="block">
+  <div
+    class="clients-map h-90 overflow-hidden rounded-3xl border border-bor-light sm:h-115 dark:border-neutral-400"
+    aria-hidden="true"
+  ></div>
+</clients-map>
+
+<style is:global>
+  /* Leaflet builds its HTML in JS → global styles */
+
+  /* OpenStreetMap tiles in the site's colors: grey in light, dark in dark */
+  .clients-map {
+    background: var(--color-neutral-50);
+  }
+  .dark .clients-map {
+    background: var(--color-neutral-500);
+  }
+  .clients-map .leaflet-tile-pane {
+    filter: grayscale(1) contrast(0.85) brightness(1.08);
+  }
+  .dark .clients-map .leaflet-tile-pane {
+    filter: grayscale(1) invert(1) brightness(0.62) contrast(1.25);
+  }
+  .clients-map .leaflet-control-attribution {
+    background: transparent;
+    color: var(--color-neutral-200);
+    font-size: 10px;
+  }
+  .clients-map .leaflet-control-attribution a {
+    color: inherit;
+  }
+
+  /* Pin: yellow dot + ring that pulses */
+  .map-pin {
+    position: relative;
+    display: block;
+    width: 14px;
+    height: 14px;
+  }
+  .map-pin-dot,
+  .map-pin-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    background: var(--color-primary-500);
+  }
+  .map-pin-ring {
+    animation: map-pin-pulse 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+  @keyframes map-pin-pulse {
+    from {
+      transform: scale(1);
+      opacity: 0.55;
+    }
+    to {
+      transform: scale(3.2);
+      opacity: 0;
+    }
+  }
+
+  /* Label: black pill in light, yellow in dark */
+  .map-pin-label.leaflet-tooltip {
+    border: 0;
+    border-radius: 9999px;
+    padding: 4px 10px;
+    background: var(--color-neutral-500);
+    color: #fff;
+    font: 600 12px/1.2 var(--font-sans);
+    box-shadow: none;
+  }
+  .dark .map-pin-label.leaflet-tooltip {
+    background: var(--color-primary-500);
+    color: var(--color-neutral-500);
+  }
+  .map-pin-label.leaflet-tooltip::before {
+    display: none; /* no little arrow */
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .map-pin-ring {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  import L from "leaflet";
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  import type { Marker } from "@/types";
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  class ClientsMap extends HTMLElement {
+    map: L.Map | null = null;
+    trigger: ScrollTrigger | null = null;
+
+    // Runs every time the element enters the page (also after a ClientRouter navigation)
+    connectedCallback() {
+      const markers: Marker[] = JSON.parse(this.dataset.markers ?? "[]");
+      const container = this.querySelector<HTMLElement>(".clients-map");
+      if (!container || markers.length === 0) return;
+
+      // Read-only map: it illustrates, it isn't for navigating (and doesn't steal the scroll)
+      this.map = L.map(container, {
+        zoomControl: false,
+        scrollWheelZoom: false,
+        dragging: false,
+        touchZoom: false,
+        doubleClickZoom: false,
+        boxZoom: false,
+        keyboard: false,
+      });
+
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      }).addTo(this.map);
+
+      // Frame all the pins (maxZoom: with a single pin it would zoom to street level)
+      this.map.fitBounds(
+        markers.map(({ lat, lng }) => [lat, lng] as L.LatLngTuple),
+        { padding: [60, 60], maxZoom: 4 },
+      );
+
+      // Our own pin (HTML), not Leaflet's blue image
+      const icon = L.divIcon({
+        className: "",
+        iconSize: [14, 14],
+        html: '<span class="map-pin"><span class="map-pin-ring"></span><span class="map-pin-dot"></span></span>',
+      });
+
+      markers.forEach(({ label, lat, lng }) => {
+        L.marker([lat, lng], { icon, interactive: false })
+          .bindTooltip(label, {
+            permanent: true,
+            direction: "right",
+            offset: [10, 0],
+            className: "map-pin-label",
+          })
+          .addTo(this.map!);
+      });
+
+      this.animatePins();
+    }
+
+    // Pins drop in one by one when the map reaches the screen
+    animatePins() {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+      const pins = this.querySelectorAll(".map-pin");
+      const labels = this.querySelectorAll(".map-pin-label");
+      gsap.set([...pins, ...labels], { autoAlpha: 0 });
+
+      this.trigger = ScrollTrigger.create({
+        trigger: this,
+        start: "top 75%",
+        once: true,
+        onEnter: () => {
+          gsap.fromTo(
+            pins,
+            { y: -16, scale: 0.4 },
+            {
+              autoAlpha: 1,
+              y: 0,
+              scale: 1,
+              duration: 0.5,
+              ease: "back.out(2)",
+              stagger: 0.15,
+            },
+          );
+          gsap.to(labels, {
+            autoAlpha: 1,
+            duration: 0.3,
+            stagger: 0.15,
+            delay: 0.3,
+          });
+        },
+      });
+    }
+
+    // Leaving the page: free the map and the trigger
+    disconnectedCallback() {
+      this.trigger?.kill();
+      this.trigger = null;
+      this.map?.remove();
+      this.map = null;
+    }
+  }
+
+  customElements.define("clients-map", ClientsMap);
+</script>

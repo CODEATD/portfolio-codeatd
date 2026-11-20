@@ -1,0 +1,199 @@
+---
+// Notyf styles in the frontmatter, not in <script>: ClientRouter keeps them (lesson from Swiper)
+import "notyf/notyf.min.css";
+
+// Same text as the CF7 radio options (W3), or CF7 rejects the message
+const projectTypes = ["Website", "Web app", "Headless WordPress", "Job opportunity", "Other"];
+---
+
+<form
+  id="contact-form"
+  method="post"
+  novalidate
+  class="relative rounded-3xl border border-bor-light bg-neutral-50/30 p-6 sm:p-10 dark:border-neutral-400 dark:bg-black-400/20"
+>
+  <p class="mb-8 text-sm text-neutral-400 dark:text-neutral-50">
+    Fields marked <span class="text-danger-500">*</span> are required.
+  </p>
+
+  <div class="grid gap-6 sm:grid-cols-2">
+    <div>
+      <label for="name" class="input-label">
+        Name <span class="text-danger-500" aria-hidden="true">*</span>
+      </label>
+      <input id="name" name="name" type="text" autocomplete="name" placeholder="Jane Doe" class="input-field" required />
+    </div>
+    <div>
+      <label for="email" class="input-label">
+        Email <span class="text-danger-500" aria-hidden="true">*</span>
+      </label>
+      <input
+        id="email"
+        name="email"
+        type="email"
+        inputmode="email"
+        autocomplete="email"
+        placeholder="jane@company.com"
+        class="input-field"
+        required
+      />
+    </div>
+  </div>
+
+  <div class="mt-6">
+    <label for="company" class="input-label">
+      Company <span class="font-normal text-neutral-300 dark:text-neutral-100">(optional)</span>
+    </label>
+    <input id="company" name="company" type="text" autocomplete="organization" placeholder="Acme Inc." class="input-field" />
+  </div>
+
+  <fieldset class="mt-6">
+    <legend class="input-label">What do you need?</legend>
+    <div class="flex flex-wrap gap-2">
+      {
+        projectTypes.map((type, i) => (
+          <label class="chip">
+            <input type="radio" name="projectType" value={type} class="sr-only" checked={i === 0} />
+            {type}
+          </label>
+        ))
+      }
+    </div>
+  </fieldset>
+
+  <div class="mt-6">
+    <div class="flex items-baseline justify-between">
+      <label for="message" class="input-label">
+        Message <span class="text-danger-500" aria-hidden="true">*</span>
+      </label>
+      <span id="message-count" class="text-xs text-neutral-300 tabular-nums dark:text-neutral-100">0 / 30 min</span>
+    </div>
+    <textarea
+      id="message"
+      name="message"
+      rows="6"
+      placeholder="Tell me about the project, goals and timeline…"
+      class="input-field resize-y"
+      required></textarea>
+  </div>
+
+  <!-- Honeypot: off-screen for people, bots fill it → the Action ignores the message -->
+  <div class="absolute left-[-9999px]" aria-hidden="true">
+    <label for="website">Website</label>
+    <input id="website" name="website" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <div class="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <p class="text-xs text-neutral-300 dark:text-neutral-100">
+      <i class="ri-lock-line" aria-hidden="true"></i> I'll only use your details to reply.
+    </p>
+    <button type="submit" class="group btn-primary min-w-44 disabled:cursor-wait disabled:opacity-80">
+      <span class="inline-flex items-center gap-1.5 group-aria-busy:hidden">
+        Send message <i class="ri-arrow-right-up-line" aria-hidden="true"></i>
+      </span>
+      <span class="hidden items-center gap-1.5 group-aria-busy:inline-flex">
+        <i class="ri-loader-4-line motion-safe:animate-spin" aria-hidden="true"></i> Sending…
+      </span>
+    </button>
+  </div>
+</form>
+
+<style is:global>
+  /* Notyf builds its toasts outside this component → global styles */
+  .notyf {
+    padding-top: 6rem; /* below the sticky header */
+  }
+  .notyf__toast {
+    max-width: 26rem;
+    border-radius: 1.25rem;
+    font-family: var(--font-sans);
+  }
+  .notyf__toast--success .notyf__message {
+    color: var(--color-neutral-500);
+    font-weight: 600;
+  }
+  .notyf__toast--success .notyf__dismiss-btn::before,
+  .notyf__toast--success .notyf__dismiss-btn::after {
+    background: var(--color-neutral-500);
+  }
+</style>
+
+<script>
+  import { actions, isInputError } from "astro:actions";
+  import { Notyf } from "notyf";
+
+  const VALIDATED = ["name", "email", "message"]; // fields that can be marked invalid
+
+  function initContactForm() {
+    const form = document.querySelector<HTMLFormElement>("#contact-form");
+    if (!form || form.dataset.ready) return; // other pages, or already started
+    form.dataset.ready = "true";
+
+    const submit = form.querySelector<HTMLButtonElement>('[type="submit"]')!;
+    const message = form.querySelector<HTMLTextAreaElement>("#message")!;
+    const counter = form.querySelector<HTMLElement>("#message-count")!;
+
+    // One instance per page, with the site's colors
+    const notyf = new Notyf({
+      position: { x: "right", y: "top" },
+      duration: 5000,
+      ripple: false,
+      dismissible: true,
+      types: [
+        { type: "success", background: "var(--color-primary-500)", icon: false },
+        { type: "error", background: "var(--color-danger-500)", icon: false },
+      ],
+    });
+
+    // "0 / 30 min" → "42 characters"
+    const updateCounter = () => {
+      const length = message.value.trim().length;
+      counter.textContent = length >= 30 ? `${length} characters` : `${length} / 30 min`;
+    };
+    message.addEventListener("input", updateCounter);
+
+    // aria-busy → the button shows "Sending…" (group-aria-busy in the markup)
+    const setSending = (sending: boolean) => {
+      submit.disabled = sending;
+      submit.setAttribute("aria-busy", String(sending));
+    };
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      setSending(true);
+
+      const { data, error } = await actions.contact.sendEmail(new FormData(form));
+      setSending(false);
+
+      // 1. Validation (Zod): red border on each field + one toast per error
+      const issues = isInputError(error) ? error.issues : [];
+      VALIDATED.forEach((name) => {
+        const invalid = issues.some((issue) => issue.path[0] === name);
+        form.querySelector(`[name="${name}"]`)?.setAttribute("aria-invalid", String(invalid));
+      });
+      if (issues.length > 0) {
+        issues.forEach((issue) => notyf.error(issue.message));
+        form.querySelector<HTMLElement>(`[name="${String(issues[0].path[0])}"]`)?.focus();
+        return;
+      }
+
+      // 2. Network or server error (WordPress down, wrong URL…)
+      if (error) {
+        notyf.error("Something went wrong. Please try again or email me directly.");
+        return;
+      }
+
+      // 3. CF7 answered: sent or not
+      if (data.error) {
+        notyf.error(data.message);
+        return;
+      }
+      notyf.success(data.message);
+      form.reset();
+      updateCounter();
+    });
+  }
+
+  // ClientRouter: page-load also runs on the first load
+  document.addEventListener("astro:page-load", initContactForm);
+</script>

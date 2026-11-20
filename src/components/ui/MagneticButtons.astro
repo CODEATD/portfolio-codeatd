@@ -1,0 +1,83 @@
+<!-- Magnetic buttons (GSAP demo "magnetic only": no wiggle, overwrite: true)
+     Markup: [data-magnetic] (zone) > [data-magnetic-target] (moves) > [data-magnetic-label] (moves less) -->
+<script>
+  import { gsap } from "gsap";
+
+  const STRENGTH = 0.4; // the button follows 40 % of the cursor offset
+  const LABEL_STRENGTH = 0.24; // the label a bit less → depth
+
+  function initMagneticButtons() {
+    // Only with a real mouse, never with reduced motion
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches)
+      return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    document
+      .querySelectorAll<HTMLElement>("[data-magnetic]")
+      .forEach((zone) => {
+        if (zone.dataset.ready) return;
+        zone.dataset.ready = "true";
+
+        const target = zone.querySelector<HTMLElement>(
+          "[data-magnetic-target]",
+        );
+        const label = zone.querySelector<HTMLElement>("[data-magnetic-label]");
+        if (!target) return;
+
+        zone.addEventListener("mousemove", (e) => {
+          const rect = zone.getBoundingClientRect();
+          // Cursor position from the center of the zone (-half … +half)
+          const x = gsap.utils.mapRange(
+            rect.left,
+            rect.right,
+            -rect.width / 2,
+            rect.width / 2,
+            e.clientX,
+          );
+          const y = gsap.utils.mapRange(
+            rect.top,
+            rect.bottom,
+            -rect.height / 2,
+            rect.height / 2,
+            e.clientY,
+          );
+
+          gsap.to(target, {
+            x: x * STRENGTH,
+            y: y * STRENGTH,
+            duration: 0.4,
+            ease: "power2.out",
+            overwrite: true,
+          });
+          if (label) {
+            gsap.to(label, {
+              x: x * LABEL_STRENGTH,
+              y: y * LABEL_STRENGTH,
+              duration: 0.4,
+              ease: "power2.out",
+              overwrite: true,
+            });
+          }
+        });
+
+        // Back to the center with a small bounce
+        zone.addEventListener("mouseleave", () => {
+          gsap.to([target, label].filter(Boolean), {
+            x: 0,
+            y: 0,
+            duration: 0.7,
+            ease: "elastic.out(1, 0.4)",
+            overwrite: true,
+          });
+        });
+      });
+  }
+
+  function destroyMagneticButtons() {
+    gsap.killTweensOf("[data-magnetic-target], [data-magnetic-label]");
+  }
+
+  // ClientRouter: page-load also runs on the first load
+  document.addEventListener("astro:page-load", initMagneticButtons);
+  document.addEventListener("astro:before-swap", destroyMagneticButtons);
+</script>

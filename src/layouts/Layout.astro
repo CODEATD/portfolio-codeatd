@@ -3,6 +3,7 @@ import { ClientRouter } from "astro:transitions";
 import { siteConfig } from "@/config/site-config.ts";
 import Header from "@/components/header/Header.astro";
 import Footer from "@/components/footer/Footer.astro";
+import MagneticButtons from "@/components/ui/MagneticButtons.astro";
 import NavigationProgress from "@/components/ui/NavigationProgress.astro";
 import "@/styles/global.css";
 import bg from "@/assets/backgrounds/bg-pattern-dark.png";
@@ -50,7 +51,7 @@ const pageTitle = title ? `${title} | ${siteConfig.name}` : siteConfig.title;
     <meta property="og:image" content={image} />
     <meta property="og:url" content={siteConfig.url} />
 
-    <!-- View Transitions: navigate without full reloads (Juan 21.4) -->
+    <!-- View Transitions: navigate without full reloads -->
     <ClientRouter />
 
     <script is:inline>
@@ -70,17 +71,18 @@ const pageTitle = title ? `${title} | ${siteConfig.name}` : siteConfig.title;
       };
 
       const applyTheme = () => {
-        document.documentElement.classList.toggle("dark", getInitialTheme() === "dark");
+        document.documentElement.classList.toggle(
+          "dark",
+          getInitialTheme() === "dark",
+        );
       };
 
       applyTheme();
-      // ClientRouter copies the new page's <html> attributes (no "dark") → apply it again (Juan 21.4)
+      // ClientRouter copies the new page's <html> attributes (no "dark") → apply it again
       document.addEventListener("astro:after-swap", applyTheme);
     </script>
   </head>
-  <body
-    class="bg-surface-light text-neutral-500 dark:bg-surface-dark dark:text-white min-h-screen flex flex-col overflow-x-clip"
-  >
+  <body class="bg-surface-light text-neutral-500 dark:bg-surface-dark dark:text-white min-h-screen flex flex-col overflow-x-clip">
     <NavigationProgress />
     <Header />
     <slot name="before-main-content" />
@@ -89,5 +91,6 @@ const pageTitle = title ? `${title} | ${siteConfig.name}` : siteConfig.title;
     </main>
     <slot name="after-main-content" />
     <Footer bgImage={bg.src} />
+    <MagneticButtons />
   </body>
 </html>

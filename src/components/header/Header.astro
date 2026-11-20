@@ -28,10 +28,16 @@ import MobileMenu from "@/components/header/MobileMenu.astro";
 
       <!-- Actions -->
       <div class="flex items-center gap-3">
-        <a href="#contact" class="hidden md:inline-flex btn-primary">
-          <span>Let's Talk</span>
-          <i class="ri-arrow-right-up-line text-base"></i>
-        </a>
+        <!-- Magnetic zone: a bit bigger than the button (p-3), so the pull starts before touching it -->
+        <span class="-m-3 hidden p-3 md:inline-block" data-magnetic>
+          <span class="inline-block" data-magnetic-target>
+            <a href="/contact" class="btn-primary">
+              <span class="inline-flex items-center gap-1.5" data-magnetic-label>
+                Let's Talk <i class="ri-arrow-right-up-line text-base"></i>
+              </span>
+            </a>
+          </span>
+        </span>
 
         <ThemeToggle />
 
