@@ -1,31 +1,38 @@
 ---
 // Notyf styles in the frontmatter, not in <script>: ClientRouter keeps them (lesson from Swiper)
 import "notyf/notyf.min.css";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+const t = useTranslations(getLangFromUrl(Astro.url));
+
 
 // Same text as the CF7 radio options (W3), or CF7 rejects the message
-const projectTypes = ["Website", "Web app", "Headless WordPress", "Job opportunity", "Other"];
+const projectTypes = ["Sitio web", "App web", "WordPress headless", "Oferta de empleo", "Otro"];
 ---
 
 <form
   id="contact-form"
   method="post"
   novalidate
+  data-min-label={t("form.min")}
+  data-characters-label={t("form.characters")}
+  data-network-error={t("form.networkError")}
   class="relative rounded-3xl border border-bor-light bg-neutral-50/30 p-6 sm:p-10 dark:border-neutral-400 dark:bg-black-400/20"
 >
   <p class="mb-8 text-sm text-neutral-400 dark:text-neutral-50">
-    Fields marked <span class="text-danger-500">*</span> are required.
+    {t("form.requiredBefore")} <span class="text-danger-500">*</span> {t("form.requiredAfter")}
   </p>
 
   <div class="grid gap-6 sm:grid-cols-2">
     <div>
       <label for="name" class="input-label">
-        Name <span class="text-danger-500" aria-hidden="true">*</span>
+        {t("form.name")} <span class="text-danger-500" aria-hidden="true">*</span>
       </label>
-      <input id="name" name="name" type="text" autocomplete="name" placeholder="Jane Doe" class="input-field" required />
+      <input id="name" name="name" type="text" autocomplete="name" placeholder={t("form.namePlaceholder")} class="input-field" required />
     </div>
     <div>
       <label for="email" class="input-label">
-        Email <span class="text-danger-500" aria-hidden="true">*</span>
+        {t("form.email")} <span class="text-danger-500" aria-hidden="true">*</span>
       </label>
       <input
         id="email"
@@ -33,7 +40,7 @@ const projectTypes = ["Website", "Web app", "Headless WordPress", "Job opportuni
         type="email"
         inputmode="email"
         autocomplete="email"
-        placeholder="jane@company.com"
+        placeholder={t("form.emailPlaceholder")}
         class="input-field"
         required
       />
@@ -42,13 +49,13 @@ const projectTypes = ["Website", "Web app", "Headless WordPress", "Job opportuni
 
   <div class="mt-6">
     <label for="company" class="input-label">
-      Company <span class="font-normal text-neutral-300 dark:text-neutral-100">(optional)</span>
+      {t("form.company")} <span class="font-normal text-neutral-300 dark:text-neutral-100">{t("form.optional")}</span>
     </label>
-    <input id="company" name="company" type="text" autocomplete="organization" placeholder="Acme Inc." class="input-field" />
+    <input id="company" name="company" type="text" autocomplete="organization" placeholder={t("form.companyPlaceholder")} class="input-field" />
   </div>
 
   <fieldset class="mt-6">
-    <legend class="input-label">What do you need?</legend>
+    <legend class="input-label">{t("form.need")}</legend>
     <div class="flex flex-wrap gap-2">
       {
         projectTypes.map((type, i) => (
@@ -64,15 +71,15 @@ const projectTypes = ["Website", "Web app", "Headless WordPress", "Job opportuni
   <div class="mt-6">
     <div class="flex items-baseline justify-between">
       <label for="message" class="input-label">
-        Message <span class="text-danger-500" aria-hidden="true">*</span>
+        {t("form.message")} <span class="text-danger-500" aria-hidden="true">*</span>
       </label>
-      <span id="message-count" class="text-xs text-neutral-300 tabular-nums dark:text-neutral-100">0 / 30 min</span>
+      <span id="message-count" class="text-xs text-neutral-300 tabular-nums dark:text-neutral-100">0 / 30 {t("form.min")}</span>
     </div>
     <textarea
       id="message"
       name="message"
       rows="6"
-      placeholder="Tell me about the project, goals and timeline…"
+      placeholder={t("form.messagePlaceholder")}
       class="input-field resize-y"
       required></textarea>
   </div>
@@ -85,14 +92,14 @@ const projectTypes = ["Website", "Web app", "Headless WordPress", "Job opportuni
 
   <div class="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
     <p class="text-xs text-neutral-300 dark:text-neutral-100">
-      <i class="ri-lock-line" aria-hidden="true"></i> I'll only use your details to reply.
+      <i class="ri-lock-line" aria-hidden="true"></i> {t("form.privacy")}
     </p>
     <button type="submit" class="group btn-primary min-w-44 disabled:cursor-wait disabled:opacity-80">
       <span class="inline-flex items-center gap-1.5 group-aria-busy:hidden">
-        Send message <i class="ri-arrow-right-up-line" aria-hidden="true"></i>
+        {t("form.send")} <i class="ri-arrow-right-up-line" aria-hidden="true"></i>
       </span>
       <span class="hidden items-center gap-1.5 group-aria-busy:inline-flex">
-        <i class="ri-loader-4-line motion-safe:animate-spin" aria-hidden="true"></i> Sending…
+        <i class="ri-loader-4-line motion-safe:animate-spin" aria-hidden="true"></i> {t("form.sending")}
       </span>
     </button>
   </div>
@@ -145,14 +152,15 @@ const projectTypes = ["Website", "Web app", "Headless WordPress", "Job opportuni
       ],
     });
 
-    // "0 / 30 min" → "42 characters"
+    // "0 / 30 mín." → "42 caracteres" (texts from the form's data-*)
+    const { minLabel, charactersLabel, networkError } = form.dataset;
     const updateCounter = () => {
       const length = message.value.trim().length;
-      counter.textContent = length >= 30 ? `${length} characters` : `${length} / 30 min`;
+      counter.textContent = length >= 30 ? `${length} ${charactersLabel}` : `${length} / 30 ${minLabel}`;
     };
     message.addEventListener("input", updateCounter);
 
-    // aria-busy → the button shows "Sending…" (group-aria-busy in the markup)
+    // aria-busy → the button shows "Enviando…" (group-aria-busy in the markup)
     const setSending = (sending: boolean) => {
       submit.disabled = sending;
       submit.setAttribute("aria-busy", String(sending));
@@ -179,7 +187,7 @@ const projectTypes = ["Website", "Web app", "Headless WordPress", "Job opportuni
 
       // 2. Network or server error (WordPress down, wrong URL…)
       if (error) {
-        notyf.error("Something went wrong. Please try again or email me directly.");
+        notyf.error(networkError ?? "");
         return;
       }
 
