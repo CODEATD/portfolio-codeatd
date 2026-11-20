@@ -5,23 +5,28 @@ import HeroBadge from "@/components/hero/HeroBadge.astro";
 import defaultLight from "@/assets/hero/hero-avatar-2.png";
 import defaultDark from "@/assets/hero/hero-avatar-1.png";
 
+// Local image (src/assets) or one from WordPress (url + its size)
 interface Media {
-  src: ImageMetadata;
+  src: ImageMetadata | string;
   alt: string;
+  width?: number;
+  height?: number;
 }
 
-interface Props {
+export interface Props {
   class?: string;
   light?: Media;
   dark?: Media;
+  badgeText?: string;
   showBadge?: boolean;
   badgePosition?: string;
 }
 
 const {
   class: className = "",
-  light = { src: defaultLight, alt: "Imagen 1" },
-  dark = { src: defaultDark, alt: "Imagen 2" },
+  light = { src: defaultLight, alt: "Adolfo, desarrollador full stack" },
+  dark = { src: defaultDark, alt: "Adolfo, desarrollador full stack" },
+  badgeText,
   showBadge = true,
   badgePosition = "-bottom-4 -left-1 sm:-bottom-7 sm:-left-7",
 } = Astro.props;
@@ -43,6 +48,8 @@ const {
     <Picture
       src={light.src}
       alt={light.alt}
+      width={light.width}
+      height={light.height}
       formats={["avif", "webp"]}
       widths={[320, 440, 640]}
       sizes="(min-width: 1024px) 420px, 90vw"
@@ -55,6 +62,8 @@ const {
     <Picture
       src={dark.src}
       alt={dark.alt}
+      width={dark.width}
+      height={dark.height}
       formats={["avif", "webp"]}
       widths={[320, 440, 640]}
       sizes="(min-width: 1024px) 420px, 90vw"
@@ -71,7 +80,7 @@ const {
     showBadge && (
       <div class={`absolute ${badgePosition} z-30`}>
         <slot name="badge">
-          <HeroBadge />
+          <HeroBadge text={badgeText} />
         </slot>
       </div>
     )

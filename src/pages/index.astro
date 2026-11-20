@@ -16,6 +16,7 @@ import Blog from "@/components/blog/Blog.astro";
 
 // Helpers
 import { getOptions, getPageBySlug, getPostType } from "@/helpers";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
 
 // Types
 import {
@@ -66,7 +67,10 @@ const [
   getPostType("posts"),
 ]);
 
+const t = useTranslations(getLangFromUrl(Astro.url));
+
 const options = OptionsSchema.parse(optionsJson);
+const { hero } = options;
 const about = AboutPageSchema.parse(aboutJson);
 const stack = StackPageSchema.parse(stackJson);
 const experiencePage = SectionPageSchema.parse(experiencePageJson);
@@ -91,9 +95,16 @@ const homePosts = posts.slice(0, 3); // home: the 3 most recent
   <Hero
     slot="before-main-content"
     bgImage={bg.src}
+    tag={hero.tag}
+    greeting={hero.greeting}
+    title={hero.title}
+    highlightText={hero.highlight}
+    description={hero.description}
+    primaryCta={hero.primary_text ? { text: hero.primary_text, href: "#projects" } : undefined}
     secondaryCta={options.cv_file
-      ? { text: "Download CV", href: options.cv_file }
+      ? { text: hero.cv_text ?? t("hero.cv"), href: options.cv_file }
       : undefined}
+    media={{ light: hero.image_light, dark: hero.image_dark, badgeText: hero.badge_text }}
   />
   <LogoMarquee slot="before-main-content" />
 

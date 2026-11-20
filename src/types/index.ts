@@ -104,12 +104,37 @@ const SocialLinkSchema = z.object({
     icon: z.string(), // RemixIcon class, e.g. "ri-instagram-line"
 });
 
+//* ACF image (Return Format: Image Array) → the shape <Picture> needs
+const AcfImageSchema = z
+    .object({ url: z.string(), width: z.number(), height: z.number(), alt: z.string() })
+    .transform(({ url, width, height, alt }) => ({ src: url, width, height, alt }))
+    .optional()
+    .catch(undefined); // no image → false → undefined → the component's default image
+
+// Empty ACF text → undefined → the component's default text
+const OptionalTextSchema = z.string().catch("").transform((value) => value || undefined);
+
+//* Home → Hero (ACF Group on Site Settings)
+const HeroSchema = z.object({
+    tag: OptionalTextSchema,
+    greeting: OptionalTextSchema,
+    title: OptionalTextSchema,
+    highlight: OptionalTextSchema,
+    description: OptionalTextSchema,
+    primary_text: OptionalTextSchema,
+    cv_text: OptionalTextSchema,
+    badge_text: OptionalTextSchema,
+    image_light: AcfImageSchema,
+    image_dark: AcfImageSchema,
+});
+
 export const OptionsSchema = z.object({
     contact_email: z.string(),
     contact_phone: z.string(),
     contact_location: z.string(),
     social_links: z.array(SocialLinkSchema).catch([]), // empty repeater → false
     cv_file: z.string().catch(""), // no CV → false → ""
+    hero: HeroSchema.catch(HeroSchema.parse({})), // group missing → every field undefined
 });
 
 export type SocialLink = z.infer<typeof SocialLinkSchema>;
