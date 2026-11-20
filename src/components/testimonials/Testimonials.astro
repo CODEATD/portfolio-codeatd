@@ -14,7 +14,7 @@ interface Props {
 
 const {
   index = "06",
-  label = "Testimonials",
+  label = "Testimonios",
   testimonials,
   class: className = "",
 } = Astro.props;
@@ -119,19 +119,38 @@ const items = Array.from({ length: repeat }, () => testimonials).flat();
       freeMode: true, // drag with inertia, no snapping to a slide
       // Reduced motion → no auto-scroll and no loop: the user drags or uses the keyboard
       loop: !reduceMotion,
+      loopPreventsSliding: false, // a tap or a pause leaves a transition half done: still move on
       speed: 7000, // ms per slide: higher = slower
       autoplay: reduceMotion
         ? false
         : {
             delay: 0, // no wait between moves → continuous
             disableOnInteraction: false, // keep going after dragging
-            pauseOnMouseEnter: true, // stop to read
           },
     });
 
-    // Pause when a card receives keyboard focus (pauseOnMouseEnter only covers the mouse)
-    container.addEventListener("focusin", () => swiper?.autoplay?.stop());
-    container.addEventListener("focusout", () => swiper?.autoplay?.start());
+    if (!reduceMotion) {
+      // Swiper's own pause (pauseOnMouseEnter) waits for the transition and sometimes never resumes,
+      // and a tap stops the row for good → pause and resume it ourselves.
+      // Stop right where it is…
+      const pauseRow = () => {
+        if (!swiper) return;
+        swiper.autoplay.stop();
+        swiper.setTransition(0);
+        swiper.setTranslate(swiper.getTranslate());
+      };
+      // …and start again from there
+      const playRow = () => {
+        swiper?.autoplay.stop();
+        swiper?.autoplay.start();
+      };
+
+      container.addEventListener("pointerenter", (e) => e.pointerType === "mouse" && pauseRow()); // stop to read
+      container.addEventListener("pointerleave", (e) => e.pointerType === "mouse" && playRow());
+      container.addEventListener("focusin", pauseRow); // keyboard
+      container.addEventListener("focusout", playRow);
+      swiper.on("tap", playRow); // a tap stops the transition halfway
+    }
 
     // 2. Entrance animation (label + row)
     if (reduceMotion) return;

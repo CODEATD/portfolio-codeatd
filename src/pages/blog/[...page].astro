@@ -16,6 +16,9 @@ import {
   type Post,
   type SectionPage,
 } from "@/types";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+const t = useTranslations(getLangFromUrl(Astro.url));
 
 //* SSG: /blog, /blog/page/2, /blog/page/3… (6 posts per page)
 export const getStaticPaths = (async ({ paginate }) => {
@@ -37,7 +40,7 @@ interface Props {
 
 const { page, categories, blogPage } = Astro.props;
 const { title, acf, content } = blogPage;
-const pageTitle = page.currentPage === 1 ? "Blog" : `Blog · Page ${page.currentPage}`;
+const pageTitle = page.currentPage === 1 ? "Blog" : `Blog · ${t("blog.page")} ${page.currentPage}`;
 ---
 
 <Layout title={pageTitle} description={toPlainText(content.rendered) || undefined}>
@@ -46,7 +49,7 @@ const pageTitle = page.currentPage === 1 ? "Blog" : `Blog · Page ${page.current
     class="pt-12 pb-20 sm:pt-16 sm:pb-28 lg:pb-30"
     data-blog-reveal
   >
-    <Breadcrumb items={[{ name: "Home", href: "/" }, { name: title.rendered }]} />
+    <Breadcrumb items={[{ name: t("breadcrumb.home"), href: "/" }, { name: title.rendered }]} />
 
     <!-- Label + h1 + intro -->
     <div class="blog-reveal-item mt-10 grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-8">
@@ -81,7 +84,7 @@ const pageTitle = page.currentPage === 1 ? "Blog" : `Blog · Page ${page.current
           ))}
         </ul>
       ) : (
-        <p class="mt-12 text-neutral-300 dark:text-neutral-100">No posts yet. Check back soon.</p>
+        <p class="mt-12 text-neutral-300 dark:text-neutral-100">{t("blog.empty")}</p>
       )
     }
 

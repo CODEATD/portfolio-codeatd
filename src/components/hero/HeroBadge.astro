@@ -1,13 +1,19 @@
 ---
 // src/components/hero/HeroBadge.astro
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
 interface Props {
   class?: string;
   altText?: string;
+  text?: string;
 }
+
+const t = useTranslations(getLangFromUrl(Astro.url));
 
 const {
   class: className = "",
   altText = "Insignia interactiva de bienvenida",
+  text = t("hero.badge"),
 } = Astro.props;
 ---
 
@@ -37,11 +43,11 @@ const {
     </div>
   </div>
 
-  <!-- State 2: Alternate text ("Hi!") -->
+  <!-- State 2: Alternate text ("¡Hola!") -->
   <div
-    class="badge-icon-text absolute inset-0 flex items-center justify-center font-heading font-black text-xl sm:text-2xl text-neutral-500 opacity-0 pointer-events-none"
+    class="badge-icon-text absolute inset-0 flex items-center justify-center font-heading font-black text-base sm:text-2xl text-neutral-500 opacity-0 pointer-events-none"
   >
-    <span>Hi!</span>
+    <span>{text}</span>
   </div>
 
   <!-- State 3: Light bulb / Idea RemixIcon -->
@@ -128,7 +134,7 @@ const {
         duration: 0.35,
         ease: "power2.in",
       })
-      // 5. "Hi!" drops in from above
+      // 5. The text drops in from above
       .fromTo(
         text,
         { y: -35, autoAlpha: 0 },
@@ -139,7 +145,7 @@ const {
           ease: "back.out(1.7)",
         },
       )
-      // 6. Reading pause for "Hi!", then exits downward
+      // 6. Reading pause for the text, then exits downward
       .to(
         text,
         {

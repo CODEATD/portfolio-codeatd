@@ -1,5 +1,7 @@
 ---
 // src/components/hero/HeroActions.astro
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
 interface Props {
   primaryCta?: {
     text: string;
@@ -12,8 +14,10 @@ interface Props {
   class?: string;
 }
 
+const t = useTranslations(getLangFromUrl(Astro.url));
+
 const {
-  primaryCta = { text: "View Projects", href: "#projects" },
+  primaryCta = { text: t("hero.primary"), href: "#projects" },
   secondaryCta,
   class: className = "",
 } = Astro.props;

@@ -1,5 +1,9 @@
 import { codeToHtml } from "shiki";
 import { decodeEntities } from "@/helpers";
+import { defaultLang } from "@/i18n/ui";
+import { useTranslations } from "@/i18n/utils";
+
+const t = useTranslations(defaultLang);
 
 // class="language-xxx" in WordPress → label and badge in the block header
 const LANGUAGES: Record<string, { name: string; badge: string }> = {
@@ -11,6 +15,8 @@ const LANGUAGES: Record<string, { name: string; badge: string }> = {
     php: { name: "PHP", badge: "PHP" },
     json: { name: "JSON", badge: "{}" },
     bash: { name: "Terminal", badge: "$" },
+    tsx: { name: "TSX", badge: "TSX" },
+    dart: { name: "Dart", badge: "DT" },
 };
 
 // <pre><code class="language-js">…</code></pre> (the <code> and its class are optional)
@@ -35,7 +41,7 @@ export async function highlightCode(html: string) {
   <figcaption class="code-block__header">
     <span class="code-block__badge" aria-hidden="true">${language?.badge ?? "</>"}</span>
     <span>${language?.name ?? "Code"}</span>
-    <button type="button" class="code-block__copy" data-copy-code aria-label="Copy code">
+    <button type="button" class="code-block__copy" data-copy-code data-done-label="${t("blog.codeCopied")}" aria-label="${t("blog.copyCode")}">
       <i class="ri-file-copy-line" aria-hidden="true"></i>
     </button>
   </figcaption>

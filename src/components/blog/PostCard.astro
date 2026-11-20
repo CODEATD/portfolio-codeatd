@@ -2,6 +2,9 @@
 import { Picture } from "astro:assets";
 import PostMeta from "@/components/blog/PostMeta.astro";
 import type { Post } from "@/types";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+const t = useTranslations(getLangFromUrl(Astro.url));
 
 interface Props {
   post: Post;
@@ -65,7 +68,7 @@ const category = categories[0]; // card label: first category
     class="post-card-text mt-auto inline-flex items-center gap-2 pt-5 text-sm font-medium text-neutral-500 dark:text-white"
     aria-hidden="true"
   >
-    Read post
+    {t("blog.readPost")}
     <i class="ri-arrow-right-up-line transition-transform duration-300 group-hover/post:translate-x-0.5 group-hover/post:-translate-y-0.5" />
   </span>
 </article>

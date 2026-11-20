@@ -10,6 +10,9 @@ import { siteConfig } from "@/config/site-config";
 import { getPostType, toPlainText } from "@/helpers";
 import { highlightCode } from "@/helpers/code";
 import { PostSchema } from "@/types";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+const t = useTranslations(getLangFromUrl(Astro.url));
 
 //* SSR: rendered on each visit, not in the build
 export const prerender = false;
@@ -34,7 +37,7 @@ const url = `${siteConfig.url}/blog/${slug}`;
 <Layout title={plainTitle} description={excerpt} image={image?.large.url}>
   <article class="mx-auto max-w-3xl pt-12 pb-20 sm:pt-16 sm:pb-28 lg:pb-30" data-post-reveal>
     <Breadcrumb
-      items={[{ name: "Home", href: "/" }, { name: "Blog", href: "/blog" }, { name: title }]}
+      items={[{ name: t("breadcrumb.home"), href: "/" }, { name: "Blog", href: "/blog" }, { name: title }]}
     />
 
     <!-- Header -->
@@ -93,7 +96,7 @@ const url = `${siteConfig.url}/blog/${slug}`;
 
       <a href="/blog" class="btn-link mt-10">
         <i class="ri-arrow-left-line mr-2" aria-hidden="true" />
-        Back to blog
+        {t("blog.back")}
       </a>
     </footer>
   </article>

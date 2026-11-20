@@ -1,5 +1,9 @@
 import { defineAction } from "astro:actions";
 import { z } from "astro/zod";
+import { defaultLang } from "@/i18n/ui";
+import { useTranslations } from "@/i18n/utils";
+
+const t = useTranslations(defaultLang);
 
 // An empty field arrives as null, not "": turn it into "" so each field's own message applies
 const text = (schema: z.ZodString) => z.preprocess((value) => value ?? "", schema);
@@ -8,17 +12,17 @@ export const contact = {
     sendEmail: defineAction({
         accept: "form", // receives the <form> as FormData
         input: z.object({
-            name: text(z.string().trim().min(1, "Please tell me your name.")),
-            email: z.email("Enter a valid email so I can reply."),
+            name: text(z.string().trim().min(1, t("form.errorName"))),
+            email: z.email(t("form.errorEmail")),
             company: text(z.string().trim()), // optional
-            projectType: text(z.string().min(1, "Choose what you need.")),
-            message: text(z.string().trim().min(30, "A bit more detail, please (at least 30 characters).")),
+            projectType: text(z.string().min(1, t("form.errorType"))),
+            message: text(z.string().trim().min(30, t("form.errorMessage"))),
             website: text(z.string()), // honeypot: people never see it, bots fill it
         }),
         handler: async (input) => {
             // Honeypot filled → a bot: answer "sent" and send nothing
             if (input.website) {
-                return { error: false, message: "Thanks! Your message is on its way." };
+                return { error: false, message: t("form.sent") };
             }
 
             // Same names as the CF7 form (W3)
@@ -41,13 +45,13 @@ export const contact = {
                 console.error("[contact] CF7:", json.status, json.invalid_fields ?? json.message);
                 return {
                     error: true,
-                    message: "Sorry, the message couldn't be sent. Please email me directly.",
+                    message: t("form.failed"),
                 };
             }
 
             return {
                 error: false,
-                message: "Thanks! Your message is on its way. I'll reply within 24 hours.",
+                message: t("form.sent"),
             };
         },
     }),

@@ -1,6 +1,9 @@
 ---
 import SectionHeading from "@/components/ui/SectionHeading.astro";
 import type { Experience } from "@/types";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+const t = useTranslations(getLangFromUrl(Astro.url));
 
 interface Props {
   index?: string;
@@ -68,7 +71,7 @@ const sorted = experiences.toSorted(
           <!-- Dates -->
           <p class="text-xs font-medium text-primary-500 lg:col-span-3 lg:pt-1.5 lg:text-neutral-400 lg:dark:text-white">
             <time datetime={String(start)}>{start}</time> —{" "}
-            {end ? <time datetime={String(end)}>{end}</time> : "Present"}
+            {end ? <time datetime={String(end)}>{end}</time> : t("experience.present")}
           </p>
 
           <!-- Role, description, technologies -->

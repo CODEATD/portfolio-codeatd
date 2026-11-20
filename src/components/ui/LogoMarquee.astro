@@ -1,5 +1,8 @@
 ---
 import { trustedBrands, type Brand } from "@/config/brands";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+const t = useTranslations(getLangFromUrl(Astro.url));
 
 interface Props {
   items?: readonly Brand[];
@@ -11,7 +14,7 @@ interface Props {
 
 const {
   items = trustedBrands,
-  label = "Trusted by teams building at",
+  label = t("marquee.label"),
   duration = 60,
   id = "logo-marquee",
   class: className = "",

@@ -1,6 +1,6 @@
 ---
 import HeroActions from "@/components/hero/HeroActions.astro";
-import HeroMedia from "@/components/hero/HeroMedia.astro";
+import HeroMedia, { type Props as HeroMediaProps } from "@/components/hero/HeroMedia.astro";
 
 interface Props {
   tag?: string;
@@ -13,19 +13,21 @@ interface Props {
   bgImage?: string;
   primaryCta?: { text: string; href: string };
   secondaryCta?: { text: string; href: string };
+  media?: HeroMediaProps; // images + badge text
 }
 
 const {
-  tag = "FULL STACK DEVELOPER",
-  greeting = "Hi, I'm Adolfo. I build",
-  title = "beautiful software that performs as",
-  highlightText = "well as it looks.",
-  description = "I'm a full-stack engineer with eight years building SaaS platforms, startup products, and scalable web applications — from first commit to production at scale.",
+  tag = "DESARROLLADOR FULL STACK",
+  greeting = "Hola, soy Adolfo. Construyo",
+  title = "productos digitales a medida, con criterio y",
+  highlightText = "pensados para escalar.",
+  description = "Ingeniero en Sistemas con más de 5 años creando sitios, tiendas y aplicaciones para clientes de Chile, España, Estados Unidos y Venezuela: desde la primera reunión hasta el despliegue.",
   bgLight,
   bgDark,
   bgImage = bgDark, // fallback
   primaryCta,
   secondaryCta,
+  media,
 } = Astro.props;
 ---
 
@@ -83,13 +85,17 @@ const {
             >
               <span class="sr-only">{highlightText}</span>
               {
-                highlightText.split("").map((char) => (
-                  <span
-                    class="hero-split-char inline-block will-change-[transform,opacity,filter]"
-                    aria-hidden="true"
-                  >
-                    {char === " " ? "\u00A0" : char}
-                  </span>
+                highlightText.split(" ").map((word, i) => (
+                  <Fragment>
+                    {i > 0 && " "}
+                    <span class="inline-block whitespace-nowrap" aria-hidden="true">
+                      {[...word].map((char) => (
+                        <span class="hero-split-char inline-block will-change-[transform,opacity,filter]">
+                          {char}
+                        </span>
+                      ))}
+                    </span>
+                  </Fragment>
                 ))
               }
             </span>
@@ -119,7 +125,7 @@ const {
         class="hero-anim-media lg:col-span-5 flex justify-center lg:justify-end relative"
       >
         <slot name="media">
-          <HeroMedia />
+          <HeroMedia {...media} />
         </slot>
       </div>
     </div>

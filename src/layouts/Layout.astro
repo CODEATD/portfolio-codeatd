@@ -23,6 +23,9 @@ const {
 
 // Construct the full page title for SEO
 const pageTitle = title ? `${title} | ${siteConfig.name}` : siteConfig.title;
+// Absolute URLs for Google and link previews ("/og-image.jpg" → "https://codeatd.dev/og-image.jpg")
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(image, Astro.site); // a WordPress URL stays as it is
 ---
 
 <!doctype html>
@@ -44,12 +47,18 @@ const pageTitle = title ? `${title} | ${siteConfig.name}` : siteConfig.title;
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <meta name="author" content={siteConfig.author} />
+    <link rel="canonical" href={canonical} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
 
     <!-- Open Graph Social Media -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:site_name" content={siteConfig.name} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={image} />
-    <meta property="og:url" content={siteConfig.url} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
 
     <!-- View Transitions: navigate without full reloads -->
     <ClientRouter />

@@ -43,10 +43,11 @@ export const StackPageSchema = BaseWPSchema.extend({
 
 export type Skill = z.infer<typeof SkillSchema>;
 
-//* Section page (ACF: heading) → Experience, later Projects/Blog
+//* Section page (ACF: heading + optional button text) → Experience, Projects, FAQ, Blog
 export const SectionPageSchema = BaseWPSchema.extend({
     acf: z.object({
         heading: z.string(),
+        cta_text: z.string().catch(""), // empty → the component's default text
     }),
 });
 
@@ -104,12 +105,37 @@ const SocialLinkSchema = z.object({
     icon: z.string(), // RemixIcon class, e.g. "ri-instagram-line"
 });
 
+//* ACF image (Return Format: Image Array) → the shape <Picture> needs
+const AcfImageSchema = z
+    .object({ url: z.string(), width: z.number(), height: z.number(), alt: z.string() })
+    .transform(({ url, width, height, alt }) => ({ src: url, width, height, alt }))
+    .optional()
+    .catch(undefined); // no image → false → undefined → the component's default image
+
+// Empty ACF text → undefined → the component's default text
+const OptionalTextSchema = z.string().catch("").transform((value) => value || undefined);
+
+//* Home → Hero (ACF Group on Site Settings)
+const HeroSchema = z.object({
+    tag: OptionalTextSchema,
+    greeting: OptionalTextSchema,
+    title: OptionalTextSchema,
+    highlight: OptionalTextSchema,
+    description: OptionalTextSchema,
+    primary_text: OptionalTextSchema,
+    cv_text: OptionalTextSchema,
+    badge_text: OptionalTextSchema,
+    image_light: AcfImageSchema,
+    image_dark: AcfImageSchema,
+});
+
 export const OptionsSchema = z.object({
     contact_email: z.string(),
     contact_phone: z.string(),
     contact_location: z.string(),
     social_links: z.array(SocialLinkSchema).catch([]), // empty repeater → false
     cv_file: z.string().catch(""), // no CV → false → ""
+    hero: HeroSchema.catch(HeroSchema.parse({})), // group missing → every field undefined
 });
 
 export type SocialLink = z.infer<typeof SocialLinkSchema>;
@@ -141,7 +167,8 @@ const ProjectSchema = BaseWPSchema.pick({
         featured_images: FeaturedImagesSchema,
         acf: z.object({
             description: z.string(),
-            live_url: z.string().catch(""), // empty → no "Visit Live"
+            live_url: z.string().catch(""), // empty → no "Ver sitio"
+            repo_url: z.string().catch(""), // empty → no "Ver código"
         }),
         technology_details: z.array(TermSchema),
         project_category_details: z.array(TermSchema),
@@ -155,6 +182,7 @@ const ProjectSchema = BaseWPSchema.pick({
             category: project_category_details[0]?.name ?? "", // card label: first category
             description: acf.description,
             liveUrl: acf.live_url,
+            repoUrl: acf.repo_url,
             image: featured_images,
             technologies: technology_details.map((term) => term.name),
         }),

@@ -52,7 +52,7 @@ const { location = "", class: className = "", variant = "pill" } = Astro.props;
     const clockDisplays = document.querySelectorAll<HTMLElement>(".live-clock-display");
     if (clockDisplays.length === 0) return;
 
-    const formatter: Intl.DateTimeFormat = new Intl.DateTimeFormat("en-US", {
+    const formatter: Intl.DateTimeFormat = new Intl.DateTimeFormat(document.documentElement.lang, {
       timeZone: siteConfig.timeZone,
       hour: "2-digit",
       minute: "2-digit",
