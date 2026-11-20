@@ -261,3 +261,24 @@ const CategorySchema = TermSchema.extend({
 export const CategoriesSchema = z.array(CategorySchema);
 
 export type Category = z.infer<typeof CategorySchema>;
+
+//* Contact page (ACF: heading, availability, reply_time, clients_map → OpenStreetMap, Raw Data)
+const MarkerSchema = z.object({
+    label: z.string(), // "Spain"
+    lat: z.number(),
+    lng: z.number(),
+});
+
+export const ContactPageSchema = BaseWPSchema.extend({
+    acf: z.object({
+        heading: z.string(),
+        availability: z.string().catch(""), // empty → no pill
+        reply_time: z.string().catch(""), // empty → hidden
+        clients_map: z
+            .object({ markers: z.array(MarkerSchema) })
+            .nullable()
+            .catch(null), // no map → false → null
+    }),
+});
+
+export type Marker = z.infer<typeof MarkerSchema>;
