@@ -1,4 +1,8 @@
 ---
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+const t = useTranslations(getLangFromUrl(Astro.url));
+
 interface Props {
   url: string; // full post URL
   title: string; // plain text (no HTML entities)
@@ -8,16 +12,16 @@ interface Props {
 const { url, title, class: className = "" } = Astro.props;
 
 const u = encodeURIComponent(url);
-const t = encodeURIComponent(title);
+const text = encodeURIComponent(title); // not "t": that name is the translations function
 const tu = encodeURIComponent(`${title} ${url}`); // apps that only take one text field
 
 // Plain share links: no third-party scripts
 const links = [
-  { name: "X", icon: "ri-twitter-x-line", href: `https://x.com/intent/post?url=${u}&text=${t}` },
+  { name: "X", icon: "ri-twitter-x-line", href: `https://x.com/intent/post?url=${u}&text=${text}` },
   { name: "LinkedIn", icon: "ri-linkedin-line", href: `https://www.linkedin.com/sharing/share-offsite/?url=${u}` },
   { name: "Bluesky", icon: "ri-bluesky-line", href: `https://bsky.app/intent/compose?text=${tu}` },
   { name: "WhatsApp", icon: "ri-whatsapp-line", href: `https://wa.me/?text=${tu}` },
-  { name: "Telegram", icon: "ri-telegram-line", href: `https://t.me/share/url?url=${u}&text=${t}` },
+  { name: "Telegram", icon: "ri-telegram-line", href: `https://t.me/share/url?url=${u}&text=${text}` },
 ];
 
 const button =
@@ -25,16 +29,16 @@ const button =
 ---
 
 <div class:list={["flex flex-wrap items-center gap-3", className]}>
-  <span class="text-sm font-medium text-neutral-500 dark:text-white">Share:</span>
+  <span class="text-sm font-medium text-neutral-500 dark:text-white">{t("blog.share")}</span>
   {
     links.map(({ name, icon, href }) => (
       <a href={href} target="_blank" rel="noopener noreferrer" class={button}>
         <i class={icon} aria-hidden="true" />
-        <span class="sr-only">Share on {name} (opens in a new tab)</span>
+        <span class="sr-only">{t("blog.shareOn")} {name} {t("a11y.newTab")}</span>
       </a>
     ))
   }
-  <button type="button" class={button} data-copy-link={url} aria-label="Copy link">
+  <button type="button" class={button} data-copy-link={url} data-done-label={t("blog.linkCopied")} aria-label={t("blog.copyLink")}>
     <i class="ri-links-line" aria-hidden="true" />
   </button>
 </div>
@@ -45,13 +49,14 @@ const button =
       button.onclick = async () => {
         await navigator.clipboard.writeText(button.dataset.copyLink ?? location.href);
 
-        // Feedback: check icon for 2 s
+        // Feedback: check icon + "copied" label for 2 s, then the original label
         const icon = button.querySelector("i");
+        const label = button.getAttribute("aria-label") ?? "";
         icon?.classList.replace("ri-links-line", "ri-check-line");
-        button.setAttribute("aria-label", "Link copied");
+        button.setAttribute("aria-label", button.dataset.doneLabel ?? label);
         setTimeout(() => {
           icon?.classList.replace("ri-check-line", "ri-links-line");
-          button.setAttribute("aria-label", "Copy link");
+          button.setAttribute("aria-label", label);
         }, 2000);
       };
     });

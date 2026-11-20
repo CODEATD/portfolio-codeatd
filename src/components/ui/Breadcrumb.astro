@@ -1,4 +1,8 @@
 ---
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+const t = useTranslations(getLangFromUrl(Astro.url));
+
 interface Crumb {
   name: string;
   href?: string; // last crumb (current page) has no link
@@ -12,7 +16,7 @@ interface Props {
 const { items, class: className = "" } = Astro.props;
 ---
 
-<nav aria-label="Breadcrumb" class={className}>
+<nav aria-label={t("breadcrumb.label")} class={className}>
   <ol class="flex flex-wrap items-center gap-2 text-sm text-neutral-300 dark:text-neutral-100">
     {
       items.map(({ name, href }, i) => (

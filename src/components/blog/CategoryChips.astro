@@ -1,5 +1,8 @@
 ---
 import type { Category } from "@/types";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+const t = useTranslations(getLangFromUrl(Astro.url));
 
 interface Props {
   categories: Category[];
@@ -9,9 +12,9 @@ interface Props {
 
 const { categories, current = "", class: className = "" } = Astro.props;
 
-// "All" + one chip per category (only categories with posts: hide_empty=true)
+// "Todas" + one chip per category (only categories with posts: hide_empty=true)
 const chips = [
-  { name: "All", slug: "", href: "/blog", count: null },
+  { name: t("blog.all"), slug: "", href: "/blog", count: null },
   ...categories.map(({ name, slug, count }) => ({
     name,
     slug,
@@ -21,7 +24,7 @@ const chips = [
 ];
 ---
 
-<nav aria-label="Blog categories" class={className}>
+<nav aria-label={t("blog.categories")} class={className}>
   <ul class="flex flex-wrap gap-2">
     {
       chips.map(({ name, slug, href, count }) => {

@@ -11,6 +11,9 @@ import LogoPrimary from "@/assets/logos/logo_text_primary.svg";
 import LiveClock from "@/components/ui/LiveClock.astro";
 import { getOptions } from "@/helpers";
 import { OptionsSchema } from "@/types";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+const t = useTranslations(getLangFromUrl(Astro.url));
 
 // Dynamic background image prop support
 interface Props {
@@ -69,7 +72,7 @@ const options = OptionsSchema.parse(await getOptions());
           <div class="flex gap-3 sm:gap-6">
             <!-- Phone -->
             <div class="flex flex-col gap-1">
-              <span class="text-white font-medium"> Call Today: </span>{" "}
+              <span class="text-white font-medium"> {t("footer.phone")} </span>{" "}
               <a
                 href={`tel:${options.contact_phone.replace(/[^0-9+]/g, "")}`}
                 class="text-neutral-200 hover:text-primary-500 transition-colors font-medium"
@@ -80,7 +83,7 @@ const options = OptionsSchema.parse(await getOptions());
 
             <!-- Email -->
             <div class="flex flex-col gap-1">
-              <span class="text-white font-medium"> Email: </span>{" "}
+              <span class="text-white font-medium"> {t("footer.email")} </span>{" "}
               <a
                 href={`mailto:${options.contact_email}`}
                 class="text-neutral-200 hover:text-primary-500 transition-colors font-medium"
@@ -111,7 +114,7 @@ const options = OptionsSchema.parse(await getOptions());
       <!-- Right Column: Navigation & Legal -->
       <div class="md:col-span-6 lg:col-span-5 grid grid-cols-2 gap-8 sm:gap-12">
         <!-- Menu 1 -->
-        <FooterBox heading="Navigation">
+        <FooterBox heading={t("footer.navigation")}>
           <ul class="space-y-4">
             {
               footerNavCol1.map((item) => (
@@ -128,7 +131,7 @@ const options = OptionsSchema.parse(await getOptions());
           </ul>
         </FooterBox>
         <!-- Menu 2 -->
-        <FooterBox heading="Social">
+        <FooterBox heading={t("footer.more")}>
           <ul class="space-y-4">
             {
               footerNavCol2.map((item) => (
@@ -152,7 +155,7 @@ const options = OptionsSchema.parse(await getOptions());
     class="relative z-20 flex flex-col md:flex-row items-start md:items-center justify-between gap-2.5 md:gap-6 container text-xs text-neutral-500 text-text-muted pt-6 pb-9 md:py-6"
   >
     <p class="order-1 text-left">
-      &copy; {`${currentYear} ${siteConfig.brandName}`}. All rights reserved.
+      &copy; {`${currentYear} ${siteConfig.brandName}`}. {t("footer.rights")}
     </p>
 
     <!-- Live Clock -->
@@ -163,7 +166,7 @@ const options = OptionsSchema.parse(await getOptions());
 
     <!-- Créditos de desarrollo -->
     <p class="order-2 md:order-3 text-left md:text-right">
-      Developed and designed by <span class="text-neutral-200 font-medium"
+      {t("footer.credits")} <span class="text-neutral-200 font-medium"
         >{siteConfig.brandName}</span
       >
     </p>

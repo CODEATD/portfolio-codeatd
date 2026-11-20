@@ -3,6 +3,10 @@ import MainNav from "@/components/header/MainNav.astro";
 import ThemeToggle from "@/components/ui/ThemeToggle.astro";
 import Logo from "@/assets/logos/logo-circle.svg";
 import MobileMenu from "@/components/header/MobileMenu.astro";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+const t = useTranslations(getLangFromUrl(Astro.url));
+
 ---
 
 <header
@@ -35,7 +39,7 @@ import MobileMenu from "@/components/header/MobileMenu.astro";
           <span class="inline-block" data-magnetic-target>
             <a href="/contact" class="btn-primary">
               <span class="inline-flex items-center gap-1.5" data-magnetic-label>
-                Let's Talk <i class="ri-arrow-right-up-line text-base"></i>
+                {t("nav.cta")} <i class="ri-arrow-right-up-line text-base"></i>
               </span>
             </a>
           </span>

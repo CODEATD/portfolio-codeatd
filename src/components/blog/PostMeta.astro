@@ -1,5 +1,8 @@
 ---
 import { formatDate } from "@/helpers";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+const t = useTranslations(getLangFromUrl(Astro.url));
 
 interface Props {
   date: string; // ISO date from WordPress
@@ -22,6 +25,6 @@ const { date, readingTime, class: className = "" } = Astro.props;
   </span>
   <span class="inline-flex items-center gap-1.5">
     <i class="ri-time-line text-sm text-neutral-500 dark:text-primary-500" aria-hidden="true" />
-    {readingTime} min read
+    {readingTime} {t("blog.minRead")}
   </span>
 </p>

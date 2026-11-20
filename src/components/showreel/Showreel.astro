@@ -1,5 +1,8 @@
 ---
 import { Picture } from "astro:assets";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+const t = useTranslations(getLangFromUrl(Astro.url));
 
 interface Props {
   label?: string; // accessible name (WordPress page title)
@@ -55,7 +58,9 @@ const {
     <button
       type="button"
       class="showreel-toggle absolute right-4 bottom-4 grid size-11 place-items-center rounded-full bg-neutral-500/70 text-white backdrop-blur-sm transition-colors duration-200 hover:bg-primary-500 hover:text-neutral-500 sm:right-6 sm:bottom-6"
-      aria-label="Play video"
+      aria-label={t("showreel.play")}
+      data-play-label={t("showreel.play")}
+      data-pause-label={t("showreel.pause")}
     >
       <i class="ri-play-fill text-xl" aria-hidden="true"></i>
     </button>
@@ -91,7 +96,7 @@ const {
 
     // Button label + icon follow the real state of the video
     const showState = (playing: boolean) => {
-      toggle.setAttribute("aria-label", playing ? "Pause video" : "Play video");
+      toggle.setAttribute("aria-label", (playing ? toggle.dataset.pauseLabel : toggle.dataset.playLabel) ?? "");
       icon.className = `${playing ? "ri-pause-fill" : "ri-play-fill"} text-xl`;
     };
     video.onplay = () => showState(true);

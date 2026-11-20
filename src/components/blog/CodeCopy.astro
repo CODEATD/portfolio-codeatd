@@ -8,11 +8,12 @@
 
         // Feedback: check icon for 2 s
         const icon = button.querySelector("i");
+        const label = button.getAttribute("aria-label") ?? "";
         icon?.classList.replace("ri-file-copy-line", "ri-check-line");
-        button.setAttribute("aria-label", "Copied");
+        button.setAttribute("aria-label", button.dataset.doneLabel ?? label);
         setTimeout(() => {
           icon?.classList.replace("ri-check-line", "ri-file-copy-line");
-          button.setAttribute("aria-label", "Copy code");
+          button.setAttribute("aria-label", label);
         }, 2000);
       };
     });

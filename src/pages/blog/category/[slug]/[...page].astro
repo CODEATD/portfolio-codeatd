@@ -9,6 +9,9 @@ import BlogGridReveal from "@/components/blog/BlogGridReveal.astro";
 import Pagination from "@/components/blog/Pagination.astro";
 import { getPostType, toPlainText, withPagePrefix } from "@/helpers";
 import { CategoriesSchema, PostsSchema, type Category, type Post } from "@/types";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+const t = useTranslations(getLangFromUrl(Astro.url));
 
 //* SSG: /blog/category/astro, /blog/category/astro/page/2…
 export const getStaticPaths = (async ({ paginate }) => {
@@ -41,12 +44,12 @@ interface Props {
 
 const { page, category, categories } = Astro.props;
 const name = toPlainText(category.name); // "CSS &amp; Design" → "CSS & Design"
-const postsLabel = `${category.count} ${category.count === 1 ? "post" : "posts"}`;
+const postsLabel = `${category.count} ${category.count === 1 ? t("blog.post") : t("blog.posts")}`;
 ---
 
 <Layout
   title={`${name} · Blog`}
-  description={`${postsLabel} about ${name} on the CODE ATD blog.`}
+  description={`${postsLabel} ${t("blog.about")} ${name} · Blog de CODE ATD`}
 >
   <section
     aria-labelledby="blog-title"
@@ -55,7 +58,7 @@ const postsLabel = `${category.count} ${category.count === 1 ? "post" : "posts"}
   >
     <Breadcrumb
       items={[
-        { name: "Home", href: "/" },
+        { name: t("breadcrumb.home"), href: "/" },
         { name: "Blog", href: "/blog" },
         { name: category.name },
       ]}
@@ -65,7 +68,7 @@ const postsLabel = `${category.count} ${category.count === 1 ? "post" : "posts"}
       as="h1"
       class="blog-reveal-item mt-10"
       id="blog-title"
-      label={`Category · ${postsLabel}`}
+      label={`${t("blog.category")} · ${postsLabel}`}
       heading={name}
       headingClass="sm:text-5xl lg:text-6xl"
     />
