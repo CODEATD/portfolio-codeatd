@@ -33,9 +33,9 @@ export function withPagePrefix<T extends { params: { page?: string | number } }>
     }));
 }
 
-//* Format an ISO date in English, e.g. "2025-03-15T10:00:00" → "Mar 15, 2025"
-export function formatDate(date: string) {
-    return new Intl.DateTimeFormat("en-US", {
+//* Format an ISO date, e.g. "2025-03-15T10:00:00" → "15 mar 2025"
+export function formatDate(date: string, locale = "es") {
+    return new Intl.DateTimeFormat(locale, {
         year: "numeric",
         month: "short",
         day: "numeric",
