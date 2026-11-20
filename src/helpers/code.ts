@@ -15,6 +15,8 @@ const LANGUAGES: Record<string, { name: string; badge: string }> = {
     php: { name: "PHP", badge: "PHP" },
     json: { name: "JSON", badge: "{}" },
     bash: { name: "Terminal", badge: "$" },
+    tsx: { name: "TSX", badge: "TSX" },
+    dart: { name: "Dart", badge: "DT" },
 };
 
 // <pre><code class="language-js">…</code></pre> (the <code> and its class are optional)

@@ -98,6 +98,15 @@
   & blockquote {
     @apply border-l-2 border-primary-500 pl-5 italic text-neutral-500 dark:text-white;
   }
+  & table {
+    @apply my-8 block w-full overflow-x-auto text-sm sm:table; /* scroll on mobile */
+  }
+  & th {
+    @apply border-b border-bor-light px-3 py-2 text-left font-semibold text-neutral-500 dark:border-neutral-400 dark:text-white;
+  }
+  & td {
+    @apply border-b border-bor-light px-3 py-2 align-top dark:border-neutral-400;
+  }
   & :not(pre) > code {
     @apply rounded-md border border-bor-light bg-neutral-50/40 px-1.5 py-0.5 font-mono text-[0.85em] font-medium text-neutral-500 dark:border-neutral-400 dark:bg-black-400 dark:text-primary-500;
   }
