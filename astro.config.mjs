@@ -2,9 +2,12 @@
 import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import netlify from "@astrojs/netlify";
+import sitemap from "@astrojs/sitemap";
 
 // https://astro.build/config
 export default defineConfig({
+  // Absolute URLs: canonical, Open Graph and the sitemap
+  site: "https://codeatd.dev",
   vite: {
     plugins: [tailwindcss()],
   },
@@ -17,4 +20,6 @@ export default defineConfig({
   adapter: netlify({
     devFeatures: { edgeFunctions: false },
   }),
+  // sitemap-index.xml with every static page (posts are server-rendered, so they are not listed)
+  integrations: [sitemap()],
 });
