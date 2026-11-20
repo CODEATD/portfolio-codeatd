@@ -1,43 +1,47 @@
 ---
 // src/components/ui/LiveClock.astro
 interface Props {
-  location: string; // from Site Settings (contact_location)
+  location?: string; // from Site Settings (contact_location)
   class?: string;
+  variant?: "pill" | "plain"; // plain: only the time, inherits the text color
 }
 
-const { location, class: className = "" } = Astro.props;
+const { location = "", class: className = "", variant = "pill" } = Astro.props;
 ---
 
-<div
-  class={`items-center gap-2.5 rounded-full text-neutral-300 font-mono text-xs shadow-sm ${className}`}
->
-  <!-- Pulsing dot -->
-  <span class="relative flex h-2 w-2">
-    <span
-      class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
-    ></span>
-    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"
-    ></span>
-  </span>
+{
+  variant === "plain" ? (
+    <span class={`live-clock-display font-mono tabular-nums ${className}`}>--:--:-- --</span>
+  ) : (
+    <div
+      class={`items-center gap-2.5 rounded-full text-neutral-300 font-mono text-xs shadow-sm ${className}`}
+    >
+      {/* Pulsing dot */}
+      <span class="relative flex h-2 w-2">
+        <span
+          class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
+        ></span>
+        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"
+        ></span>
+      </span>
 
-  <!-- Clock display -->
-  <span
-    id="live-clock-display"
-    class="live-clock-display font-semibold text-white tracking-wider"
-  >
-    --:--:-- --
-  </span>
+      {/* Clock display */}
+      <span class="live-clock-display font-semibold text-white tracking-wider">
+        --:--:-- --
+      </span>
 
-  <!-- Location separator and label -->
-  {
-    location && (
-      <>
-        <span class="text-text-muted">·</span>
-        <span class="text-text-muted">{location}</span>
-      </>
-    )
-  }
-</div>
+      {/* Location separator and label */}
+      {
+        location && (
+          <>
+            <span class="text-text-muted">·</span>
+            <span class="text-text-muted">{location}</span>
+          </>
+        )
+      }
+    </div>
+  )
+}
 
 <script>
   import { siteConfig } from "@/config/site-config";
@@ -45,9 +49,7 @@ const { location, class: className = "" } = Astro.props;
   let clockId: number | undefined;
 
   function initClock(): void {
-    const clockDisplays = document.querySelectorAll<HTMLElement>(
-      ".live-clock-display, #live-clock-display",
-    );
+    const clockDisplays = document.querySelectorAll<HTMLElement>(".live-clock-display");
     if (clockDisplays.length === 0) return;
 
     const formatter: Intl.DateTimeFormat = new Intl.DateTimeFormat("en-US", {
