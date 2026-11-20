@@ -18,7 +18,7 @@ export const navLinks = [
   { name: "Experience", href: "/#experience" },
   { name: "Projects", href: "/#projects" },
   { name: "Blog", href: "/blog" },
-  { name: "Contact", href: "/#contact" },
+  { name: "Contact", href: "/contact" },
 ] as const;
 
 export const footerNavCol1 = [
@@ -29,6 +29,6 @@ export const footerNavCol1 = [
 
 export const footerNavCol2 = [
   { name: "Experience", href: "/#experience" },
-  { name: "Contact", href: "/#contact" },
+  { name: "Contact", href: "/contact" },
 ] as const;
 
