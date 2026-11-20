@@ -13,7 +13,8 @@ export default defineConfig({
     domains: ["codeatd.local", "cms.codeatd.dev"],
   },
   // Netlify: the site stays static; only pages with prerender = false (/blog/[slug]) run on the server
+  // Dev: no Edge Functions emulation (unused; its Deno server fails on Windows and slows the start)
   adapter: netlify({
-    devFeatures: false,
+    devFeatures: { edgeFunctions: false },
   }),
 });
