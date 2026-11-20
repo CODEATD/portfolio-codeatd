@@ -346,9 +346,61 @@
 }
 
 /* ===== GLOBAL: VIEW TRANSITIONS ===== */
-/* Disable View Transitions fade (Theme Reveal) */
-::view-transition-old(root),
-::view-transition-new(root) {
+
+/* Theme reveal: no fade, the circle (ThemeToggle) does the work */
+html.theme-transition::view-transition-old(root),
+html.theme-transition::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
+}
+
+/* Theme reveal: named elements (header, post images) stay inside the root snapshot,
+   so the circle covers the whole page */
+html.theme-transition [data-astro-transition-scope] {
+  view-transition-name: none;
+}
+
+/* Page navigation: quick exit, soft entrance */
+::view-transition-old(root) {
+  animation: page-fade-out 200ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+::view-transition-new(root) {
+  animation: page-fade-in 340ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* No plus-lighter blending between the two snapshots */
+::view-transition-old(root),
+::view-transition-new(root) {
+  mix-blend-mode: normal;
+}
+
+@keyframes page-fade-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Reduced motion: instant page swap */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+  }
 }
