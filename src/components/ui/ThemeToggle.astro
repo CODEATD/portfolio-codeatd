@@ -143,6 +143,9 @@
       Math.max(x, window.innerWidth - x),
       Math.max(y, window.innerHeight - y),
     );
+    // Tells the CSS this transition is the theme reveal, not a page navigation
+    document.documentElement.classList.add("theme-transition");
+
     const transition = document.startViewTransition(applyTheme);
     transition.ready.then(() => {
       document.documentElement.animate(
@@ -158,6 +161,11 @@
           pseudoElement: "::view-transition-new(root)",
         },
       );
+    });
+
+    // Remove it when the reveal ends (finished or skipped)
+    transition.finished.finally(() => {
+      document.documentElement.classList.remove("theme-transition");
     });
   }
   // Initialize the theme toggle button
