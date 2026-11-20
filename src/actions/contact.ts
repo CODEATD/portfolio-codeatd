@@ -1,16 +1,19 @@
 import { defineAction } from "astro:actions";
 import { z } from "astro/zod";
 
+// An empty field arrives as null, not "": turn it into "" so each field's own message applies
+const text = (schema: z.ZodString) => z.preprocess((value) => value ?? "", schema);
+
 export const contact = {
     sendEmail: defineAction({
         accept: "form", // receives the <form> as FormData
         input: z.object({
-            name: z.string().trim().min(1, "Please tell me your name."),
+            name: text(z.string().trim().min(1, "Please tell me your name.")),
             email: z.email("Enter a valid email so I can reply."),
-            company: z.string().trim().default(""), // optional
-            projectType: z.string().min(1, "Choose what you need."),
-            message: z.string().trim().min(30, "A bit more detail, please (at least 30 characters)."),
-            website: z.string().default(""), // honeypot: people never see it, bots fill it
+            company: text(z.string().trim()), // optional
+            projectType: text(z.string().min(1, "Choose what you need.")),
+            message: text(z.string().trim().min(30, "A bit more detail, please (at least 30 characters).")),
+            website: text(z.string()), // honeypot: people never see it, bots fill it
         }),
         handler: async (input) => {
             // Honeypot filled → a bot: answer "sent" and send nothing
