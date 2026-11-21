@@ -63,6 +63,15 @@
       transform: translateX(-50%);
     }
   }
+
+  /* Page hero grid: moves one cell diagonally, so the loop has no jump */
+  --animate-grid-drift: grid-drift 24s linear infinite;
+
+  @keyframes grid-drift {
+    to {
+      transform: translate(var(--grid-size), var(--grid-size));
+    }
+  }
 }
 
 /* WordPress editor HTML (FAQ answers; later blog posts and single-project) */
@@ -176,6 +185,20 @@
 }
 
 /* ===== UTILITIES ===== */
+/* Square grid lines (page heroes: /blog, /projects) */
+@utility grid-lines {
+  --grid-size: 56px;
+  --grid-color: color-mix(in oklab, var(--color-neutral-500) 7%, transparent);
+  background-image:
+    linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+
+  &:where(.dark, .dark *) {
+    --grid-color: color-mix(in oklab, white 9%, transparent);
+  }
+}
+
 .container {
   @apply max-w-7xl w-[95%] mx-auto;
 }
