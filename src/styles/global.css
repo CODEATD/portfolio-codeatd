@@ -185,7 +185,7 @@
 @utility btn-outline {
   @apply inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200
          border border-neutral-300 text-neutral-800 hover:border-black
-         dark:border-neutral-700 dark:text-white dark:hover:border-white cursor-pointer
+         dark:border-neutral-200 dark:text-white dark:hover:border-white cursor-pointer
          hover:-translate-y-0.5 active:translate-y-0 motion-reduce:hover:translate-y-0;
 }
 
