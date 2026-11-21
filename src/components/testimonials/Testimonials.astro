@@ -1,9 +1,6 @@
 ---
 import { Picture } from "astro:assets";
 import type { Testimonial } from "@/types";
-// Swiper styles in the frontmatter (not in <script>): they go in every page's <head>,
-// so ClientRouter keeps them when you navigate away and back
-import "swiper/css";
 
 interface Props {
   index?: string;
@@ -19,9 +16,10 @@ const {
   class: className = "",
 } = Astro.props;
 
-// Swiper's loop needs more slides than the screen shows → repeat the list up to 8
-const repeat = Math.ceil(8 / testimonials.length);
-const items = Array.from({ length: repeat }, () => testimonials).flat();
+// Two copies of the list: the animation moves the track -50%, so it loops with no jump
+const copies = [0, 1];
+// Same pace whatever the number of cards: ~7 s per card
+const duration = testimonials.length * 7;
 ---
 
 <section
@@ -36,124 +34,77 @@ const items = Array.from({ length: repeat }, () => testimonials).flat();
     ({index}) {label}
   </h2>
 
-  <!-- Swiper -->
+  <!-- Marquee: CSS only. It pauses on hover with no jump, like the logo one -->
   <div
-    class="testimonials-anim-item testimonials-swiper swiper mt-10 ml-[calc(50%-50vw)]! w-screen sm:mt-12"
+    class="testimonials-anim-item mt-10 ml-[calc(50%-50vw)] w-screen overflow-hidden sm:mt-12 motion-reduce:overflow-x-auto"
+    style={`--marquee-duration: ${duration}s`}
   >
-    <ul
-      class="swiper-wrapper [--swiper-wrapper-transition-timing-function:linear]"
+    <div
+      class="flex w-max animate-marquee hover:[animation-play-state:paused] focus-within:[animation-play-state:paused] motion-reduce:animate-none"
     >
       {
-        items.map(({ name, quote, role, company, avatar }, i) => (
-          <li
-            class="swiper-slide w-[85vw]! sm:w-108! h-auto!"
-            aria-hidden={i >= testimonials.length ? "true" : undefined}
-          >
-            <figure class="flex h-full flex-col justify-between gap-8 rounded-3xl bg-neutral-50/30 p-8 sm:p-10 dark:bg-black-400">
-              <blockquote class="text-lg leading-relaxed text-pretty text-neutral-300 sm:text-xl dark:text-neutral-50">
-                <p>{quote}</p>
-              </blockquote>
+        copies.map((copy) => (
+          <ul class="flex shrink-0" aria-hidden={copy > 0 ? "true" : undefined}>
+            {testimonials.map(({ name, quote, role, company, avatar }) => (
+              <li class="w-[85vw] shrink-0 pr-6 sm:w-108">
+                <figure class="flex h-full flex-col justify-between gap-8 rounded-3xl bg-neutral-50/30 p-8 sm:p-10 dark:bg-black-400">
+                  <blockquote class="text-lg leading-relaxed text-pretty text-neutral-300 sm:text-xl dark:text-neutral-50">
+                    <p>{quote}</p>
+                  </blockquote>
 
-              <figcaption class="flex items-center gap-4">
-                {avatar ? (
-                  <Picture
-                    src={avatar.url}
-                    alt=""
-                    width={96}
-                    height={96}
-                    formats={["avif", "webp"]}
-                    fallbackFormat="jpg"
-                    class="size-12 shrink-0 rounded-full object-cover dark:ring-2 dark:ring-white"
-                  />
-                ) : (
-                  <span
-                    class="grid size-12 shrink-0 place-items-center rounded-full bg-primary-500 font-heading text-lg font-semibold text-neutral-500"
-                    aria-hidden="true"
-                  >
-                    {name.charAt(0)}
-                  </span>
-                )}
-                <div>
-                  <p class="font-medium text-neutral-500 dark:text-white" set:html={name} />
-                  <p class="text-sm text-neutral-300 dark:text-primary-500">
-                    {[role, company].filter(Boolean).join(" · ")}
-                  </p>
-                </div>
-              </figcaption>
-            </figure>
-          </li>
+                  <figcaption class="flex items-center gap-4">
+                    {avatar ? (
+                      <Picture
+                        src={avatar.url}
+                        alt=""
+                        width={96}
+                        height={96}
+                        formats={["avif", "webp"]}
+                        fallbackFormat="jpg"
+                        class="size-12 shrink-0 rounded-full object-cover dark:ring-2 dark:ring-white"
+                      />
+                    ) : (
+                      <span
+                        class="grid size-12 shrink-0 place-items-center rounded-full bg-primary-500 font-heading text-lg font-semibold text-neutral-500"
+                        aria-hidden="true"
+                      >
+                        {name.charAt(0)}
+                      </span>
+                    )}
+                    <div>
+                      <p class="font-medium text-neutral-500 dark:text-white" set:html={name} />
+                      <p class="text-sm text-neutral-300 dark:text-primary-500">
+                        {[role, company].filter(Boolean).join(" · ")}
+                      </p>
+                    </div>
+                  </figcaption>
+                </figure>
+              </li>
+            ))}
+          </ul>
         ))
       }
-    </ul>
+    </div>
   </div>
 </section>
 
 <script>
-  import Swiper from "swiper";
-  import { Autoplay, FreeMode, Keyboard, A11y } from "swiper/modules";
   import { gsap } from "gsap";
   import { ScrollTrigger } from "gsap/ScrollTrigger";
 
   gsap.registerPlugin(ScrollTrigger);
 
-  let swiper: Swiper | null = null;
   let testimonialsTween: gsap.core.Tween | null = null;
 
   function initTestimonials() {
     const section = document.querySelector<HTMLElement>("#testimonials");
-    const container = section?.querySelector<HTMLElement>(".testimonials-swiper");
-    if (!section || !container) return;
+    if (!section) return;
     destroyTestimonials();
 
-    const reduceMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
+    // Accessibility: no entrance animation if the user prefers reduced motion
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    // 1. Swiper: a continuous, draggable row
-    swiper = new Swiper(container, {
-      modules: [Autoplay, FreeMode, Keyboard, A11y],
-      slidesPerView: "auto",
-      spaceBetween: 24,
-      grabCursor: true,
-      keyboard: { enabled: true },
-      freeMode: true, // drag with inertia, no snapping to a slide
-      // Reduced motion → no auto-scroll and no loop: the user drags or uses the keyboard
-      loop: !reduceMotion,
-      loopPreventsSliding: false, // a tap or a pause leaves a transition half done: still move on
-      speed: 7000, // ms per slide: higher = slower
-      autoplay: reduceMotion
-        ? false
-        : {
-            delay: 0, // no wait between moves → continuous
-            disableOnInteraction: false, // keep going after dragging
-          },
-    });
-
-    if (!reduceMotion) {
-      // Swiper's own pause (pauseOnMouseEnter) waits for the transition and sometimes never resumes,
-      // and a tap stops the row for good → pause and resume it ourselves.
-      // Stop right where it is…
-      const pauseRow = () => {
-        if (!swiper) return;
-        swiper.autoplay.stop();
-        swiper.setTransition(0);
-        swiper.setTranslate(swiper.getTranslate());
-      };
-      // …and start again from there
-      const playRow = () => {
-        swiper?.autoplay.stop();
-        swiper?.autoplay.start();
-      };
-
-      container.addEventListener("pointerenter", (e) => e.pointerType === "mouse" && pauseRow()); // stop to read
-      container.addEventListener("pointerleave", (e) => e.pointerType === "mouse" && playRow());
-      container.addEventListener("focusin", pauseRow); // keyboard
-      container.addEventListener("focusout", playRow);
-      swiper.on("tap", playRow); // a tap stops the transition halfway
-    }
-
-    // 2. Entrance animation (label + row)
-    if (reduceMotion) return;
+    // Entrance animation (label + row); the row itself scrolls with CSS
     testimonialsTween = gsap.from(
       section.querySelectorAll(".testimonials-anim-item"),
       {
@@ -168,8 +119,6 @@ const items = Array.from({ length: repeat }, () => testimonials).flat();
   }
 
   function destroyTestimonials() {
-    swiper?.destroy(true, true); // remove listeners and styles Swiper added
-    swiper = null;
     testimonialsTween?.scrollTrigger?.kill();
     testimonialsTween?.kill();
     testimonialsTween = null;
