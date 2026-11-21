@@ -1,0 +1,50 @@
+---
+import Breadcrumb from "@/components/ui/Breadcrumb.astro";
+import SectionHeading from "@/components/ui/SectionHeading.astro";
+
+interface Props {
+  crumbs: { name: string; href?: string }[];
+  label: string;
+  heading: string;
+  id: string; // h1 id → aria-labelledby on the page <section>
+  intro?: string; // HTML (WordPress content) or plain text
+  itemClass?: string; // entrance animation class of the page (e.g. blog-reveal-item)
+  class?: string;
+}
+
+const { crumbs, label, heading, id, intro, itemClass = "", class: className = "" } = Astro.props;
+---
+
+<!-- Breadcrumb + label + h1 + intro over a grid that fades out at the edges (/blog, /projects) -->
+<div class:list={["relative isolate pt-12 sm:pt-16", className]}>
+  <!-- Full width behind the container; the grid is one cell bigger so it can drift without gaps -->
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-y-0 left-1/2 -z-10 w-screen -translate-x-1/2 overflow-hidden mask-[radial-gradient(ellipse_70%_90%_at_50%_0%,black_35%,transparent_100%)]"
+  >
+    <div class="grid-lines absolute -inset-14 animate-grid-drift motion-reduce:animate-none"></div>
+  </div>
+
+  <Breadcrumb items={crumbs} />
+
+  <div class:list={[itemClass, "mt-10 grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-8"]}>
+    <SectionHeading
+      as="h1"
+      class="lg:col-span-7"
+      id={id}
+      label={label}
+      heading={heading}
+      headingClass="sm:text-5xl lg:text-6xl"
+    />
+    {
+      intro && (
+        <div
+          class="rich-text text-sm leading-relaxed text-pretty text-neutral-400 sm:text-base lg:col-span-4 lg:col-start-9 dark:text-neutral-50"
+          set:html={intro}
+        />
+      )
+    }
+  </div>
+
+  <slot />
+</div>

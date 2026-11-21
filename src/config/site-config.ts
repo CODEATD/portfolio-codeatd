@@ -16,14 +16,14 @@ export const siteConfig = {
 export const navLinks = [
   { name: "Sobre mí", href: "/#about" },
   { name: "Experiencia", href: "/#experience" },
-  { name: "Proyectos", href: "/#projects" },
+  { name: "Proyectos", href: "/projects" },
   { name: "Blog", href: "/blog" },
   { name: "Contacto", href: "/contact" },
 ] as const;
 
 export const footerNavCol1 = [
   { name: "Sobre mí", href: "/#about" },
-  { name: "Proyectos", href: "/#projects" },
+  { name: "Proyectos", href: "/projects" },
   { name: "Blog", href: "/blog" },
 ] as const;
 

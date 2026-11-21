@@ -1,0 +1,35 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import ProjectsGallery from "@/components/projects/ProjectsGallery.astro";
+import { getPostType, toPlainText } from "@/helpers";
+import { CategoriesSchema, ProjectsSchema } from "@/types";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+const t = useTranslations(getLangFromUrl(Astro.url));
+
+//* SSR: /projects/category/web-app, /projects/category/mobile-app…
+export const prerender = false;
+
+// Slug from the URL: /projects/category/[slug] → { slug }
+const { slug } = Astro.params;
+
+const [projectsJson, categoriesJson] = await Promise.all([
+  getPostType("project"),
+  getPostType("project_category", "&hide_empty=true"),
+]);
+const projects = ProjectsSchema.parse(projectsJson);
+const categories = CategoriesSchema.parse(categoriesJson);
+
+// Unknown or empty category → 404
+const current = categories.find((category) => category.slug === slug);
+if (!current) return Astro.redirect("/404");
+
+const name = toPlainText(current.name);
+---
+
+<Layout
+  title={`${name} · ${t("projectsPage.title")}`}
+  description={`${name}: ${t("projectsPage.text")}`}
+>
+  <ProjectsGallery projects={projects} categories={categories} current={current} />
+</Layout>

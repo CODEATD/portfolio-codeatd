@@ -1,0 +1,62 @@
+---
+import type { Category } from "@/types";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+const t = useTranslations(getLangFromUrl(Astro.url));
+
+interface Props {
+  categories: Category[]; // WordPress project_category (only with projects: hide_empty=true)
+  total: number; // "Todos" count
+  current?: string; // active category slug ("" = Todos)
+  class?: string;
+}
+
+const { categories, total, current = "", class: className = "" } = Astro.props;
+
+// Each filter is a link to its own route: shareable URL and no JS needed
+const items = [
+  { name: t("projectsPage.all"), slug: "", href: "/projects", count: total },
+  ...categories.map(({ name, slug, count }) => ({
+    name,
+    slug,
+    href: `/projects/category/${slug}`,
+    count,
+  })),
+];
+---
+
+<!-- Mobile: a row that scrolls sideways · Desktop: a sticky column -->
+<nav aria-label={t("projectsPage.filters")} class={className}>
+  <p
+    class="hidden text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500 lg:block dark:text-primary-500"
+  >
+    {t("projectsPage.categories")}
+  </p>
+  <ul
+    class="flex gap-2 overflow-x-auto pb-2 [scrollbar-width:none] lg:mt-5 lg:flex-col lg:overflow-visible lg:pb-0"
+  >
+    {
+      items.map(({ name, slug, href, count }) => {
+        // Active filter: the URL slug matches the item (Juan's pattern with Astro.params)
+        const active = slug === current;
+        return (
+          <li class="shrink-0">
+            <a
+              href={href}
+              aria-current={active ? "page" : undefined}
+              class:list={[
+                "flex items-center justify-between gap-4 rounded-full border px-4 py-2 text-sm font-medium transition-colors lg:rounded-2xl lg:px-5 lg:py-3",
+                active
+                  ? "border-primary-500 bg-primary-500 text-neutral-500"
+                  : "border-bor-light text-neutral-400 hover:border-neutral-500 hover:text-neutral-500 dark:border-neutral-400 dark:text-neutral-50 dark:hover:border-white dark:hover:text-white",
+              ]}
+            >
+              <span set:html={name} />
+              <span class="text-xs opacity-60">{count}</span>
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</nav>
