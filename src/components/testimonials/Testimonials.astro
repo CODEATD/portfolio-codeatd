@@ -16,10 +16,13 @@ const {
   class: className = "",
 } = Astro.props;
 
-// Two copies of the list: the animation moves the track -50%, so it loops with no jump
+// Two copies of the list: the animation moves the track -50%, so it loops with no jump.
+// Each copy repeats the list until it has 8 cards (~3600 px), or a wide screen would show a gap
+const perCopy = Math.max(1, Math.ceil(8 / testimonials.length));
+const cards = Array.from({ length: perCopy }, () => testimonials).flat();
 const copies = [0, 1];
 // Same pace whatever the number of cards: ~7 s per card
-const duration = testimonials.length * 7;
+const duration = cards.length * 7;
 ---
 
 <section
@@ -45,7 +48,7 @@ const duration = testimonials.length * 7;
       {
         copies.map((copy) => (
           <ul class="flex shrink-0" aria-hidden={copy > 0 ? "true" : undefined}>
-            {testimonials.map(({ name, quote, role, company, avatar }) => (
+            {cards.map(({ name, quote, role, company, avatar }) => (
               <li class="w-[85vw] shrink-0 pr-6 sm:w-108">
                 <figure class="flex h-full flex-col justify-between gap-8 rounded-3xl bg-neutral-50/30 p-8 sm:p-10 dark:bg-black-400">
                   <blockquote class="text-lg leading-relaxed text-pretty text-neutral-300 sm:text-xl dark:text-neutral-50">
