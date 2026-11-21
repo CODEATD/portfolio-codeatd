@@ -10,6 +10,21 @@ export default defineConfig({
   site: "https://codeatd.dev",
   vite: {
     plugins: [tailwindcss()],
+    // Pre-bundle the client libraries at startup. Discovering them later forces Vite to rebuild
+    // its cache, and on Windows that rename fails (EPERM) if another program holds node_modules/.vite:
+    // the scripts then 504 and the animations, the slider and the map stop working in dev.
+    optimizeDeps: {
+      include: [
+        "gsap",
+        "gsap/ScrollTrigger",
+        "gsap/SplitText",
+        "swiper",
+        "swiper/modules",
+        "notyf",
+        "leaflet",
+        "astro/actions/runtime/entrypoints/client.js", // astro:actions (the contact form)
+      ],
+    },
   },
   // Remote images Astro may optimize (WordPress local + production)
   image: {
