@@ -23,6 +23,11 @@ export default defineConfig({
         "notyf",
         "leaflet",
         "astro/actions/runtime/entrypoints/client.js", // astro:actions (the contact form)
+        // ClientRouter: without these, view transitions and the navigation progress bar stop working
+        "astro/virtual-modules/transitions-router.js",
+        "astro/virtual-modules/transitions-events.js",
+        "astro/virtual-modules/transitions-swap-functions.js",
+        "astro/virtual-modules/transitions-types.js",
       ],
     },
   },
