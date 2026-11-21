@@ -30,11 +30,11 @@ export default defineConfig({
   image: {
     domains: ["codeatd.local", "cms.codeatd.dev"],
   },
-  // Netlify: the site stays static; only pages with prerender = false (/blog/[slug]) run on the server
+  // Netlify: the site stays static; only pages with prerender = false (/blog/[slug], /projects) run on the server
   // Dev: no Edge Functions emulation (unused; its Deno server fails on Windows and slows the start)
   adapter: netlify({
     devFeatures: { edgeFunctions: false },
   }),
-  // sitemap-index.xml with every static page (posts are server-rendered, so they are not listed)
+  // sitemap-index.xml: static pages + /projects (SSR without params). Posts and project filters stay out
   integrations: [sitemap()],
 });

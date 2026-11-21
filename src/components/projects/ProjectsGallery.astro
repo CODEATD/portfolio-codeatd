@@ -1,0 +1,135 @@
+---
+import PageHero from "@/components/ui/PageHero.astro";
+import ProjectFilters from "@/components/projects/ProjectFilters.astro";
+import ProjectCard from "@/components/projects/ProjectCard.astro";
+import type { Category, Project } from "@/types";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+const t = useTranslations(getLangFromUrl(Astro.url));
+
+interface Props {
+  projects: Project[]; // all of them ("Todos" count + "de N")
+  categories: Category[];
+  current?: Category; // /projects/category/[slug] → that category
+}
+
+const { projects, categories, current } = Astro.props;
+
+// Filtered here: one request for all the projects, no extra one per category
+const visible = current
+  ? projects.filter((project) => project.categorySlugs.includes(current.slug))
+  : projects;
+
+const noun = projects.length === 1 ? t("projectsPage.project") : t("projectsPage.projects");
+const crumbs = [
+  { name: t("breadcrumb.home"), href: "/" },
+  current ? { name: t("projectsPage.title"), href: "/projects" } : { name: t("projectsPage.title") },
+  ...(current ? [{ name: current.name }] : []),
+];
+---
+
+<section aria-labelledby="projects-title" class="pb-20 sm:pb-28 lg:pb-30" data-projects-page>
+  <!-- transition:name → hero and filters stay still while the filter changes; only the list moves -->
+  <div transition:name="projects-hero">
+    <PageHero
+      crumbs={crumbs}
+      id="projects-title"
+      label={t("projectsPage.title")}
+      heading={t("projectsPage.heading")}
+      intro={t("projectsPage.text")}
+      itemClass="projects-reveal-item"
+    />
+  </div>
+
+  <div class="mt-12 grid gap-10 sm:mt-16 lg:grid-cols-12 lg:gap-8">
+    <aside class="projects-reveal-item lg:col-span-3">
+      <div class="lg:sticky lg:top-28" transition:name="projects-filters">
+        <ProjectFilters categories={categories} total={projects.length} current={current?.slug} />
+      </div>
+    </aside>
+
+    <div class="lg:col-span-9">
+      <p
+        class="projects-reveal-item text-xs font-semibold uppercase tracking-[0.2em] text-neutral-300 dark:text-neutral-100"
+      >
+        {`${t("projectsPage.showing")} ${visible.length} ${t("projectsPage.of")} ${projects.length} ${noun}`}
+      </p>
+
+      <ul class="mt-10 space-y-16 lg:space-y-20">
+        {
+          visible.map((project) => (
+            <li>
+              <ProjectCard project={project} headingLevel="h2" />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  let galleryTweens: gsap.core.Tween[] = [];
+  let previousPath = ""; // the page we come from (this script lives across ClientRouter navigations)
+
+  function initProjectsGallery() {
+    const cameFrom = previousPath;
+    previousPath = location.pathname;
+
+    const section = document.querySelector<HTMLElement>("[data-projects-page]");
+    if (!section) return; // other pages: this listener stays after visiting /projects
+    destroyProjectsGallery();
+
+    // Accessibility: no animation if the user prefers reduced motion
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    // Changing the filter: the View Transition already moves the cards → no entrance again
+    if (cameFrom.startsWith("/projects")) return;
+
+    // 1. Heading + intro, filters and the counter
+    galleryTweens.push(
+      gsap.from(section.querySelectorAll(".projects-reveal-item"), {
+        y: 35,
+        autoAlpha: 0,
+        duration: 0.85,
+        ease: "power3.out",
+        stagger: 0.1,
+      }),
+    );
+
+    // 2. Each card when it reaches the screen. Coming from the home with ClientRouter,
+    //    the View Transition already moves the images → only animate the text
+    const isNavigating = document.documentElement.hasAttribute("data-astro-transition");
+    const parts = isNavigating ? ".project-card-text" : ".project-card-media, .project-card-text";
+
+    section.querySelectorAll<HTMLElement>(".project-anim-card").forEach((card) => {
+      galleryTweens.push(
+        gsap.from(card.querySelectorAll(parts), {
+          y: 30,
+          autoAlpha: 0,
+          duration: 0.75,
+          ease: "power3.out",
+          stagger: 0.1,
+          scrollTrigger: { trigger: card, start: "top 85%", once: true },
+        }),
+      );
+    });
+  }
+
+  function destroyProjectsGallery() {
+    galleryTweens.forEach((tween) => {
+      tween.scrollTrigger?.kill();
+      tween.kill();
+    });
+    galleryTweens = [];
+  }
+
+  // ClientRouter: page-load also runs on the first load
+  document.addEventListener("astro:page-load", initProjectsGallery);
+  document.addEventListener("astro:before-swap", destroyProjectsGallery);
+</script>

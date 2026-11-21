@@ -180,6 +180,7 @@ const ProjectSchema = BaseWPSchema.pick({
             slug, // → /projects/[slug] (single-project, later)
             title: title.rendered,
             category: project_category_details[0]?.name ?? "", // card label: first category
+            categorySlugs: project_category_details.map((term) => term.slug), // /projects/category/[slug] filter
             description: acf.description,
             liveUrl: acf.live_url,
             repoUrl: acf.repo_url,

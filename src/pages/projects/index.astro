@@ -1,0 +1,24 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import ProjectsGallery from "@/components/projects/ProjectsGallery.astro";
+import { getPostType } from "@/helpers";
+import { CategoriesSchema, ProjectsSchema } from "@/types";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+const t = useTranslations(getLangFromUrl(Astro.url));
+
+//* SSR: a project published in WordPress shows up without a new build
+export const prerender = false;
+
+// Projects + their categories (only categories with projects)
+const [projectsJson, categoriesJson] = await Promise.all([
+  getPostType("project"),
+  getPostType("project_category", "&hide_empty=true"),
+]);
+const projects = ProjectsSchema.parse(projectsJson);
+const categories = CategoriesSchema.parse(categoriesJson);
+---
+
+<Layout title={t("projectsPage.title")} description={t("projectsPage.text")}>
+  <ProjectsGallery projects={projects} categories={categories} />
+</Layout>

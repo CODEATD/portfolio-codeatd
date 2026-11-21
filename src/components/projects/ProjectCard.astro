@@ -5,18 +5,22 @@ import { getLangFromUrl, useTranslations } from "@/i18n/utils";
 
 interface Props {
   project: Project;
+  headingLevel?: "h2" | "h3"; // h3 in the home section, h2 on /projects (h1 is the page title)
 }
 
-const { project } = Astro.props;
-const { title, category, description, liveUrl, repoUrl, image, technologies } = project;
+const { project, headingLevel: Heading = "h3" } = Astro.props;
+const { slug, title, category, description, liveUrl, repoUrl, image, technologies } = project;
 const t = useTranslations(getLangFromUrl(Astro.url));
 ---
 
 <article
   class="project-anim-card group/card grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-center lg:gap-8"
 >
-  <!-- Image -->
-  <div class="overflow-hidden rounded-2xl lg:col-span-5">
+  <!-- Image (transition:name → it slides to its new place when the /projects filter changes) -->
+  <div
+    class="project-card-media overflow-hidden rounded-2xl lg:col-span-5"
+    transition:name={`project-image-${slug}`}
+  >
     <Picture
       src={image.large.url}
       alt={`${t("projects.preview")} ${title}`}
@@ -29,7 +33,7 @@ const t = useTranslations(getLangFromUrl(Astro.url));
   </div>
 
   <!-- Category, title, description, technologies, actions -->
-  <div class="lg:col-span-6 lg:col-start-7">
+  <div class="project-card-text lg:col-span-6 lg:col-start-7">
     {
       category && (
         <p class="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-300 dark:text-primary-500">
@@ -37,11 +41,11 @@ const t = useTranslations(getLangFromUrl(Astro.url));
         </p>
       )
     }
-    <h3
+    <Heading
       class="mt-3 font-heading text-2xl font-medium text-neutral-500 sm:text-3xl dark:text-white"
     >
       <Fragment set:html={title} />
-    </h3>
+    </Heading>
     <p
       class="mt-3 max-w-md text-sm leading-relaxed text-pretty text-neutral-300 dark:text-neutral-200"
     >
