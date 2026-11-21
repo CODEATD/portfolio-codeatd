@@ -41,7 +41,8 @@ const crumbs = [
     />
   </div>
 
-  <div class="mt-12 grid gap-10 sm:mt-16 lg:grid-cols-12 lg:gap-8">
+  <!-- grid-cols-1 = minmax(0, 1fr): the scrolling filter row cannot widen the column on mobile -->
+  <div class="mt-12 grid grid-cols-1 gap-10 sm:mt-16 lg:grid-cols-12 lg:gap-8">
     <aside class="projects-reveal-item lg:col-span-3">
       <div class="lg:sticky lg:top-28" transition:name="projects-filters">
         <ProjectFilters categories={categories} total={projects.length} current={current?.slug} />
@@ -49,17 +50,42 @@ const crumbs = [
     </aside>
 
     <div class="lg:col-span-9">
-      <p
-        class="projects-reveal-item text-xs font-semibold uppercase tracking-[0.2em] text-neutral-300 dark:text-neutral-100"
-      >
-        {`${t("projectsPage.showing")} ${visible.length} ${t("projectsPage.of")} ${projects.length} ${noun}`}
-      </p>
+      <!-- Counter + list / grid switch -->
+      <div class="projects-reveal-item flex items-center justify-between gap-4">
+        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-300 dark:text-neutral-100">
+          {`${t("projectsPage.showing")} ${visible.length} ${t("projectsPage.of")} ${projects.length} ${noun}`}
+        </p>
+        <div class="hidden gap-1 sm:flex" role="group" aria-label={t("projectsPage.view")}>
+          {
+            [
+              { view: "list", icon: "ri-list-check-2", label: t("projectsPage.viewList") },
+              { view: "grid", icon: "ri-layout-grid-line", label: t("projectsPage.viewGrid") },
+            ].map(({ view, icon, label }) => (
+              <button
+                type="button"
+                data-view-button={view}
+                aria-pressed={view === "list" ? "true" : "false"}
+                aria-label={label}
+                title={label}
+                class="grid size-9 cursor-pointer place-items-center rounded-full text-lg text-neutral-300 transition-colors hover:text-neutral-500 aria-pressed:bg-primary-500 aria-pressed:text-neutral-500 dark:text-neutral-100 dark:hover:text-white dark:aria-pressed:text-neutral-500"
+              >
+                <i class={icon} aria-hidden="true" />
+              </button>
+            ))
+          }
+        </div>
+      </div>
 
-      <ul class="mt-10 space-y-16 lg:space-y-20">
+      <!-- data-view="list" | "grid": the cards adapt with in-data-[view=grid] (CSS only) -->
+      <ul
+        data-projects-list
+        data-view="list"
+        class="mt-10 grid grid-cols-1 gap-14 data-[view=grid]:gap-x-8 data-[view=grid]:sm:grid-cols-2"
+      >
         {
           visible.map((project) => (
             <li>
-              <ProjectCard project={project} headingLevel="h2" />
+              <ProjectCard project={project} headingLevel="h2" layout="gallery" />
             </li>
           ))
         }
@@ -75,6 +101,39 @@ const crumbs = [
   gsap.registerPlugin(ScrollTrigger);
 
   let galleryTweens: gsap.core.Tween[] = [];
+
+  // List or grid: a per-visitor preference (lost in a private window: falls back to list)
+  const VIEW_KEY = "projects-view";
+
+  function readView() {
+    try {
+      return localStorage.getItem(VIEW_KEY) === "grid" ? "grid" : "list";
+    } catch {
+      return "list";
+    }
+  }
+
+  function applyView(view: string) {
+    document.querySelector("[data-projects-list]")?.setAttribute("data-view", view);
+    document.querySelectorAll("[data-view-button]").forEach((button) => {
+      button.setAttribute("aria-pressed", String(button.getAttribute("data-view-button") === view));
+    });
+  }
+
+  // Event delegation: the buttons are replaced on every ClientRouter navigation
+  document.addEventListener("click", (event) => {
+    const button = (event.target as Element).closest<HTMLElement>("[data-view-button]");
+    if (!button) return;
+    const view = button.dataset.viewButton ?? "list";
+    try {
+      localStorage.setItem(VIEW_KEY, view);
+    } catch {}
+    applyView(view);
+    ScrollTrigger.refresh(); // the cards changed position
+  });
+
+  // Before the new page is shown (no flash of the list view when changing filter)
+  document.addEventListener("astro:after-swap", () => applyView(readView()));
   let previousPath = ""; // the page we come from (this script lives across ClientRouter navigations)
 
   function initProjectsGallery() {
@@ -84,6 +143,7 @@ const crumbs = [
     const section = document.querySelector<HTMLElement>("[data-projects-page]");
     if (!section) return; // other pages: this listener stays after visiting /projects
     destroyProjectsGallery();
+    applyView(readView()); // first load (after-swap only runs on ClientRouter navigations)
 
     // Accessibility: no animation if the user prefers reduced motion
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;

@@ -6,19 +6,26 @@ import { getLangFromUrl, useTranslations } from "@/i18n/utils";
 interface Props {
   project: Project;
   headingLevel?: "h2" | "h3"; // h3 in the home section, h2 on /projects (h1 is the page title)
+  layout?: "home" | "gallery"; // gallery: half and half, or stacked inside a [data-view="grid"] list
 }
 
-const { project, headingLevel: Heading = "h3" } = Astro.props;
+const { project, headingLevel: Heading = "h3", layout = "home" } = Astro.props;
+const gallery = layout === "gallery";
 const { slug, title, category, description, liveUrl, repoUrl, image, technologies } = project;
 const t = useTranslations(getLangFromUrl(Astro.url));
 ---
 
 <article
-  class="project-anim-card group/card grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-center lg:gap-8"
+  class:list={[
+    "project-anim-card group/card grid grid-cols-1 gap-6",
+    gallery
+      ? "lg:grid-cols-2 lg:items-center lg:gap-10 in-data-[view=grid]:gap-5 in-data-[view=grid]:lg:grid-cols-1 in-data-[view=grid]:lg:items-start"
+      : "lg:grid-cols-12 lg:items-center lg:gap-8",
+  ]}
 >
   <!-- Image (transition:name → it slides to its new place when the /projects filter changes) -->
   <div
-    class="project-card-media overflow-hidden rounded-2xl lg:col-span-5"
+    class:list={["project-card-media overflow-hidden rounded-2xl", !gallery && "lg:col-span-5"]}
     transition:name={`project-image-${slug}`}
   >
     <Picture
@@ -33,7 +40,7 @@ const t = useTranslations(getLangFromUrl(Astro.url));
   </div>
 
   <!-- Category, title, description, technologies, actions -->
-  <div class="project-card-text lg:col-span-6 lg:col-start-7">
+  <div class:list={["project-card-text", !gallery && "lg:col-span-6 lg:col-start-7"]}>
     {
       category && (
         <p class="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-300 dark:text-primary-500">
@@ -42,7 +49,7 @@ const t = useTranslations(getLangFromUrl(Astro.url));
       )
     }
     <Heading
-      class="mt-3 font-heading text-2xl font-medium text-neutral-500 sm:text-3xl dark:text-white"
+      class="mt-3 font-heading text-2xl font-medium text-neutral-500 sm:text-3xl in-data-[view=grid]:sm:text-2xl dark:text-white"
     >
       <Fragment set:html={title} />
     </Heading>
