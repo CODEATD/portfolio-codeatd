@@ -29,8 +29,10 @@ const {
 
 // Full class
 const chipStyles = {
-  base: "stack-chip rounded-full border px-5 py-2 text-sm font-medium transition-[translate] duration-300 hover:-translate-y-0.5 dark:border-primary-500 dark:bg-transparent dark:text-primary-500",
-  normal: "border-bor-light bg-neutral-50/40 text-neutral-500",
+  base: "stack-chip rounded-full border px-5 py-2 text-sm font-medium transition-[translate] duration-300 hover:-translate-y-0.5",
+  // Dark styles per variant: in base they would also empty the featured (yellow) chips
+  normal:
+    "border-bor-light bg-neutral-50/40 text-neutral-500 dark:border-primary-500 dark:bg-transparent dark:text-primary-500",
   featured: "border-primary-500 bg-primary-500 text-neutral-500",
 };
 ---
