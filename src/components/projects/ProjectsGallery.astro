@@ -128,8 +128,22 @@ const crumbs = [
     try {
       localStorage.setItem(VIEW_KEY, view);
     } catch {}
-    applyView(view);
-    ScrollTrigger.refresh(); // the cards changed position
+
+    // View Transition: each image (it has transition:name) slides to its new place, the rest fades.
+    // No support or reduced motion → instant change
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!document.startViewTransition || reduced) {
+      applyView(view);
+      ScrollTrigger.refresh(); // the cards changed position
+      return;
+    }
+    const root = document.documentElement;
+    root.dataset.viewSwitch = ""; // global.css: a plain fade instead of the page transition
+    const transition = document.startViewTransition(() => applyView(view));
+    transition.finished.finally(() => {
+      delete root.dataset.viewSwitch;
+      ScrollTrigger.refresh();
+    });
   });
 
   // Before the new page is shown (no flash of the list view when changing filter)
