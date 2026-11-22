@@ -10,6 +10,7 @@ interface Props {
   label?: string;
   heading?: string;
   experiences?: Experience[];
+  cv?: { text: string; href: string }; // "Descargar CV" (only when WordPress has a CV file)
   class?: string;
 }
 
@@ -39,6 +40,7 @@ heading = "Where I've been building.",
       technologies: ["React", "Node.js", "Tailwind CSS"],
     },
   ],
+  cv,
   class: className = "",
 } = Astro.props;
 
@@ -53,14 +55,31 @@ const sorted = experiences.toSorted(
   aria-labelledby="experience-title"
   class:list={["scroll-mt-20 pb-20 sm:pb-28 lg:pb-30", className]}
 >
-  <SectionHeading
-    class="experience-anim-item"
-    id="experience-title"
-    index={index}
-    label={label}
-    heading={heading}
-    headingClass="lg:text-5xl"
-  />
+  <!-- Heading + CV button: side by side on desktop, stacked on mobile (like Projects) -->
+  <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+    <SectionHeading
+      class="experience-anim-item"
+      id="experience-title"
+      index={index}
+      label={label}
+      heading={heading}
+      headingClass="lg:text-5xl"
+    />
+    {
+      cv && (
+        <a
+          href={cv.href}
+          class="experience-anim-item btn-primary self-start lg:self-auto"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <i class="ri-download-2-line" aria-hidden="true" />
+          {cv.text}
+          <span class="sr-only">{t("a11y.newTab")}</span>
+        </a>
+      )
+    }
+  </div>
 
   <ol
     class="mt-12 sm:mt-16"

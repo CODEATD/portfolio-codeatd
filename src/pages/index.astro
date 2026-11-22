@@ -133,6 +133,7 @@ const homePosts = posts.slice(0, 3); // home: the 3 most recent
         label={experiencePage.title.rendered}
         heading={experiencePage.acf.heading}
         experiences={experiences}
+        cv={options.cv_file ? { text: hero.cv_text ?? t("hero.cv"), href: options.cv_file } : undefined}
       />
     )
   }
