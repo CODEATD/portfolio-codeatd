@@ -44,13 +44,14 @@ const {
       class="peer sr-only"
       aria-label="Revelar la otra versión de la imagen"
     />
-    <!-- Light image -->
+    <!-- Light image (fallbackFormat jpg: the default fallback is png, far heavier for a photo) -->
     <Picture
       src={light.src}
       alt={light.alt}
       width={light.width}
       height={light.height}
       formats={["avif", "webp"]}
+      fallbackFormat="jpg"
       widths={[320, 440, 640]}
       sizes="(min-width: 1024px) 420px, 90vw"
       loading="eager"
@@ -65,6 +66,7 @@ const {
       width={dark.width}
       height={dark.height}
       formats={["avif", "webp"]}
+      fallbackFormat="jpg"
       widths={[320, 440, 640]}
       sizes="(min-width: 1024px) 420px, 90vw"
       loading="eager"
