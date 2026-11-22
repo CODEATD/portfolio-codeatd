@@ -77,7 +77,9 @@ const experiencePage = SectionPageSchema.parse(experiencePageJson);
 const experiences = ExperiencesSchema.parse(experiencesJson);
 const projectsPage = SectionPageSchema.parse(projectsPageJson);
 const projects = ProjectsSchema.parse(projectsJson);
-const homeProjects = projects.slice(0, 4); // home: the 4 most recent
+// Home: the projects marked "Destacado en la home" in WordPress (max 4); none marked → the 4 most recent
+const featuredProjects = projects.filter((project) => project.featured);
+const homeProjects = (featuredProjects.length > 0 ? featuredProjects : projects).slice(0, 4);
 const showreel = ShowreelPageSchema.parse(showreelJson);
 const testimonialsPage = BaseWPSchema.parse(testimonialsPageJson);
 const testimonials = TestimonialsSchema.parse(testimonialsJson);

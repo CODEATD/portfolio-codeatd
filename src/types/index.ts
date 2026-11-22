@@ -169,6 +169,7 @@ const ProjectSchema = BaseWPSchema.pick({
             description: z.string(),
             live_url: z.string().catch(""), // empty → no "Ver sitio"
             repo_url: z.string().catch(""), // empty → no "Ver código"
+            featured: z.boolean().catch(false), // "Destacado en la home"
         }),
         technology_details: z.array(TermSchema),
         project_category_details: z.array(TermSchema),
@@ -184,6 +185,7 @@ const ProjectSchema = BaseWPSchema.pick({
             description: acf.description,
             liveUrl: acf.live_url,
             repoUrl: acf.repo_url,
+            featured: acf.featured,
             image: featured_images,
             technologies: technology_details.map((term) => term.name),
         }),
