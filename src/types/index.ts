@@ -136,6 +136,7 @@ export const OptionsSchema = z.object({
     social_links: z.array(SocialLinkSchema).catch([]), // empty repeater → false
     cv_file: z.string().catch(""), // no CV → false → ""
     hero: HeroSchema.catch(HeroSchema.parse({})), // group missing → every field undefined
+    marquee_label: OptionalTextSchema, // logo marquee title (Home group)
 });
 
 export type SocialLink = z.infer<typeof SocialLinkSchema>;
