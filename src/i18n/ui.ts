@@ -13,7 +13,7 @@ export const ui = {
     "hero.primary": "Ver proyectos",
     "hero.cv": "Descargar CV",
     "hero.badge": "¡Hola!",
-    "marquee.label": "Han confiado en mi trabajo",
+    "marquee.label": "Herramientas con las que trabajo",
     "experience.present": "Actual",
     "projects.preview": "Vista previa de",
     "projects.live": "Ver sitio",

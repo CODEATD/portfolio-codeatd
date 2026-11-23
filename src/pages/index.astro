@@ -108,7 +108,7 @@ const homePosts = posts.slice(0, 3); // home: the 3 most recent
       : undefined}
     media={{ light: hero.image_light, dark: hero.image_dark, badgeText: hero.badge_text }}
   />
-  <LogoMarquee slot="before-main-content" />
+  <LogoMarquee slot="before-main-content" label={options.marquee_label} />
 
   <About
     label={about.title.rendered}
